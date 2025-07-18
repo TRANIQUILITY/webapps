@@ -90,28 +90,28 @@
                 </div>
                 <div class="bg-white p-4 md:p-8 rounded-2xl shadow-2xl max-w-7xl mx-auto fade-in-section">
                     <!-- New Performance Summary Section -->
-                    <div class="mb-8 pb-6 border-b border-gray-200">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">투자 성과 요약</h3>
+                    <div id="performance-summary" class="mb-8 pb-6 border-b border-gray-200">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">나의 투자 성과 요약</h3>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <div class="bg-slate-100 p-4 rounded-lg text-center">
                                 <p class="text-2xl mb-1">🎯</p>
                                 <p class="font-semibold text-gray-700">은퇴 목표 달성률</p>
-                                <p class="text-2xl font-bold text-indigo-600 mt-1">65%</p>
+                                <p class="counter text-2xl font-bold text-indigo-600 mt-1" data-target="65">0%</p>
                             </div>
                             <div class="bg-slate-100 p-4 rounded-lg text-center">
                                 <p class="text-2xl mb-1">👤</p>
                                 <p class="font-semibold text-gray-700">직접 투자</p>
-                                <p class="text-2xl font-bold text-gray-800 mt-1">+8.5%</p>
+                                <p class="counter text-2xl font-bold text-gray-800 mt-1" data-target="8.5" data-suffix="%">+0.0%</p>
                             </div>
                             <div class="bg-slate-100 p-4 rounded-lg text-center">
                                 <p class="text-2xl mb-1">🤖</p>
                                 <p class="font-semibold text-gray-700">AI 조언 기반</p>
-                                <p class="text-2xl font-bold text-indigo-600 mt-1">+11.2%</p>
+                                <p class="counter text-2xl font-bold text-indigo-600 mt-1" data-target="11.2" data-suffix="%">+0.0%</p>
                             </div>
                             <div class="bg-slate-100 p-4 rounded-lg text-center">
                                 <p class="text-2xl mb-1">📊</p>
                                 <p class="font-semibold text-gray-700">우수 성과자 따라하기</p>
-                                <p class="text-2xl font-bold text-teal-600 mt-1">+12.8%</p>
+                                <p class="counter text-2xl font-bold text-teal-600 mt-1" data-target="12.8" data-suffix="%">+0.0%</p>
                             </div>
                         </div>
                     </div>
@@ -203,10 +203,22 @@
                         <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">우수 성과자 따라하기</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             <div class="bg-slate-100 p-4 rounded-lg text-center">
+                                <span class="text-4xl">👩‍🎨</span>
+                                <p class="font-bold mt-2">배당여왕P</p>
+                                <p class="text-sm text-green-600 font-semibold">연평균 +18%</p>
+                                <p class="text-xs text-gray-500"><span class="font-semibold">퀘스트 수행률:</span> 100%</p>
+                                <p class="text-xs text-gray-500"><span class="font-semibold">AI 조언 수용도:</span> 97%</p>
+                                <div class="mt-3 flex gap-2">
+                                    <button class="w-full text-xs bg-indigo-500 text-white py-1.5 rounded-md hover:bg-indigo-600">Follow</button>
+                                    <button class="w-full text-xs bg-white border border-gray-300 py-1.5 rounded-md hover:bg-gray-200">Connect</button>
+                                </div>
+                            </div>
+                             <div class="bg-slate-100 p-4 rounded-lg text-center">
                                 <span class="text-4xl">👨‍🚀</span>
                                 <p class="font-bold mt-2">투자마스터J</p>
-                                <p class="text-sm text-green-600 font-semibold">연평균 12%</p>
-                                <p class="text-xs text-gray-500">목표 달성률 95%</p>
+                                <p class="text-sm text-green-600 font-semibold">연평균 +15%</p>
+                                <p class="text-xs text-gray-500"><span class="font-semibold">퀘스트 수행률:</span> 98%</p>
+                                <p class="text-xs text-gray-500"><span class="font-semibold">AI 조언 수용도:</span> 95%</p>
                                 <div class="mt-3 flex gap-2">
                                     <button class="w-full text-xs bg-indigo-500 text-white py-1.5 rounded-md hover:bg-indigo-600">Follow</button>
                                     <button class="w-full text-xs bg-white border border-gray-300 py-1.5 rounded-md hover:bg-gray-200">Connect</button>
@@ -215,8 +227,9 @@
                              <div class="bg-slate-100 p-4 rounded-lg text-center">
                                 <span class="text-4xl">👩‍🔬</span>
                                 <p class="font-bold mt-2">안정추구K</p>
-                                <p class="text-sm text-green-600 font-semibold">연평균 8%</p>
-                                <p class="text-xs text-gray-500">목표 달성률 98%</p>
+                                <p class="text-sm text-green-600 font-semibold">연평균 +12%</p>
+                                <p class="text-xs text-gray-500"><span class="font-semibold">퀘스트 수행률:</span> 95%</p>
+                                <p class="text-xs text-gray-500"><span class="font-semibold">AI 조언 수용도:</span> 92%</p>
                                 <div class="mt-3 flex gap-2">
                                     <button class="w-full text-xs bg-indigo-500 text-white py-1.5 rounded-md hover:bg-indigo-600">Follow</button>
                                     <button class="w-full text-xs bg-white border border-gray-300 py-1.5 rounded-md hover:bg-gray-200">Connect</button>
@@ -225,18 +238,9 @@
                              <div class="bg-slate-100 p-4 rounded-lg text-center">
                                 <span class="text-4xl">👨‍💻</span>
                                 <p class="font-bold mt-2">테크성장L</p>
-                                <p class="text-sm text-green-600 font-semibold">연평균 15%</p>
-                                <p class="text-xs text-gray-500">목표 달성률 85%</p>
-                                <div class="mt-3 flex gap-2">
-                                    <button class="w-full text-xs bg-indigo-500 text-white py-1.5 rounded-md hover:bg-indigo-600">Follow</button>
-                                    <button class="w-full text-xs bg-white border border-gray-300 py-1.5 rounded-md hover:bg-gray-200">Connect</button>
-                                </div>
-                            </div>
-                             <div class="bg-slate-100 p-4 rounded-lg text-center">
-                                <span class="text-4xl">👩‍🎨</span>
-                                <p class="font-bold mt-2">배당여왕P</p>
-                                <p class="text-sm text-green-600 font-semibold">연평균 9%</p>
-                                <p class="text-xs text-gray-500">목표 달성률 99%</p>
+                                <p class="text-sm text-green-600 font-semibold">연평균 +10%</p>
+                                <p class="text-xs text-gray-500"><span class="font-semibold">퀘스트 수행률:</span> 88%</p>
+                                <p class="text-xs text-gray-500"><span class="font-semibold">AI 조언 수용도:</span> 85%</p>
                                 <div class="mt-3 flex gap-2">
                                     <button class="w-full text-xs bg-indigo-500 text-white py-1.5 rounded-md hover:bg-indigo-600">Follow</button>
                                     <button class="w-full text-xs bg-white border border-gray-300 py-1.5 rounded-md hover:bg-gray-200">Connect</button>
@@ -372,10 +376,53 @@
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('is-visible');
+                    if(entry.target.querySelector('#performance-summary')) {
+                        startCounters();
+                    }
                 }
             });
         }, { threshold: 0.1 });
         sections.forEach(section => { observer.observe(section); });
+
+        // 숫자 카운트업 애니메이션
+        function startCounters() {
+            const counters = document.querySelectorAll('.counter');
+            counters.forEach(counter => {
+                if(counter.dataset.counted) return;
+                counter.dataset.counted = true;
+
+                const target = +counter.dataset.target;
+                const suffix = counter.dataset.suffix || '%';
+                const prefix = counter.textContent.startsWith('+') ? '+' : '';
+                
+                let startTimestamp = null;
+                const duration = 1500;
+
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    const currentValue = progress * target;
+
+                    if (target.toString().includes('.')) {
+                        counter.textContent = `${prefix}${currentValue.toFixed(1)}${suffix}`;
+                    } else {
+                        counter.textContent = `${prefix}${Math.floor(currentValue)}${suffix}`;
+                    }
+
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    } else {
+                        if (target.toString().includes('.')) {
+                           counter.textContent = `${prefix}${target.toFixed(1)}${suffix}`;
+                        } else {
+                           counter.textContent = `${prefix}${target}${suffix}`;
+                        }
+                    }
+                };
+                window.requestAnimationFrame(step);
+            });
+        }
+
 
         // 이메일 등록 폼 비활성화
         const form = document.getElementById('pioneer-form');
@@ -554,7 +601,7 @@
             stage1: { 
                 title: '20-40대: 자산 형성기', 
                 description: [
-                    '#장기투자 #복리효과 #공격적자산배분',
+                    '<span class="font-bold">#장기투자 #복리효과 #공격적자산배분</span>',
                     '긴 투자 기간을 활용하여 자산 증식에 집중하는 시기입니다.',
                     '위험 감수도를 높여 성장주, 기술주 ETF 등의 비중을 높게 가져갑니다.',
                     '연금저축, IRP 등 절세 계좌를 최대한 활용하여 세금 혜택을 통한 복리 효과를 극대화하는 것이 중요합니다.'
@@ -565,7 +612,7 @@
             stage2: { 
                 title: '50대: 은퇴 준비기', 
                 description: [
-                    '#자산보존 #포트폴리오안정화 #배당주',
+                    '<span class="font-bold">#자산보존 #포트폴리오안정화 #배당주</span>',
                     '자산 증식과 안정성의 균형을 맞춰야 합니다.',
                     '위험자산 비중을 점진적으로 축소하고 배당주, 우량채권 비중을 늘려 포트폴리오를 안정화합니다.',
                     '은퇴 후 현금흐름을 예측하고, 연금 수령 계획을 구체화하기 시작해야 합니다.'
@@ -576,7 +623,7 @@
             stage3: { 
                 title: '55세+: 연금 수령기', 
                 description: [
-                    '#현금흐름 #자산인출전략 #저변동성',
+                    '<span class="font-bold">#현금흐름 #자산인출전략 #저변동성</span>',
                     '안정적인 현금흐름 확보가 최우선 목표입니다.',
                     '채권 및 고배당주 비중을 늘려 원금 손실 위험을 최소화하고 자산을 보존하는 데 집중합니다.',
                     '사적연금 수령을 시작하며, 세금 부담을 최소화하는 효율적인 인출 전략이 필요합니다.'
@@ -587,7 +634,7 @@
             stage4: { 
                 title: '65세+: 자산 인출기', 
                 description: [
-                    '#자산보존 #유동성확보 #상속계획',
+                    '<span class="font-bold">#자산보존 #유동성확보 #상속계획</span>',
                     '자산 보존을 최우선으로 합니다.',
                     '현금 및 단기채권 등 안전자산 비중을 높여 시장 변동성의 영향을 최소화하는 전략이 필요합니다.',
                     '국민연금(노령연금) 수령과 함께, 건강보험료 등을 고려한 종합적인 자산 인출 계획을 세워야 합니다.'
