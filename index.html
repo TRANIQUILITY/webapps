@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> 51Labs :: 새로운 은퇴 설계 서비스 </title>
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <title> 51Labs :: 새로운 은퇴 준비 서비스 </title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -32,8 +33,19 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+        .progress-bar-inner {
+            transition: width 0.5s ease-in-out;
+        }
+        /* Custom slider styles */
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]:focus { outline: none; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: #d1d5db; border-radius: 9999px; }
+        input[type=range]::-webkit-slider-thumb { height: 18px; width: 18px; border-radius: 50%; background: #4f46e5; cursor: pointer; -webkit-appearance: none; margin-top: -6px; }
+        input[type=range]::-moz-range-track { width: 100%; height: 6px; cursor: pointer; background: #d1d5db; border-radius: 9999px; }
+        input[type=range]::-moz-range-thumb { height: 18px; width: 18px; border-radius: 50%; background: #4f46e5; cursor: pointer; }
     </style>
 </head>
+    
 <body class="bg-gray-50 text-gray-800">
 
     <!-- Navigation Bar -->
@@ -41,9 +53,6 @@
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <a href="#" class="text-2xl font-extrabold gradient-text">
                 51labs
-            </a>
-            <a href="#join" class="bg-indigo-600 text-white font-bold py-2 px-5 rounded-lg hover:bg-indigo-700 transition-colors">
-                E-mail 등록
             </a>
         </div>
     </header>
@@ -62,168 +71,199 @@
                     AI Agent 기반 개인화 서비스와 집단지성을 결합한 새로운 서비스 플랫폼
                 </p>
                 <div class="flex justify-center gap-4 flex-wrap">
-                    <a href="#solution" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-indigo-700 transition-transform hover:scale-105">
-                        은퇴 설계 솔루션
+                    <a href="#simulation" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-indigo-700 transition-transform hover:scale-105">
+                        AI 시뮬레이터 경험하기
                     </a>
-                    <a href="#join" class="bg-gray-200 text-gray-800 font-bold py-3 px-8 rounded-lg text-lg hover:bg-gray-300 transition-transform hover:scale-105">
-                        첫 투자 퀘스트
+                    <a href="#roadmap" class="bg-gray-200 text-gray-800 font-bold py-3 px-8 rounded-lg text-lg hover:bg-gray-300 transition-transform hover:scale-105">
+                        개발 로드맵
                     </a>
-                </div>
-                
-                <!-- New Dashboard UI Component -->
-                <div class="mt-20 fade-in-section max-w-6xl mx-auto">
-                    <div class="bg-gray-900 rounded-2xl shadow-2xl p-4 md:p-6 lg:p-8 text-white font-sans text-left">
-                        <!-- Dashboard Grid -->
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                
-                            <!-- Left/Main Column -->
-                            <div class="lg:col-span-2 space-y-6">
-                                <!-- Header -->
-                                <div>
-                                    <h2 class="text-2xl font-bold">은퇴 준비 현황</h2>
-                                    <p class="text-gray-400">2025년 7월 15일 기준</p>
-                                </div>
-                
-                                <!-- Stats Cards -->
-                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    <div class="bg-gray-800/50 p-4 rounded-xl">
-                                        <p class="text-sm text-gray-400">총 자산</p>
-                                        <p class="text-xl md:text-2xl font-bold">₩1.2억</p>
-                                    </div>
-                                    <div class="bg-gray-800/50 p-4 rounded-xl">
-                                        <p class="text-sm text-gray-400">월 평균 수익</p>
-                                        <p class="text-xl md:text-2xl font-bold text-green-400">+₩125만</p>
-                                    </div>
-                                    <div class="bg-gray-800/50 p-4 rounded-xl">
-                                        <p class="text-sm text-gray-400">다음 퀘스트</p>
-                                        <p class="text-xl md:text-2xl font-bold">배당주 구성</p>
-                                    </div>
-                                    <div class="bg-gray-800/50 p-4 rounded-xl">
-                                        <p class="text-sm text-gray-400">퀘스트 경험치</p>
-                                        <p class="text-xl md:text-2xl font-bold text-indigo-400">75 points</p>
-                                    </div>
-                                </div>
-                
-                                <!-- Main Chart -->
-                                <div>
-                                    <h3 class="text-xl font-bold mb-4">월별 자산 성장 그래프</h3>
-                                    <div class="bg-gray-800/50 p-4 md:p-6 rounded-xl h-64 flex items-end justify-between space-x-2">
-                                        <!-- Mockup bars for the chart -->
-                                        <div class="w-full h-[60%] bg-indigo-500 rounded-t-md" title="1월"></div>
-                                        <div class="w-full h-[65%] bg-indigo-500 rounded-t-md" title="2월"></div>
-                                        <div class="w-full h-[70%] bg-indigo-500 rounded-t-md" title="3월"></div>
-                                        <div class="w-full h-[68%] bg-indigo-500 rounded-t-md" title="4월"></div>
-                                        <div class="w-full h-[75%] bg-indigo-500 rounded-t-md" title="5월"></div>
-                                        <div class="w-full h-[80%] bg-indigo-400 rounded-t-md" title="6월"></div>
-                                        <div class="w-full h-[85%] bg-indigo-400 rounded-t-md" title="7월"></div>
-                                        <div class="w-full h-[82%] bg-gray-700 rounded-t-md" title="8월 (예상)"></div>
-                                    </div>
-                                </div>
-                            </div>
-                
-                            <!-- Right Column -->
-                            <div class="space-y-6">
-                                <!-- My Quests -->
-                                <div>
-                                    <h3 class="text-xl font-bold mb-4">투자 퀘스트</h3>
-                                    <div class="bg-gray-800/50 p-4 rounded-xl space-y-3">
-                                        <div class="flex items-center justify-between">
-                                            <div>
-                                                <p class="font-bold">고배당주 모으기</p>
-                                                <p class="text-sm text-gray-400">목표: 1,000만원</p>
-                                            </div>
-                                            <div class="text-right">
-                                                <p class="font-bold text-green-400">85%</p>
-                                            </div>
-                                        </div>
-                                         <div class="w-full bg-gray-700 rounded-full h-2.5">
-                                            <div class="bg-green-500 h-2.5 rounded-full" style="width: 85%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                
-                                <!-- Recent Activity -->
-                                <div>
-                                    <h3 class="text-xl font-bold mb-4">최근 활동</h3>
-                                    <div class="space-y-3">
-                                        <div class="bg-gray-800/50 p-3 rounded-xl flex items-center justify-between">
-                                            <div class="flex items-center gap-3">
-                                                <div class="bg-blue-500/20 text-blue-400 p-2 rounded-full">
-                                                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.826-1.106-2.156 0-2.982C10.544 8.22 11.275 8 12 8c.725 0 1.45.22 2.003.659" /></svg>
-                                                </div>
-                                                <div>
-                                                    <p class="font-semibold">배당금 입금</p>
-                                                    <p class="text-sm text-gray-400">JEPQ (ETF)</p>
-                                                </div>
-                                            </div>
-                                            <p class="font-bold text-green-400">+₩52,100</p>
-                                        </div>
-                                        <div class="bg-gray-800/50 p-3 rounded-xl flex items-center justify-between">
-                                            <div class="flex items-center gap-3">
-                                                <div class="bg-yellow-500/20 text-yellow-400 p-2 rounded-full">
-                                                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
-                                                </div>
-                                                <div>
-                                                    <p class="font-semibold">퀘스트 완료!</p>
-                                                    <p class="text-sm text-gray-400">'S&P 500 ETF' 10주 모으기</p>
-                                                </div>
-                                            </div>
-                                            <p class="font-bold text-yellow-400">달성</p>
-                                        </div>
-                                        <div class="bg-gray-800/50 p-3 rounded-xl flex items-center justify-between">
-                                            <div class="flex items-center gap-3">
-                                                <div class="bg-purple-500/20 text-purple-400 p-2 rounded-full">
-                                                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c.51 0 .962-.343 1.087-.835l1.823-6.841a.75.75 0 0 0-.543-.922l-13.5-3.411a.75.75 0 0 0-.835.67l-1.622 6.082A2.25 2.25 0 0 0 6 12.75Zm0 0h11.218" /></svg>
-                                                </div>
-                                                <div>
-                                                    <p class="font-semibold">주식 매수</p>
-                                                    <p class="text-sm text-gray-400">마이크로소프트 (MSFT)</p>
-                                                </div>
-                                            </div>
-                                            <p class="font-bold text-red-400">-₩450,000</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>
-
-        <!-- Section 2: The Solution -->
-        <section id="solution" class="py-20 md:py-28">
+                
+       <!-- New Simulation Section -->
+        <section id="simulation" class="py-20 md:py-28">
             <div class="container mx-auto px-6">
-                <div class="text-center mb-16 fade-in-section">
-                    <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">금융 투자 중심의 은퇴 준비 플랫폼</h2>
-                    <p class="text-lg text-gray-600">51Labs의 새로운 솔루션을 소개합니다.</p>
+                 <div class="text-center mb-16 fade-in-section">
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">AI 은퇴 시뮬레이터: 51Labs 솔루션 경험하기</h2>
+                    <p class="text-lg text-gray-600">좌측 컨트롤 패널에서 당신의 투자 계획을 설정하고, 우측에서 AI가 분석한 미래를 확인해보세요.</p>
                 </div>
-                <div class="grid md:grid-cols-3 gap-8">
-                    <!-- Card 1 -->
-                    <div class="bg-white p-8 rounded-2xl shadow-lg fade-in-section" style="transition-delay: 100ms;">
-                        <div class="bg-indigo-100 text-indigo-600 rounded-full w-16 h-16 flex items-center justify-center mb-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                            </svg>
+                <div class="bg-white p-4 md:p-8 rounded-2xl shadow-2xl max-w-7xl mx-auto fade-in-section">
+                    <!-- New Performance Summary Section -->
+                    <div class="mb-8 pb-6 border-b border-gray-200">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">나의 투자 성과 요약</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="bg-slate-100 p-4 rounded-lg text-center">
+                                <p class="text-2xl mb-1">🎯</p>
+                                <p class="font-semibold text-gray-700">은퇴 목표 달성률</p>
+                                <p class="text-2xl font-bold text-indigo-600 mt-1">65%</p>
+                            </div>
+                            <div class="bg-slate-100 p-4 rounded-lg text-center">
+                                <p class="text-2xl mb-1">👤</p>
+                                <p class="font-semibold text-gray-700">직접 투자</p>
+                                <p class="text-2xl font-bold text-gray-800 mt-1">+8.5%</p>
+                            </div>
+                            <div class="bg-slate-100 p-4 rounded-lg text-center">
+                                <p class="text-2xl mb-1">🤖</p>
+                                <p class="font-semibold text-gray-700">AI 조언 기반</p>
+                                <p class="text-2xl font-bold text-indigo-600 mt-1">+11.2%</p>
+                            </div>
+                            <div class="bg-slate-100 p-4 rounded-lg text-center">
+                                <p class="text-2xl mb-1">📊</p>
+                                <p class="font-semibold text-gray-700">우수 성과자 따라하기</p>
+                                <p class="text-2xl font-bold text-teal-600 mt-1">+12.8%</p>
+                            </div>
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-3">AI 기반 개인화 서비스</h3>
-                        <p class="text-gray-600">연령대, 자산 규모, 은퇴 목표, 개인 투자 성향 등을 분석하여 당신만을 위한 최적 로드맵을 설계합니다.</p>
                     </div>
-                    <!-- Card 2 -->
-                    <div class="bg-white p-8 rounded-2xl shadow-lg fade-in-section" style="transition-delay: 200ms;">
-                        <div class="bg-indigo-100 text-indigo-600 rounded-full w-16 h-16 flex items-center justify-center mb-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283-.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Left Column: Control Panel -->
+                        <div class="lg:col-span-1 space-y-6">
+                            <div class="bg-slate-100 p-4 rounded-lg">
+                                <h4 class="font-bold text-gray-800 mb-2 flex items-center"><span class="text-xl mr-2">🤖</span> AI 기반 개인화 서비스</h4>
+                                <p class="text-sm text-gray-600 mb-3">당신의 <span class="font-bold">금융 DNA</span>를 설정하면 AI가 맞춤형 조언을 제공합니다.</p>
+                                <div id="dna-profile" class="space-y-2 text-sm mb-3">
+                                    <div>
+                                        <div class="flex justify-between mb-1"><span class="font-medium text-gray-700">안정성</span><span id="dna-stability-val" class="font-bold text-indigo-600">70%</span></div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2"><div id="dna-stability-bar" class="bg-indigo-600 h-2 rounded-full progress-bar-inner" style="width: 70%"></div></div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between mb-1"><span class="font-medium text-gray-700">성장성</span><span id="dna-growth-val" class="font-bold text-cyan-600">20%</span></div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2"><div id="dna-growth-bar" class="bg-cyan-500 h-2 rounded-full progress-bar-inner" style="width: 20%"></div></div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between mb-1"><span class="font-medium text-gray-700">현금흐름</span><span id="dna-income-val" class="font-bold text-teal-600">80%</span></div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2"><div id="dna-income-bar" class="bg-teal-500 h-2 rounded-full progress-bar-inner" style="width: 80%"></div></div>
+                                    </div>
+                                </div>
+                                <div id="dna-controls" class="grid grid-cols-3 gap-2">
+                                    <button data-profile="stable" class="dna-btn bg-indigo-500 text-white p-2 rounded-lg text-xs font-semibold">안정형</button>
+                                    <button data-profile="balanced" class="dna-btn bg-white p-2 rounded-lg text-xs font-semibold">균형형</button>
+                                    <button data-profile="growth" class="dna-btn bg-white p-2 rounded-lg text-xs font-semibold">성장형</button>
+                                </div>
+                            </div>
+                            <div class="bg-slate-100 p-4 rounded-lg">
+                                <h4 class="font-bold text-gray-800 mb-2 flex items-center"><span class="text-xl mr-2">🏆</span> 퀘스트 중심 Gamification</h4>
+                                <p class="text-sm text-gray-600 mb-3">달성하고 싶은 <span class="font-bold">금융 퀘스트</span>를 선택하여 시뮬레이션에 목표를 부여하세요.</p>
+                                <select id="quest-select" class="w-full p-2 border border-gray-300 rounded-lg">
+                                    <option value="500000000">5억 자산 만들기</option>
+                                    <option value="1000000000" selected>10억 자산 만들기</option>
+                                    <option value="2000000000">20억 자산 만들기</option>
+                                </select>
+                            </div>
+                            <div class="bg-slate-100 p-4 rounded-lg">
+                                <h4 class="font-bold text-gray-800 mb-2 flex items-center"><span class="text-xl mr-2">📊</span> 실시간 성과 현황 공유</h4>
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm text-gray-600"><span class="font-bold">유사 그룹</span> 데이터와 비교</p>
+                                    <label for="peer-toggle" class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="peer-toggle" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-3">실시간 성과 현황 공유</h3>
-                        <p class="text-gray-600">마이데이터를 이용하여 다양한 사용자 그룹 및 투자 성과가 우수한 사용자 정보를 상호 참조합니다.</p>
+                        <!-- Right Column: Simulation Results -->
+                        <div class="lg:col-span-2">
+                             <div class="bg-slate-100 p-6 rounded-lg h-full flex flex-col">
+                                <h3 class="text-xl font-bold text-gray-800 mb-4">시뮬레이션 결과</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div>
+                                        <label for="initial-investment" class="text-sm font-semibold text-gray-600">초기 투자금</label>
+                                        <p id="initial-investment-value" class="font-bold text-lg text-indigo-600">5,000 만원</p>
+                                        <input type="range" id="initial-investment" min="0" max="20000" value="5000" step="1000">
+                                    </div>
+                                    <div>
+                                        <label for="monthly-contribution" class="text-sm font-semibold text-gray-600">월 추가 투자금</label>
+                                        <p id="monthly-contribution-value" class="font-bold text-lg text-indigo-600">100 만원</p>
+                                        <input type="range" id="monthly-contribution" min="0" max="500" value="100" step="10">
+                                    </div>
+                                    <div>
+                                        <label for="investment-horizon" class="text-sm font-semibold text-gray-600">투자 기간</label>
+                                        <p id="investment-horizon-value" class="font-bold text-lg text-indigo-600">20 년</p>
+                                        <input type="range" id="investment-horizon" min="5" max="40" value="20" step="1">
+                                    </div>
+                                </div>
+                                <div class="relative h-64 md:h-80 flex-grow">
+                                    <canvas id="projectionChart"></canvas>
+                                </div>
+                                <div id="ai-advice" class="mt-6 bg-indigo-600 text-white p-4 rounded-lg text-sm">
+                                    <div class="flex items-start space-x-2">
+                                        <span class="text-xl flex-shrink-0">🤖</span>
+                                        <div>
+                                            <p class="font-bold mb-1">AI 어드바이저:</p>
+                                            <p id="advice-text"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <!-- Card 3 -->
-                    <div class="bg-white p-8 rounded-2xl shadow-lg fade-in-section" style="transition-delay: 300ms;">
-                        <div class="bg-indigo-100 text-indigo-600 rounded-full w-16 h-16 flex items-center justify-center mb-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                    <!-- New Follow High Performers Section -->
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">우수 성과자 따라하기</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="bg-slate-100 p-4 rounded-lg text-center">
+                                <span class="text-4xl">👨‍🚀</span>
+                                <p class="font-bold mt-2">투자마스터J</p>
+                                <p class="text-sm text-green-600 font-semibold">연평균 12%</p>
+                                <p class="text-xs text-gray-500">목표 달성률 95%</p>
+                                <div class="mt-3 flex gap-2">
+                                    <button class="w-full text-xs bg-indigo-500 text-white py-1.5 rounded-md hover:bg-indigo-600">Follow</button>
+                                    <button class="w-full text-xs bg-white border border-gray-300 py-1.5 rounded-md hover:bg-gray-200">Connect</button>
+                                </div>
+                            </div>
+                             <div class="bg-slate-100 p-4 rounded-lg text-center">
+                                <span class="text-4xl">👩‍🔬</span>
+                                <p class="font-bold mt-2">안정추구K</p>
+                                <p class="text-sm text-green-600 font-semibold">연평균 8%</p>
+                                <p class="text-xs text-gray-500">목표 달성률 98%</p>
+                                <div class="mt-3 flex gap-2">
+                                    <button class="w-full text-xs bg-indigo-500 text-white py-1.5 rounded-md hover:bg-indigo-600">Follow</button>
+                                    <button class="w-full text-xs bg-white border border-gray-300 py-1.5 rounded-md hover:bg-gray-200">Connect</button>
+                                </div>
+                            </div>
+                             <div class="bg-slate-100 p-4 rounded-lg text-center">
+                                <span class="text-4xl">👨‍💻</span>
+                                <p class="font-bold mt-2">테크성장L</p>
+                                <p class="text-sm text-green-600 font-semibold">연평균 15%</p>
+                                <p class="text-xs text-gray-500">목표 달성률 85%</p>
+                                <div class="mt-3 flex gap-2">
+                                    <button class="w-full text-xs bg-indigo-500 text-white py-1.5 rounded-md hover:bg-indigo-600">Follow</button>
+                                    <button class="w-full text-xs bg-white border border-gray-300 py-1.5 rounded-md hover:bg-gray-200">Connect</button>
+                                </div>
+                            </div>
+                             <div class="bg-slate-100 p-4 rounded-lg text-center">
+                                <span class="text-4xl">👩‍🎨</span>
+                                <p class="font-bold mt-2">배당여왕P</p>
+                                <p class="text-sm text-green-600 font-semibold">연평균 9%</p>
+                                <p class="text-xs text-gray-500">목표 달성률 99%</p>
+                                <div class="mt-3 flex gap-2">
+                                    <button class="w-full text-xs bg-indigo-500 text-white py-1.5 rounded-md hover:bg-indigo-600">Follow</button>
+                                    <button class="w-full text-xs bg-white border border-gray-300 py-1.5 rounded-md hover:bg-gray-200">Connect</button>
+                                </div>
+                            </div>
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-3">퀘스트 중심 Gamification</h3>
-                        <p class="text-gray-600">자동화된 '투자 길드' 참여와 사용자별로 Grouping하며 집단화된 데이터 분석으로 더 멀리, 더 안전하게 운영합니다.</p>
+                    </div>
+                     <!-- New Lifecycle Section -->
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6 text-center">생애주기별 포트폴리오 예시</h3>
+                        <div class="bg-slate-100 p-6 rounded-lg">
+                            <div id="lifecycle-tabs" class="flex flex-wrap justify-center border-b border-gray-300 mb-4">
+                                <button data-stage="stage1" class="lifecycle-tab px-4 py-2 text-sm font-semibold bg-indigo-600 text-white border-b-2 border-indigo-600">20-40대: 자산 형성기</button>
+                                <button data-stage="stage2" class="lifecycle-tab px-4 py-2 text-sm font-semibold text-gray-500">50대: 은퇴 준비기</button>
+                                <button data-stage="stage3" class="lifecycle-tab px-4 py-2 text-sm font-semibold text-gray-500">55세+: 연금 수령기</button>
+                                <button data-stage="stage4" class="lifecycle-tab px-4 py-2 text-sm font-semibold text-gray-500">65세+: 자산 인출기</button>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                                <div class="md:col-span-1 h-48 w-48 mx-auto">
+                                    <canvas id="lifecycleChart"></canvas>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <h4 id="lifecycle-title" class="font-bold text-lg text-gray-800">자산 형성기</h4>
+                                    <p id="lifecycle-description" class="text-sm text-gray-600 mt-2">종잣돈 마련과 공격적인 자산 증식에 집중해야 하는 시기입니다. 긴 투자 기간을 활용하여 주식과 같은 성장 자산의 비중을 높게 유지하는 전략이 유효합니다.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -325,7 +365,7 @@
     </footer>
 
     <script>
-        // 스크롤 시 섹션이 부드럽게 나타나는 효과
+        // 스크롤 애니메이션
         const sections = document.querySelectorAll('.fade-in-section');
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -336,17 +376,234 @@
         }, { threshold: 0.1 });
         sections.forEach(section => { observer.observe(section); });
 
-        // --- 이메일 등록 로직 수정 (비활성화) ---
+        // 이메일 등록 폼 비활성화
         const form = document.getElementById('pioneer-form');
         const submitButton = document.getElementById('submit-button');
-
-        // 버튼 자체를 비활성화
         submitButton.disabled = true;
-
         form.addEventListener('submit', (e) => {
-            e.preventDefault(); // 폼의 기본 제출 동작을 막습니다.
+            e.preventDefault();
         });
+
+        // --- 통합 시뮬레이터 로직 ---
+        const dnaControls = document.getElementById('dna-controls');
+        const dnaButtons = dnaControls.querySelectorAll('.dna-btn');
+        const adviceText = document.getElementById('advice-text');
+        
+        const initialInvestmentSlider = document.getElementById('initial-investment');
+        const monthlyContributionSlider = document.getElementById('monthly-contribution');
+        const investmentHorizonSlider = document.getElementById('investment-horizon');
+        const questSelect = document.getElementById('quest-select');
+        const peerToggle = document.getElementById('peer-toggle');
+        
+        const initialValueEl = document.getElementById('initial-investment-value');
+        const monthlyValueEl = document.getElementById('monthly-contribution-value');
+        const horizonValueEl = document.getElementById('investment-horizon-value');
+
+        const projectionCtx = document.getElementById('projectionChart').getContext('2d');
+        let projectionChart;
+
+        const dnaProfiles = {
+            stable: { stability: 70, growth: 20, income: 80, rates: { optimistic: 0.08, average: 0.05, pessimistic: 0.03 } },
+            balanced: { stability: 50, growth: 50, income: 60, rates: { optimistic: 0.10, average: 0.07, pessimistic: 0.04 } },
+            growth: { stability: 20, growth: 80, income: 30, rates: { optimistic: 0.13, average: 0.09, pessimistic: 0.05 } }
+        };
+        let currentDnaProfile = 'stable';
+
+        function formatCurrency(value) {
+            if (value >= 100000000) return `${(value / 100000000).toFixed(1)} 억원`;
+            return `${(value / 10000).toLocaleString()} 만원`;
+        }
+
+        function updateSimulation() {
+            const P = parseFloat(initialInvestmentSlider.value) * 10000;
+            const M = parseFloat(monthlyContributionSlider.value) * 10000;
+            const T = parseInt(investmentHorizonSlider.value);
+            const questTarget = parseFloat(questSelect.value);
+            const showPeers = peerToggle.checked;
+
+            initialValueEl.textContent = formatCurrency(P);
+            monthlyValueEl.textContent = formatCurrency(M);
+            horizonValueEl.textContent = `${T} 년`;
+
+            const userRates = dnaProfiles[currentDnaProfile].rates;
+            const peerRates = dnaProfiles['balanced'].rates; // Peer group is always 'balanced' for comparison
+
+            const results = { user: [], peer_avg: [], peer_top: [] };
+            const labels = [];
+            
+            for (let year = 0; year <= T; year++) {
+                labels.push(new Date().getFullYear() + year);
+                
+                let r_user = userRates.average / 12;
+                let n = year * 12;
+                let userValue = P * Math.pow(1 + r_user, n) + (r_user > 0 ? M * ((Math.pow(1 + r_user, n) - 1) / r_user) : M * n);
+                results.user.push(userValue);
+
+                if (showPeers) {
+                    let r_peer_avg = peerRates.average / 12;
+                    let peerAvgValue = P * Math.pow(1 + r_peer_avg, n) + (r_peer_avg > 0 ? M * ((Math.pow(1 + r_peer_avg, n) - 1) / r_peer_avg) : M * n);
+                    results.peer_avg.push(peerAvgValue);
+                    
+                    let r_peer_top = peerRates.optimistic / 12;
+                    let peerTopValue = P * Math.pow(1 + r_peer_top, n) + (r_peer_top > 0 ? M * ((Math.pow(1 + r_peer_top, n) - 1) / r_peer_top) : M * n);
+                    results.peer_top.push(peerTopValue);
+                }
+            }
+            
+            updateProjectionChart(labels, results, showPeers);
+            updateAdvice(results.user[T], questTarget, T);
+        }
+
+        function updateProjectionChart(labels, results, showPeers) {
+            if (projectionChart) {
+                projectionChart.destroy();
+            }
+            
+            const datasets = [{
+                label: '나의 예상 자산',
+                data: results.user,
+                borderColor: '#4f46e5',
+                backgroundColor: 'rgba(79, 70, 229, 0.2)',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 0,
+            }];
+
+            if (showPeers) {
+                datasets.push({
+                    label: '유사 그룹 평균',
+                    data: results.peer_avg,
+                    borderColor: 'rgba(107, 114, 128, 0.5)',
+                    borderDash: [5, 5],
+                    fill: false,
+                    tension: 0.3,
+                    pointRadius: 0,
+                });
+                datasets.push({
+                    label: '상위 10% 그룹',
+                    data: results.peer_top,
+                    borderColor: 'rgba(251, 191, 36, 0.5)',
+                    borderDash: [5, 5],
+                    fill: false,
+                    tension: 0.3,
+                    pointRadius: 0,
+                });
+            }
+
+            projectionChart = new Chart(projectionCtx, {
+                type: 'line',
+                data: { labels, datasets },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { y: { ticks: { callback: (v) => formatCurrency(v) } }, x: { ticks: { maxRotation: 0, minRotation: 0 } } },
+                    plugins: { legend: { display: true, position: 'bottom' }, tooltip: { mode: 'index', intersect: false, callbacks: {
+                        label: (ctx) => `${ctx.dataset.label}: ${formatCurrency(ctx.parsed.y)}`
+                    }}},
+                    interaction: { mode: 'index', intersect: false }
+                }
+            });
+        }
+        
+        function updateAdvice(finalValue, questTarget, years) {
+            let advice = "";
+            if (finalValue >= questTarget) {
+                advice = `축하합니다! 현재 계획대로라면 ${years}년 후 <span class="font-bold">${formatCurrency(questTarget)} 퀘스트</span> 달성이 가능합니다. 최종 자산은 약 <span class="font-bold">${formatCurrency(finalValue)}</span>으로 예상됩니다.`;
+            } else {
+                const shortfall = questTarget - finalValue;
+                advice = `현재 계획으로는 ${years}년 후 <span class="font-bold">${formatCurrency(questTarget)} 퀘스트</span> 달성이 어렵습니다. 약 <span class="font-bold">${formatCurrency(shortfall)}</span>이 부족합니다. 월 투자금을 늘리거나 투자 기간을 조정해보세요.`;
+            }
+            adviceText.innerHTML = advice;
+        }
+
+        dnaControls.addEventListener('click', (e) => {
+            if (e.target.classList.contains('dna-btn')) {
+                currentDnaProfile = e.target.dataset.profile;
+                const { stability, growth, income } = dnaProfiles[currentDnaProfile];
+                
+                document.getElementById('dna-stability-bar').style.width = `${stability}%`;
+                document.getElementById('dna-stability-val').textContent = `${stability}%`;
+                document.getElementById('dna-growth-bar').style.width = `${growth}%`;
+                document.getElementById('dna-growth-val').textContent = `${growth}%`;
+                document.getElementById('dna-income-bar').style.width = `${income}%`;
+                document.getElementById('dna-income-val').textContent = `${income}%`;
+                
+                dnaButtons.forEach(btn => btn.classList.replace('bg-indigo-500', 'bg-white') || btn.classList.replace('text-white', 'text-gray-800'));
+                e.target.classList.replace('bg-white', 'bg-indigo-500');
+                e.target.classList.replace('text-gray-800', 'text-white');
+                
+                updateSimulation();
+            }
+        });
+
+        [initialInvestmentSlider, monthlyContributionSlider, investmentHorizonSlider, questSelect, peerToggle].forEach(el => {
+            el.addEventListener('input', updateSimulation);
+        });
+
+        updateSimulation();
+
+        // Lifecycle pie charts
+        const lifecycleTabs = document.getElementById('lifecycle-tabs');
+        const lifecycleTitle = document.getElementById('lifecycle-title');
+        const lifecycleDescription = document.getElementById('lifecycle-description');
+        const lifecycleCtx = document.getElementById('lifecycleChart').getContext('2d');
+        let lifecycleChart;
+
+        const lifecycleData = {
+            stage1: { title: '20-40대: 자산 형성기', description: '종잣돈 마련과 공격적인 자산 증식에 집중해야 하는 시기입니다. 긴 투자 기간을 활용하여 주식과 같은 성장 자산의 비중을 높게 유지하는 전략이 유효합니다.', data: [70, 20, 10], labels: ['성장주식', '안정채권', '현금'] },
+            stage2: { title: '50대: 은퇴 준비기', description: '자산 증식과 안정성의 균형을 맞춰야 합니다. 위험자산 비중을 점진적으로 축소하고 배당주, 우량채권 비중을 늘려 포트폴리오를 안정화합니다.', data: [50, 40, 10], labels: ['배당주', '우량채권', '현금'] },
+            stage3: { title: '55세+: 연금 수령기', description: '안정적인 현금흐름 확보가 최우선 목표입니다. 채권 및 고배당주 비중을 늘려 원금 손실 위험을 최소화하고 자산을 보존하는 데 집중합니다.', data: [30, 50, 20], labels: ['고배당주', '국공채', '현금'] },
+            stage4: { title: '65세+: 자산 인출기', description: '자산 보존을 최우선으로 합니다. 현금 및 단기채권 등 안전자산 비중을 높여 시장 변동성의 영향을 최소화하는 전략이 필요합니다.', data: [15, 45, 40], labels: ['배당주', '단기채권', '현금'] }
+        };
+
+        function updateLifecycleView(stage) {
+            const stageData = lifecycleData[stage];
+            lifecycleTitle.textContent = stageData.title;
+            lifecycleDescription.textContent = stageData.description;
+
+            if (lifecycleChart) {
+                lifecycleChart.data.labels = stageData.labels;
+                lifecycleChart.data.datasets[0].data = stageData.data;
+                lifecycleChart.update();
+            } else {
+                 lifecycleChart = new Chart(lifecycleCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: stageData.labels,
+                        datasets: [{
+                            data: stageData.data,
+                            backgroundColor: ['#4f46e5', '#3b82f6', '#60a5fa'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { font: { family: "'Noto Sans KR', 'Inter', sans-serif" } } }
+                        }
+                    }
+                });
+            }
+        }
+
+        lifecycleTabs.addEventListener('click', (e) => {
+            if(e.target.tagName === 'BUTTON') {
+                const stage = e.target.dataset.stage;
+                document.querySelectorAll('.lifecycle-tab').forEach(tab => {
+                    tab.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-600');
+                    tab.classList.add('text-gray-500');
+                });
+                e.target.classList.add('bg-indigo-600', 'text-white', 'border-indigo-600');
+                e.target.classList.remove('text-gray-500');
+                updateLifecycleView(stage);
+            }
+        });
+
+        updateLifecycleView('stage1');
+
+
     </script>
+
 
 </body>
 </html>
