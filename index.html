@@ -255,14 +255,15 @@
                                 <button data-stage="stage4" class="lifecycle-tab px-4 py-2 text-sm font-semibold text-gray-500">65세+: 자산 인출기</button>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-                                <div class="md:col-span-1 h-48 w-48 mx-auto">
+                                <div class="md:col-span-1 h-48 w-48 mx-auto relative">
                                     <canvas id="lifecycleChart"></canvas>
                                 </div>
                                 <div class="md:col-span-2">
                                     <h4 id="lifecycle-title" class="font-bold text-lg text-gray-800">자산 형성기</h4>
-                                    <p id="lifecycle-description" class="text-sm text-gray-600 mt-2">종잣돈 마련과 공격적인 자산 증식에 집중해야 하는 시기입니다. 긴 투자 기간을 활용하여 주식과 같은 성장 자산의 비중을 높게 유지하는 전략이 유효합니다.</p>
+                                    <div id="lifecycle-description" class="text-sm text-gray-600 mt-2 space-y-1"></div>
                                 </div>
                             </div>
+                            <div id="lifecycle-legend" class="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-4"></div>
                         </div>
                     </div>
                 </div>
@@ -274,7 +275,7 @@
             <div class="container mx-auto px-6">
                 <div class="text-center mb-16 fade-in-section">
                     <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">플랫폼 구현 Masterplan</h2>
-                    <p class="text-lg text-gray-600">사업화 초기 Roadmap으로 추후 상세화됩니다.</p>
+                    <p class="text-lg text-gray-600">사업화 초기 Roadmap이며 추후 상세화됩니다.</p>
                 </div>
                 <div class="relative max-w-2xl mx-auto">
                     <!-- The vertical line -->
@@ -284,8 +285,8 @@
                         <!-- Item 1 -->
                         <div class="relative flex items-center fade-in-section">
                             <div class="w-1/2 pr-8 text-right">
-                                <p class="text-indigo-600 font-bold">Phase 1 ('25.7 ~ '26.6)</p>
-                                <h3 class="text-2xl font-bold text-gray-900 mt-1">Overall Architecture 설계 및 MVP 개발</h3>
+                                <p class="text-indigo-600 font-bold">Phase 1</p>
+                                <h3 class="text-2xl font-bold text-gray-900 mt-1">Service Architecture 설계 및 MVP 개발</h3>
                                 <p class="text-gray-600 mt-2"></p>
                             </div>
                             <div class="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center absolute left-1/2 -translate-x-1/2 ring-8 ring-white">1</div>
@@ -294,7 +295,7 @@
                         <div class="relative flex items-center fade-in-section">
                             <div class="w-1/2"></div>
                             <div class="w-1/2 pl-8 text-left">
-                                <p class="text-indigo-600 font-bold">Phase 2 ('26.1 ~ '26.12)</p>
+                                <p class="text-indigo-600 font-bold">Phase 2</p>
                                 <h3 class="text-2xl font-bold text-gray-900 mt-1">핵심 기능 프레임워크 구현</h3>
                                 <p class="text-gray-600 mt-2">AI 기반 컨설팅, 사용자 Clustering, 실시간 투자 평가, Gamification 등 프레임워크 구현</p>
                             </div>
@@ -303,7 +304,7 @@
                         <!-- Item 3 -->
                         <div class="relative flex items-center fade-in-section">
                             <div class="w-1/2 pr-8 text-right">
-                                <p class="text-indigo-600 font-bold">Phase 3 ('27.1 ~)</p>
+                                <p class="text-indigo-600 font-bold">Phase 3</p>
                                 <h3 class="text-2xl font-bold text-gray-900 mt-1">베타 테스트 및 론칭 준비</h3>
                                 <p class="text-gray-600 mt-2">Closed/Open Beta Test 및 사업화 추진</p>
                             </div>
@@ -546,23 +547,67 @@
         const lifecycleTitle = document.getElementById('lifecycle-title');
         const lifecycleDescription = document.getElementById('lifecycle-description');
         const lifecycleCtx = document.getElementById('lifecycleChart').getContext('2d');
+        const lifecycleLegend = document.getElementById('lifecycle-legend');
         let lifecycleChart;
 
         const lifecycleData = {
-            stage1: { title: '20-40대: 자산 형성기', description: '종잣돈 마련과 공격적인 자산 증식에 집중해야 하는 시기입니다. 긴 투자 기간을 활용하여 주식과 같은 성장 자산의 비중을 높게 유지하는 전략이 유효합니다.', data: [70, 20, 10], labels: ['성장주식', '안정채권', '현금'] },
-            stage2: { title: '50대: 은퇴 준비기', description: '자산 증식과 안정성의 균형을 맞춰야 합니다. 위험자산 비중을 점진적으로 축소하고 배당주, 우량채권 비중을 늘려 포트폴리오를 안정화합니다.', data: [50, 40, 10], labels: ['배당주', '우량채권', '현금'] },
-            stage3: { title: '55세+: 연금 수령기', description: '안정적인 현금흐름 확보가 최우선 목표입니다. 채권 및 고배당주 비중을 늘려 원금 손실 위험을 최소화하고 자산을 보존하는 데 집중합니다.', data: [30, 50, 20], labels: ['고배당주', '국공채', '현금'] },
-            stage4: { title: '65세+: 자산 인출기', description: '자산 보존을 최우선으로 합니다. 현금 및 단기채권 등 안전자산 비중을 높여 시장 변동성의 영향을 최소화하는 전략이 필요합니다.', data: [15, 45, 40], labels: ['배당주', '단기채권', '현금'] }
+            stage1: { 
+                title: '20-40대: 자산 형성기', 
+                description: [
+                    '#장기투자 #복리효과 #공격적자산배분',
+                    '긴 투자 기간을 활용하여 자산 증식에 집중하는 시기입니다.',
+                    '위험 감수도를 높여 성장주, 기술주 ETF 등의 비중을 높게 가져갑니다.',
+                    '연금저축, IRP 등 절세 계좌를 최대한 활용하여 세금 혜택을 통한 복리 효과를 극대화하는 것이 중요합니다.'
+                ], 
+                data: [60, 15, 5, 20], 
+                labels: ['성장주식', '안정채권', '현금', '절세계좌'] 
+            },
+            stage2: { 
+                title: '50대: 은퇴 준비기', 
+                description: [
+                    '#자산보존 #포트폴리오안정화 #배당주',
+                    '자산 증식과 안정성의 균형을 맞춰야 합니다.',
+                    '위험자산 비중을 점진적으로 축소하고 배당주, 우량채권 비중을 늘려 포트폴리오를 안정화합니다.',
+                    '은퇴 후 현금흐름을 예측하고, 연금 수령 계획을 구체화하기 시작해야 합니다.'
+                ], 
+                data: [40, 30, 10, 20], 
+                labels: ['배당주', '우량채권', '현금', '절세계좌'] 
+            },
+            stage3: { 
+                title: '55세+: 연금 수령기', 
+                description: [
+                    '#현금흐름 #자산인출전략 #저변동성',
+                    '안정적인 현금흐름 확보가 최우선 목표입니다.',
+                    '채권 및 고배당주 비중을 늘려 원금 손실 위험을 최소화하고 자산을 보존하는 데 집중합니다.',
+                    '사적연금 수령을 시작하며, 세금 부담을 최소화하는 효율적인 인출 전략이 필요합니다.'
+                ], 
+                data: [25, 40, 15, 20], 
+                labels: ['고배당주', '국공채', '현금', '절세계좌'] 
+            },
+            stage4: { 
+                title: '65세+: 자산 인출기', 
+                description: [
+                    '#자산보존 #유동성확보 #상속계획',
+                    '자산 보존을 최우선으로 합니다.',
+                    '현금 및 단기채권 등 안전자산 비중을 높여 시장 변동성의 영향을 최소화하는 전략이 필요합니다.',
+                    '국민연금(노령연금) 수령과 함께, 건강보험료 등을 고려한 종합적인 자산 인출 계획을 세워야 합니다.'
+                ], 
+                data: [10, 35, 30, 25], 
+                labels: ['배당주', '단기채권', '현금', '절세계좌'] 
+            }
         };
 
         function updateLifecycleView(stage) {
             const stageData = lifecycleData[stage];
             lifecycleTitle.textContent = stageData.title;
-            lifecycleDescription.textContent = stageData.description;
+            lifecycleDescription.innerHTML = stageData.description.map(line => `<p>${line}</p>`).join('');
+
+            const chartColors = ['#4f46e5', '#3b82f6', '#60a5fa', '#14b8a6'];
 
             if (lifecycleChart) {
                 lifecycleChart.data.labels = stageData.labels;
                 lifecycleChart.data.datasets[0].data = stageData.data;
+                lifecycleChart.data.datasets[0].backgroundColor = chartColors;
                 lifecycleChart.update();
             } else {
                  lifecycleChart = new Chart(lifecycleCtx, {
@@ -571,7 +616,7 @@
                         labels: stageData.labels,
                         datasets: [{
                             data: stageData.data,
-                            backgroundColor: ['#4f46e5', '#3b82f6', '#60a5fa'],
+                            backgroundColor: chartColors,
                             borderWidth: 0
                         }]
                     },
@@ -579,11 +624,18 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            legend: { position: 'bottom', labels: { font: { family: "'Noto Sans KR', 'Inter', sans-serif" } } }
+                            legend: { display: false }
                         }
                     }
                 });
             }
+
+            lifecycleLegend.innerHTML = stageData.labels.map((label, index) => `
+                <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full mr-2" style="background-color: ${chartColors[index]}"></span>
+                    <span class="text-xs text-gray-600">${label}</span>
+                </div>
+            `).join('');
         }
 
         lifecycleTabs.addEventListener('click', (e) => {
@@ -600,7 +652,6 @@
         });
 
         updateLifecycleView('stage1');
-
 
     </script>
 
