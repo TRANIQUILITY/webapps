@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>51labs Workway</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Chosen Palette: Calm Tech -->
+    <!-- Application Structure Plan: The SPA is designed as a guided journey for a solo entrepreneur. It starts with the core concept ("Multi-Persona Company"), provides a hands-on interactive simulation of a key workflow ("AI-Powered Meeting"), explains the underlying technology stack ("Hybrid Architecture"), and concludes with actionable principles. This thematic, top-down structure was chosen over a linear report format to make a complex abstract workflow tangible and easily understandable, fostering user engagement through progressive disclosure and direct interaction. -->
+    <!-- Visualization & Content Choices: The application visualizes abstract concepts and processes. Info: The core "Multi-Persona" concept is presented as interactive cards, allowing users to explore each role. Goal: Inform & Engage. Method: HTML/CSS cards with JS-powered hover/click effects. Justification: More engaging than a static list. Demo: The central "AI Meeting" is an interactive simulation. Goal: Demonstrate the workflow. Method: JS-driven dynamic text updates on button clicks, mimicking AI responses. Justification: Provides a hands-on feel for the process. Architecture: The "Hybrid System" is visualized as a detailed list-based diagram. Goal: Explain a technical structure with specific examples. Method: Nested divs with Tailwind CSS for layout, avoiding SVG/Mermaid. Justification: Visually represents the flow of information clearly and adheres to constraints. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .smooth-scroll {
+            scroll-behavior: smooth;
+        }
+        .diagram-box {
+            border: 2px solid;
+            transition: all 0.3s ease;
+        }
+        .diagram-box:hover {
+            background-color: #f0f9ff; /* A subtle blue for hover */
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+        .btn-persona.active {
+            background-color: #0d9488; /* Darker teal for active state */
+            color: white;
+            transform: scale(1.05);
+        }
+        #simulation-output {
+            min-height: 150px;
+            white-space: pre-wrap;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .typing-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 1.2em;
+            background-color: #334155;
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            from, to { background-color: transparent }
+            50% { background-color: #334155; }
+        }
+        .hero-bg {
+            background-color: #f8fafc;
+            background-image: radial-gradient(#dbeafe 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 smooth-scroll">
+
+    <!-- Header -->
+    <header id="main-header" class="bg-transparent fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <h1 class="text-xl md:text-2xl font-bold text-teal-700">🚀 51labs 일하는 방법</h1>
+                <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">Experimental</span>
+            </div>
+            <nav class="hidden md:flex space-x-6 text-slate-600">
+                <a href="#concept" class="hover:text-teal-600 transition-colors">핵심 컨셉</a>
+                <a href="#simulation" class="hover:text-teal-600 transition-colors">워크플로우 체험</a>
+                <a href="#architecture" class="hover:text-teal-600 transition-colors">시스템 구성</a>
+                <a href="#principles" class="hover:text-teal-600 transition-colors">성공 원칙</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+        <!-- Hero Section -->
+        <section class="hero-bg pt-32 pb-20 text-center">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl md:text-6xl font-extrabold mb-6 text-slate-900 leading-tight">Multi-persona 기반<br>운영 규칙</h2>
+                <p class="text-lg text-slate-600 max-w-3xl mx-auto mb-10">AI를 단순한 조수가 아닌, 각 분야의 전문성을 가진 '가상 팀원'으로 활용하여<br>복잡한 의사결정과 실행을 자동화하는 혁신적인 워크플로우를 소개합니다.</p>
+                <a href="#concept" class="bg-teal-600 text-white font-bold py-3 px-8 rounded-full hover:bg-teal-700 transition-all duration-300 transform hover:scale-105 shadow-lg">워크플로우 탐험 시작하기</a>
+            </div>
+        </section>
+
+        <div class="container mx-auto px-6 py-12 md:py-20">
+            <!-- Section 1: The Core Concept -->
+            <section id="concept" class="mb-20 fade-in-section">
+                <h3 class="text-3xl font-bold text-center mb-2">핵심 컨셉: AI로 정의한 Role 기반으로 운영하는 기업</h3>
+                <p class="text-center text-slate-500 mb-4">AI에게 각기 다른 전문가 페르소나를 부여하여 다양한 관점에서 균형 잡힌 인사이트를 얻습니다.</p>
+                <p class="text-center text-teal-700 font-semibold mb-10">목표: 1인 기업이 AI를 통해 10명 이상의 전문가 팀처럼 일할 수 있음을 증명합니다.</p>
+                <div class="bg-white p-8 rounded-2xl shadow-lg table-responsive">
+                    <table class="w-full text-sm text-left text-slate-500">
+                        <thead class="text-xs text-slate-700 uppercase bg-slate-100">
+                            <tr>
+                                <th scope="col" class="px-6 py-3"></th>
+                                <th scope="col" class="px-6 py-3">역할 (Persona)</th>
+                                <th scope="col" class="px-6 py-3">호출 기호</th>
+                                <th scope="col" class="px-6 py-3">핵심 키워드</th>
+                            </tr>
+                        </thead>
+                        <tbody id="persona-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section 2: Interactive Workflow Simulation -->
+            <section id="simulation" class="bg-white p-8 rounded-2xl shadow-lg mb-20 fade-in-section">
+                <h3 class="text-3xl font-bold text-center mb-2">워크플로우 체험: AI 경영 회의</h3>
+                <p class="text-center text-slate-500 mb-10">아래 안건에 대해 각 페르소나 버튼을 클릭하여, AI가 생성하는 다양한 관점의 의견을 직접 확인해보세요.</p>
+                
+                <div class="bg-slate-100 p-6 rounded-lg mb-8">
+                    <p class="font-bold text-slate-500 mb-2">회의 안건 (단일 진실 공급원 - SSoT)</p>
+                    <h4 class="text-xl font-bold text-teal-800 mb-2">"개인화 투자 뉴스레터 서비스에 'AI 포트폴리오 분석' 기능을 추가한다."</h4>
+                    <p class="text-sm text-slate-600">목표: 사용자의 실제 포트폴리오를 분석하여 가장 관련성 높은 뉴스와 리포트를 매칭, 유료 전환율 5% 증가. <br>제약: 1인 개발, 3개월 내 MVP 출시 목표.</p>
+                </div>
+
+                <div class="flex flex-wrap justify-center gap-3 mb-8">
+                </div>
+
+                <div id="simulation-output-container" class="bg-slate-50 p-6 rounded-lg border border-slate-200 transition-all duration-300">
+                    <div id="simulation-output">
+                        <p class="text-slate-500 text-center">페르소나를 선택하여 의견을 확인하세요.</p>
+                    </div>
+                </div>
+
+                 <div class="text-center mt-10 fade-in-section">
+                    <h4 class="text-xl font-bold mb-4">회의 결과 → 실행</h4>
+                    <p class="text-slate-600 mb-6">다양한 의견을 종합하여, 다음과 같이 구체적인 실행 계획(Jira Task)으로 전환합니다.</p>
+                    <div id="jira-task-output" class="max-w-md mx-auto bg-white p-5 rounded-lg border-2 border-blue-200 shadow-md text-left transition-transform duration-300 hover:scale-105">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="font-bold text-blue-800">TASK-101</span>
+                            <span class="text-xs bg-blue-100 text-blue-700 font-semibold px-2 py-1 rounded-full">To Do</span>
+                        </div>
+                        <p class="font-bold mb-2">'AI 포트폴리오 분석' 기능 MVP 개발</p>
+                        <p class="text-sm text-slate-600 mb-4">설명: 외부 증권사 API 연동 없이, 사용자가 수동 입력한 종목 기반으로 뉴스 키워드 매칭 기능 우선 개발. 1개월 내 프로토타입 완료 목표.</p>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm font-medium text-slate-500">담당자:</span>
+                            <span class="w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold">👑</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: System Architecture -->
+            <section id="architecture" class="mb-20 fade-in-section">
+                <h3 class="text-3xl font-bold text-center mb-2">시스템 구성: 하이브리드 자동화</h3>
+                <p class="text-center text-slate-500 mb-10">"생각은 내 PC 안에서, 행동은 클라우드에서" <br> 로컬 AI의 보안/비용 효율성과 SaaS의 협업 기능을 결합합니다.</p>
+                <div class="w-full max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="diagram-box border-teal-500 rounded-lg p-6 flex flex-col">
+                        <h4 class="text-xl font-bold text-center mb-4 flex items-center justify-center">🧠 로컬 업무 <span class="text-xs ml-2 text-teal-600">(Local Server)</span></h4>
+                        <ul class="space-y-3 text-sm list-disc list-inside text-slate-700 flex-grow">
+                            <li><b>AI 두뇌 (Ollama/LM Studio):</b></li>
+                            <li class="ml-4">멀티-페르소나 시뮬레이션</li>
+                            <li class="ml-4">민감 데이터 분석 및 요약</li>
+                            <li class="ml-4">콘텐츠/코드 초안 생성</li>
+                            <li><b>지휘 본부 (n8n):</b></li>
+                            <li class="ml-4">전체 워크플로우 실행 및 제어</li>
+                            <li class="ml-4">데이터 변환 및 로직 처리</li>
+                        </ul>
+                    </div>
+                    <div class="diagram-box border-purple-500 rounded-lg p-6 flex flex-col">
+                        <h4 class="text-xl font-bold text-center mb-4 flex items-center justify-center">🔄 연동 업무 <span class="text-xs ml-2 text-purple-600">(n8n)</span></h4>
+                        <ul class="space-y-3 text-sm list-disc list-inside text-slate-700 flex-grow">
+                            <li>로컬 LLM의 분석 결과 → <b>Jira Task</b> 내용으로 변환 후 생성</li>
+                            <li><b>Gmail</b>의 특정 이메일 수신 → 트리거로 사용하여 로컬 LLM에 분석 요청</li>
+                            <li>로컬에서 생성된 콘텐츠 초안 → <b>Google Docs</b>에 회의록으로 자동 저장</li>
+                            <li>주요 업무 완료 시 → <b>Slack</b>으로 결과 및 링크 자동 보고</li>
+                        </ul>
+                    </div>
+                    <div class="diagram-box border-sky-500 rounded-lg p-6 flex flex-col">
+                        <h4 class="text-xl font-bold text-center mb-4 flex items-center justify-center">☁️ 클라우드 업무 <span class="text-xs ml-2 text-sky-600">(SaaS)</span></h4>
+                        <ul class="space-y-3 text-sm list-disc list-inside text-slate-700 flex-grow">
+                            <li><b>프로젝트 관리 (Jira):</b></li>
+                            <li class="ml-4">Task 생성, 상태 업데이트, 추적</li>
+                            <li><b>지식 관리 (Confluence/Notion):</b></li>
+                            <li class="ml-4">최종 문서(회의록, 기획서) 저장/공유</li>
+                            <li><b>커뮤니케이션 (Slack/Gmail):</b></li>
+                            <li class="ml-4">결과 보고, 알림, 외부 소통</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 4: Key Principles -->
+            <section id="principles" class="fade-in-section">
+                 <h3 class="text-3xl font-bold text-center mb-2">3가지 원칙</h3>
+                <p class="text-center text-slate-500 mb-10">AI 워크플로우의 효율성과 신뢰도를 높이는 핵심 원칙입니다</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <div class="bg-white p-8 rounded-2xl shadow-lg">
+                        <div class="text-4xl mb-4">📜</div>
+                        <h4 class="text-xl font-bold mb-2">단일 진실 공급원 (SSoT)</h4>
+                        <p class="text-slate-600">AI 환각 방지 → 검증된 사실 기반, 명확한 기준 제공</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-2xl shadow-lg">
+                        <div class="text-4xl mb-4">👩‍⚖️</div>
+                        <h4 class="text-xl font-bold mb-2">Lab Master가 최종 책임</h4>
+                        <p class="text-slate-600">AI는 조언자, 책임은 사람이 → 최종 사실 확인 및 전략적 판단</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-2xl shadow-lg">
+                        <div class="text-4xl mb-4">🛠️</div>
+                        <h4 class="text-xl font-bold mb-2">도구보다 워크플로우</h4>
+                        <p class="text-slate-600">완벽한 도구보다 실행이 중요 → n8n 등 활용, 프로세스 우선 구축</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-white mt-20">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <p class="font-bold">Multi-Persona Workway</p>
+            <p class="text-sm text-slate-400 mt-2">&copy; 2025 51labs LLC. / 오일랩스 유한회사 All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const personaData = [
+            { id: 'master', name: 'Lab Master (대표)', emoji: '👑', mention: '@master', color: 'bg-teal-500', description: '최종 의사결정, 비전 제시, 페르소나 조율', response: "<strong>[대표 지시]</strong> PM과 HR의견 수용. → MVP 우선 개발로 리스크 관리. → 마케터 의견 반영, '업계 최초' 컨셉으로 초기 시장 선점. → 개발팀은 1개월 내 프로토타입 개발 착수." },
+            { id: 'pm', name: '프로젝트 관리자', emoji: '📋', mention: '@pm', color: 'bg-blue-500', description: '일정, 범위, 리스크 관리, 실행 계획 수립', response: "<strong>[PM 의견]</strong> API 연동은 2단계로. → MVP 범위 축소로 1개월 내 개발 제안. → 리스크 최소화." },
+            { id: 'designer', name: 'UI/UX 디자이너', emoji: '🎨', mention: '@designer', color: 'bg-purple-500', description: '사용자 경험(UX) 최적화, 인터페이스 설계', response: "<strong>[디자이너 의견]</strong> 포트폴리오 입력 과정 간소화. → 분석 결과는 시각적 카드 형태로. → 사용자 가독성 및 편의성 극대화." },
+            { id: 'architect', name: '소프트웨어 아키텍트', emoji: '🏗️', mention: '@architect', color: 'bg-orange-500', description: '기술 구조, 확장성, 안정성, 보안 설계', response: "<strong>[아키텍트 의견]</strong> 향후 확장을 위한 '어댑터 패턴' 도입. → 사용자 데이터 암호화 필수. → 기술 부채 최소화." },
+            { id: 'developer', name: '소프트웨어 개발자', emoji: '💻', mention: '@dev', color: 'bg-gray-700', description: '코드 작성, 기능 구현, 단위 테스트', response: "<strong>[개발자 의견]</strong> MVP 기능 구현에 2주 소요 예상. → 외부 API 연동 없이 백엔드 로직 단순. → 단위 테스트 코드 작성 포함." },
+            { id: 'qa', name: 'QA 엔지니어', emoji: '🔬', mention: '@qa', color: 'bg-indigo-500', description: '품질 보증, 테스트 케이스 작성, 버그 리포트', response: "<strong>[QA 의견]</strong> 기능 요구사항 기반 테스트 케이스 25개 도출. → 비정상적 데이터 입력 등 예외 케이스 집중 테스트 필요." },
+            { id: 'req', name: '요구사항 분석가', emoji: '📝', mention: '@req', color: 'bg-cyan-500', description: '비즈니스 요구사항 정의, 기능 명세화', response: "<strong>[분석가 의견]</strong> '포트폴리오 분석' 핵심 요구사항은 '관련 뉴스 매칭'. → '수익률 계산'은 MVP 범위에서 제외. → 요구사항 명확화." },
+            { id: 'ai', name: 'AI 엔지니어', emoji: '🤖', mention: '@ai', color: 'bg-red-500', description: 'AI 모델 선정/튜닝, 데이터 파이프라인 구축', response: "<strong>[AI 엔지니어 의견]</strong> 뉴스-종목 매칭은 키워드 기반으로 충분. → 로컬 LLM(Gemma) 활용 시, 비용 없이 빠른 프로토타이핑 가능." },
+            { id: 'finance_inv', name: '금융 투자 설계 전문가', emoji: '📈', mention: '@invest', color: 'bg-lime-600', description: '투자 전략, 포트폴리오 분석, 금융 상품 설계', response: "<strong>[투자 전문가 의견]</strong> 단순 뉴스 매칭 넘어 '위험도' 분석 기능 추가 시 가치 상승. → '시장 변동성' 관련 뉴스 가중치 부여 제안." },
+            { id: 'finance_ret', name: '은퇴 설계 전문가', emoji: '🏡', mention: '@retire', color: 'bg-amber-600', description: '장기 자산 배분, 연금, 노후 준비 컨설팅', response: "<strong>[은퇴 전문가 의견]</strong> 단기 투자 정보 외 '장기 보유 적합 종목' 관련 콘텐츠 연계 필요. → 사용자 생애주기 고려." },
+            { id: 'finance_tax', name: '세법 전문가', emoji: '🧾', mention: '@tax', color: 'bg-stone-500', description: '세금 최적화, 금융 관련 세법 자문', response: "<strong>[세법 전문가 의견]</strong> 분석 결과에 '예상 세금' 정보 포함 시 차별화 가능. → '해외 주식 양도소득세' 정보 제공은 2단계로." },
+            { id: 'finance_adm', name: '재무/예산 관리자', emoji: '💰', mention: '@finance', color: 'bg-green-500', description: '비용-수익 분석(ROI), 예산 관리 및 할당', response: "<strong>[재무 관리자 의견]</strong> MVP 진행 시 ROI 분석 용이. → 개발 비용 대비 '유료 전환율 5% 증가' 목표 달성 가능성 검토 필요." },
+            { id: 'hr', name: '인사 관리자', emoji: '❤️', mention: '@hr', color: 'bg-rose-500', description: 'CEO 번아웃 방지, 업무 부하 관리', response: "<strong>[HR 의견]</strong> 1인 개발자 번아웃 리스크 높음. → MVP 범위 축소 및 우선순위 조정 필수. → 지속가능성 확보." },
+            { id: 'marketer', name: '마케팅 담당자', emoji: '📣', mention: '@market', color: 'bg-yellow-500', description: '시장 분석, 경쟁 환경 분석, GTM 전략 수립', response: "<strong>[마케터 의견]</strong> '업계 최초' 키워드로 사용자 유인에 유리. → MVP 출시 후 피드백 기반 바이럴 마케팅 전개." }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const personaTableBody = document.getElementById('persona-table-body');
+            const personaButtonContainer = document.querySelector('#simulation .flex-wrap');
+            const simulationOutput = document.getElementById('simulation-output');
+
+            personaData.forEach(p => {
+                const row = document.createElement('tr');
+                row.className = 'bg-white border-b hover:bg-slate-50';
+                row.innerHTML = `
+                    <td class="px-6 py-4 text-2xl">${p.emoji}</td>
+                    <th scope="row" class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">${p.name}</th>
+                    <td class="px-6 py-4 font-mono text-teal-600">${p.mention}</td>
+                    <td class="px-6 py-4">${p.description}</td>
+                `;
+                if(personaTableBody) personaTableBody.appendChild(row);
+
+                const button = document.createElement('button');
+                button.className = 'btn-persona px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 shadow-sm';
+                button.style.backgroundColor = 'white';
+                button.style.color = '#334155';
+                button.style.border = `2px solid ${p.color.replace('bg-', '').split('-')[0]}-200`;
+                button.textContent = `${p.emoji} ${p.name.split(' ')[0]}`;
+                button.dataset.personaId = p.id;
+                if(personaButtonContainer) personaButtonContainer.appendChild(button);
+            });
+
+            const typeWriter = (element, text, speed = 30) => {
+                element.innerHTML = "";
+                let i = 0;
+                const typing = () => {
+                    if (i < text.length) {
+                        element.innerHTML += text.charAt(i);
+                        i++;
+                        setTimeout(typing, speed);
+                    } else {
+                        const cursor = element.querySelector('.typing-cursor');
+                        if (cursor) cursor.style.display = 'none';
+                    }
+                };
+                typing();
+            }
+
+            if(personaButtonContainer) {
+                personaButtonContainer.addEventListener('click', (e) => {
+                    const targetButton = e.target.closest('.btn-persona');
+                    if (targetButton) {
+                        const personaId = targetButton.dataset.personaId;
+                        const persona = personaData.find(p => p.id === personaId);
+                        
+                        document.querySelectorAll('.btn-persona').forEach(btn => btn.classList.remove('active'));
+                        targetButton.classList.add('active');
+
+                        if (persona) {
+                            const container = document.getElementById('simulation-output');
+                            container.innerHTML = `<p class="text-left text-slate-700" id="typing-text"></p><span class="typing-cursor"></span>`;
+                            const textElement = document.getElementById('typing-text');
+                            typeWriter(textElement, persona.response.replace(/<(\/?)strong>/g, ""), 15);
+                        }
+                    }
+                });
+            }
+
+            const header = document.getElementById('main-header');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.remove('bg-transparent');
+                    header.classList.add('bg-white/80', 'backdrop-blur-lg', 'shadow-sm');
+                } else {
+                    header.classList.add('bg-transparent');
+                    header.classList.remove('bg-white/80', 'backdrop-blur-lg', 'shadow-sm');
+                }
+            });
+
+            const sections = document.querySelectorAll('.fade-in-section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
