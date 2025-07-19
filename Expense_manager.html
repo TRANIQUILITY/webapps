@@ -215,7 +215,7 @@
         qnaCancelBtn.addEventListener('click', () => qnaModal.classList.add('hidden'));
         qnaModal.addEventListener('click', (e) => { if (e.target === qnaModal) qnaModal.classList.add('hidden'); });
         aiAnalysisBtn.addEventListener('click', runFinancialAnalysis);
-        aiResultCloseBtn.addEventListener('click', () => aiResultModal.classList.add('hidden');
+        aiResultCloseBtn.addEventListener('click', () => aiResultModal.classList.add('hidden'));
         
         exportCsvBtn.addEventListener('click', () => {
             const activeLink = document.querySelector('.nav-link.active');
