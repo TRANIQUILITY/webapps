@@ -101,7 +101,6 @@
                     <button id="export-csv-btn" class="header-btn bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg flex items-center"><i class="fas fa-file-csv mr-2"></i> CSV 내보내기</button>
                     <button id="add-transaction-btn" class="header-btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg flex items-center"><i class="fas fa-plus mr-2"></i> 거래 추가</button>
                     <button id="add-question-btn" class="header-btn bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg flex items-center"><i class="fas fa-question-circle mr-2"></i> 새 질문 작성</button>
-                    <button id="ai-analysis-btn" class="header-btn bg-gradient-to-r from-pink-500 to-violet-600 hover:from-pink-600 hover:to-violet-700 text-white font-bold py-2 px-4 rounded-lg flex items-center"><span class="mr-2">✨</span> AI 재무 분석</button>
                 </div>
             </header>
             
@@ -214,8 +213,8 @@
         addQuestionBtn.addEventListener('click', () => openQnaModal());
         qnaCancelBtn.addEventListener('click', () => qnaModal.classList.add('hidden'));
         qnaModal.addEventListener('click', (e) => { if (e.target === qnaModal) qnaModal.classList.add('hidden'); });
-        aiAnalysisBtn.addEventListener('click', runFinancialAnalysis);
-        aiResultCloseBtn.addEventListener('click', () => aiResultModal.classList.add('hidden'));
+        if(aiAnalysisBtn) aiAnalysisBtn.addEventListener('click', runFinancialAnalysis);
+        if(aiResultCloseBtn) aiResultCloseBtn.addEventListener('click', () => aiResultModal.classList.add('hidden'));
         
         exportCsvBtn.addEventListener('click', () => {
             const activeLink = document.querySelector('.nav-link.active');
@@ -259,7 +258,7 @@
             exportCsvBtn.style.display = (isJournal || isLedger || isReports) ? 'flex' : 'none';
             addTxBtn.style.display = isJournal ? 'flex' : 'none';
             addQuestionBtn.style.display = isQnA ? 'flex' : 'none';
-            aiAnalysisBtn.style.display = isReports ? 'flex' : 'none';
+            if(aiAnalysisBtn) aiAnalysisBtn.style.display = isReports ? 'flex' : 'none';
             
             if (isDashboard) generateDashboardData();
             if (isReports) generateReports();
