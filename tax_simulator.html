@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>법인세 및 세금 자산 장기 시뮬레이터 v2.7</title>
+    <title>법인세 시뮬레이터</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
@@ -24,14 +24,15 @@
             height: 2rem;
             text-align: right;
         }
+        .formula-item { border-left: 4px solid #3b82f6; padding-left: 1rem; }
     </style>
 </head>
 <body class="bg-gray-100">
 
     <div class="container mx-auto p-4 md:p-8">
         <header class="text-center mb-8">
-            <h1 class="text-4xl md:text-5xl font-bold gradient-text">법인세 및 세금 자산 장기 시뮬레이터</h1>
-            <p class="mt-2 text-gray-600">성장 계획을 반영한 핵심 재무 흐름 예측</p>
+            <h1 class="text-4xl md:text-5xl font-bold gradient-text">법인세 시뮬레이터</h1>
+            <p class="mt-2 text-gray-600">선납 세액을 고려한 장기 재무 흐름 분석</p>
         </header>
 
         <main>
@@ -114,7 +115,7 @@
             </div>
 
             <!-- Detailed Table -->
-            <div class="bg-white rounded-xl shadow-md">
+            <div class="bg-white rounded-xl shadow-md mb-8">
                 <div class="p-4 border-b">
                     <h2 class="text-xl font-bold text-gray-800">연도별 상세 시뮬레이션 결과</h2>
                 </div>
@@ -132,6 +133,29 @@
                         <tbody id="simulation-table-body">
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+             <!-- Calculation Formulas -->
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">산출 공식 안내</h2>
+                <div class="space-y-4">
+                    <div class="formula-item">
+                        <h3 class="font-bold text-gray-700">과세표준 (세금 부과 대상 소득)</h3>
+                        <p class="text-gray-600 text-sm">매출(수익) - (연간 운영 경비 + 연간 거래 경비)</p>
+                    </div>
+                    <div class="formula-item">
+                        <h3 class="font-bold text-gray-700">산출세액 (내야 할 총 법인세)</h3>
+                        <p class="text-gray-600 text-sm">과세표준에 따라 법인세율(9.9% ~ 22%)을 적용하여 계산된 금액</p>
+                    </div>
+                    <div class="formula-item">
+                        <h3 class="font-bold text-gray-700">실납부 법인세 (실제 추가 납부액)</h3>
+                        <p class="text-gray-600 text-sm">산출세액 - (당해년도 선납세금 + 이월된 누적 세금자산)  [단, 0보다 작을 수 없음]</p>
+                    </div>
+                    <div class="formula-item">
+                        <h3 class="font-bold text-gray-700">누적 세금자산 (이월되는 세금)</h3>
+                        <p class="text-gray-600 text-sm">(직전년도 누적 세금자산 + 당해년도 선납세금) - 당해년도에 공제받은 금액</p>
+                    </div>
                 </div>
             </div>
         </main>
