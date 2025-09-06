@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>배당주 배당 시뮬레이터</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        .tab-btn.active { border-color: #4f46e5; color: #4f46e5; background-color: #eef2ff; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .category-badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 10px; }
+        .badge-core { background-color: #dbeafe; color: #1e40af; }
+        .badge-satellite { background-color: #dcfce7; color: #166534; }
+        .badge-high-risk { background-color: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        <div class="px-4 md:px-0 mb-6">
+             <h1 class="text-2xl">
+                <span class="font-bold bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent">51 Labs</span>
+                <span class="text-xl text-gray-700">| toy project #03</span>
+            </h1>
+        </div>
+
+        <header class="mb-6 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">배당주 배당 시뮬레이터</h1>
+            <p class="text-gray-600 mt-2">미국과 한국 시장의 배당주 포트폴리오를 구성하고 현금 흐름을 예측해보세요.</p>
+        </header>
+
+        <!-- 탭 네비게이션 -->
+        <div class="mb-6 border-b border-gray-200">
+            <nav class="flex -mb-px space-x-6" aria-label="Tabs">
+                <button class="tab-btn active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg" data-tab="portfolio">
+                    포트폴리오
+                </button>
+                <button class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="dashboard">
+                    대시보드
+                </button>
+                <button class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="reinvestment">
+                    재투자 시뮬레이터
+                </button>
+                <button class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="calculation-basis">
+                    산출 근거
+                </button>
+            </nav>
+        </div>
+
+        <!-- 탭 컨텐츠 -->
+        <main>
+            <!-- 포트폴리오 탭 -->
+            <div id="portfolio-content" class="tab-content active fade-in">
+                <div class="flex flex-wrap gap-4 mb-6 justify-center">
+                    <button id="add-stock-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition">새 티커 추가</button>
+                    <button id="save-json-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition">포트폴리오 저장</button>
+                    <label for="load-json-input" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg cursor-pointer transition">
+                        포트폴리오 불러오기
+                    </label>
+                    <input type="file" id="load-json-input" class="hidden" accept=".json">
+                </div>
+                <div id="stock-list" class="space-y-10">
+                    <!-- 주식 목록이 여기에 생성됩니다. -->
+                </div>
+            </div>
+
+            <!-- 대시보드 탭 -->
+            <div id="dashboard-content" class="tab-content">
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                    <div class="lg:col-span-5 bg-gradient-to-br from-indigo-500 to-purple-600 text-white p-8 rounded-2xl shadow-xl text-center">
+                        <h2 class="text-lg font-semibold text-indigo-200 mb-2">총 월간 예상 배당금 (KRW 환산)</h2>
+                        <p id="dashboard-total-monthly" class="text-5xl font-bold">₩0</p>
+                        <p id="exchange-rate-info" class="text-xs text-indigo-300 mt-2"></p>
+                    </div>
+                    <div class="lg:col-span-3 bg-white p-6 rounded-2xl shadow-lg">
+                        <h3 class="text-lg font-semibold text-center mb-4">시장별 / 자산 그룹별 배당 비중</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 h-80 md:h-96">
+                            <div>
+                               <canvas id="market-chart"></canvas>
+                            </div>
+                            <div>
+                               <canvas id="category-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-lg">
+                        <div class="grid grid-cols-2 gap-4 mb-6 text-center border-b pb-4">
+                            <div>
+                                <h4 class="font-semibold text-gray-600 text-sm">미국 시장 월 배당</h4>
+                                <p id="us-market-total" class="text-xl font-bold text-blue-600">$0.00</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-600 text-sm">한국 시장 월 배당</h4>
+                                <p id="kr-market-total" class="text-xl font-bold text-red-600">₩0</p>
+                            </div>
+                        </div>
+                        <h3 class="text-lg font-semibold text-center mb-4">월배당 기여도 TOP 10</h3>
+                        <ol id="top-10-list" class="space-y-3">
+                           <!-- TOP 10 리스트가 여기에 생성됩니다. -->
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 재투자 시뮬레이터 탭 -->
+            <div id="reinvestment-content" class="tab-content">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-lg space-y-6">
+                        <h3 class="text-xl font-bold text-center">재투자 조건 설정</h3>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">월 배당금 (KRW 환산)</label>
+                            <input type="text" id="reinv-monthly-dividend" class="mt-1 w-full bg-gray-100 p-2 rounded-md border-gray-300 text-right" readonly>
+                        </div>
+                        <div>
+                            <label for="reinv-expenses" class="block text-sm font-medium text-gray-700">월 고정 지출 (원)</label>
+                            <input type="number" id="reinv-expenses" value="0" class="mt-1 w-full p-2 rounded-md border-gray-300 border text-right">
+                        </div>
+                        <div>
+                            <label for="reinv-ratio" class="block text-sm font-medium text-gray-700">재투자 비율: <span id="reinv-ratio-label" class="font-bold">50</span>%</label>
+                            <input type="range" id="reinv-ratio" min="0" max="100" value="50" class="w-full h-2 bg-gray-200 rounded-lg cursor-pointer">
+                        </div>
+                        <div>
+                            <label for="reinv-cagr" class="block text-sm font-medium text-gray-700">기대 연평균 수익률(CAGR): <span id="reinv-cagr-label" class="font-bold">12</span>%</label>
+                            <input type="range" id="reinv-cagr" min="0" max="30" value="12" step="0.5" class="w-full h-2 bg-gray-200 rounded-lg cursor-pointer">
+                            <p class="text-xs text-gray-500 mt-1">※ MSFT, AAPL 등 핵심 성장주 포트폴리오의 기대 수익률</p>
+                        </div>
+                        <div>
+                            <label for="reinv-years" class="block text-sm font-medium text-gray-700">투자 기간: <span id="reinv-years-label" class="font-bold">30</span>년</label>
+                            <input type="range" id="reinv-years" min="0" max="30" value="30" class="w-full h-2 bg-gray-200 rounded-lg cursor-pointer">
+                        </div>
+                        <button id="run-reinv-simulation" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition">시뮬레이션 실행</button>
+                    </div>
+                    <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-lg">
+                        <h3 class="text-xl font-bold text-center mb-4">예상 자산 성장</h3>
+                        <canvas id="reinvestment-chart"></canvas>
+                        <div class="mt-6 h-64 overflow-y-auto">
+                            <table class="w-full text-sm text-left text-gray-500">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-50 sticky top-0">
+                                    <tr>
+                                        <th class="px-4 py-2">연차</th>
+                                        <th class="px-4 py-2 text-right">기초자산</th>
+                                        <th class="px-4 py-2 text-right">연간 재투자액</th>
+                                        <th class="px-4 py-2 text-right">연간 투자수익</th>
+                                        <th class="px-4 py-2 text-right">기말자산</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reinvestment-table-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 산출 근거 탭 -->
+            <div id="calculation-basis-content" class="tab-content">
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-bold text-center mb-6">월 배당금 산출 근거</h3>
+                    <div id="calculation-basis-table" class="overflow-x-auto">
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="text-center mt-12 pt-8 border-t border-gray-200 text-xs text-gray-500">
+            <p>서울 서초구 사임당로8길 13, 4층</p>
+            <p class="mt-1">© 2025 51labs LLC. / 오일랩스 유한회사 All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <!-- 모달들 -->
+    <div id="add-stock-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+            <h2 class="text-2xl font-bold mb-6">새 주식 티커 추가</h2>
+            <form id="add-stock-form">
+                <div class="mb-4">
+                    <label for="add-market" class="block text-gray-700 font-semibold mb-2">시장</label>
+                    <select id="add-market" name="market" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                        <option value="us">미국 시장</option>
+                        <option value="kr">한국 시장</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="add-ticker" class="block text-gray-700 font-semibold mb-2">티커 (Ticker)</label>
+                    <input type="text" id="add-ticker" name="ticker" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="예: AAPL 또는 005930" required>
+                </div>
+                <div class="mb-4">
+                    <label for="add-name" class="block text-gray-700 font-semibold mb-2">주식 이름</label>
+                    <input type="text" id="add-name" name="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="예: Apple Inc." required>
+                </div>
+                 <div class="mb-4">
+                    <label for="add-current-price" class="block text-gray-700 font-semibold mb-2">현재가</label>
+                    <input type="number" step="0.01" id="add-current-price" name="currentPrice" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="예: 55.30 또는 10500" required>
+                </div>
+                <div class="mb-4">
+                    <label for="add-annualDividend" class="block text-gray-700 font-semibold mb-2">연간 주당 배당금</label>
+                    <input type="number" step="0.01" id="add-annualDividend" name="annualDividend" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="예: 3.89 또는 1444" required>
+                </div>
+                <div class="mb-4">
+                    <label for="add-category" class="block text-gray-700 font-semibold mb-2">자산 분류</label>
+                    <select id="add-category" name="category" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                        <option value="core">핵심 자산 (Core Asset)</option>
+                        <option value="satellite">위성 자산 (Satellite Asset)</option>
+                        <option value="high-risk">고위험 자산 (High-Risk Asset)</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-4 mt-8">
+                    <button type="button" id="cancel-add-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-300">취소</button>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">추가하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="delete-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm text-center">
+            <h2 class="text-xl font-bold mb-4">정말 삭제하시겠습니까?</h2>
+            <p id="delete-modal-text" class="text-gray-600 mb-6"></p>
+            <div class="flex justify-center gap-4">
+                <button id="cancel-delete-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg transition">취소</button>
+                <button id="confirm-delete-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg transition">삭제</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let stocks = [
+                // US Stocks
+                { ticker: 'JEPI', name: 'JPMorgan Equity Premium Income ETF', currentPrice: 55.80, annualDividendPerShare: 4.13, shares: 0, category: 'core', market: 'us', currency: 'USD' },
+                { ticker: 'JEPQ', name: 'JPMorgan Nasdaq Equity Premium Income ETF', currentPrice: 49.50, annualDividendPerShare: 5.18, shares: 0, category: 'core', market: 'us', currency: 'USD' },
+                { ticker: 'TLTW', name: 'iShares 20+ Year Treasury Bond BuyWrite Strategy ETF', currentPrice: 26.70, annualDividendPerShare: 3.89, shares: 0, category: 'core', market: 'us', currency: 'USD' },
+                { ticker: 'QDTE', name: 'Roundhill NASDAQ 100 0DTE Covered Call Strategy ETF', currentPrice: 25.10, annualDividendPerShare: 2.65, shares: 0, category: 'satellite', market: 'us', currency: 'USD' },
+                { ticker: 'XDTE', name: 'Roundhill S&P 500 0DTE Covered Call Strategy ETF', currentPrice: 100.50, annualDividendPerShare: 5.25, shares: 0, category: 'satellite', market: 'us', currency: 'USD' },
+                { ticker: 'RDTE', name: 'Roundhill Dynamic T-Bill Roll ETF', currentPrice: 100.20, annualDividendPerShare: 5.23, shares: 0, category: 'satellite', market: 'us', currency: 'USD' },
+                { ticker: 'CONY', name: 'YieldMax COIN Option Income Strategy ETF', currentPrice: 20.50, annualDividendPerShare: 25.53, shares: 0, category: 'high-risk', market: 'us', currency: 'USD' },
+                { ticker: 'NVDY', name: 'YieldMax NVDA Option Income Strategy ETF', currentPrice: 31.00, annualDividendPerShare: 16.09, shares: 0, category: 'high-risk', market: 'us', currency: 'USD' },
+                { ticker: 'YBTC', name: 'Roundhill Bitcoin Covered Call Strategy ETF', currentPrice: 25.80, annualDividendPerShare: 30.60, shares: 0, category: 'high-risk', market: 'us', currency: 'USD' },
+                { ticker: 'PLTW', name: 'Roundhill PLTR Weeklypay ETF', currentPrice: 18.90, annualDividendPerShare: 7.42, shares: 0, category: 'high-risk', market: 'us', currency: 'USD' },
+                // KR Stocks
+                { ticker: '468300', name: 'PLUS 고배당주위클리고정커버드콜', currentPrice: 10100, annualDividendPerShare: 1250, shares: 0, category: 'core', market: 'kr', currency: 'KRW' },
+                { ticker: '469200', name: 'KODEX 미국배당커버드콜액티브', currentPrice: 10200, annualDividendPerShare: 820, shares: 0, category: 'core', market: 'kr', currency: 'KRW' },
+                { ticker: '461390', name: 'TIGER 미국30년국채커버드콜(H)', currentPrice: 9900, annualDividendPerShare: 1050, shares: 0, category: 'core', market: 'kr', currency: 'KRW' },
+                { ticker: '458920', name: 'SOL 미국30년국채액티브(H)', currentPrice: 10500, annualDividendPerShare: 550, shares: 0, category: 'satellite', market: 'kr', currency: 'KRW' },
+                { ticker: '458340', name: 'RISE 200위클리커버드콜', currentPrice: 9800, annualDividendPerShare: 1500, shares: 0, category: 'high-risk', market: 'kr', currency: 'KRW' },
+                { ticker: '476590', name: 'RISE 미국AI밸류체인데일리커버드콜', currentPrice: 11500, annualDividendPerShare: 1300, shares: 0, category: 'high-risk', market: 'kr', currency: 'KRW' },
+                { ticker: '476600', name: 'RISE 미국배당100데일리고정커버드콜', currentPrice: 10800, annualDividendPerShare: 1100, shares: 0, category: 'high-risk', market: 'kr', currency: 'KRW' },
+            ];
+            
+            const USD_KRW_EXCHANGE_RATE = 1350;
+            const categoryMap = { 'core': '핵심', 'satellite': '위성', 'high-risk': '고위험' };
+            const categoryOrder = ['core', 'satellite', 'high-risk'];
+            const categoryClasses = { 'core': 'badge-core', 'satellite': 'badge-satellite', 'high-risk': 'badge-high-risk' };
+            const marketMap = { us: '미국 시장', kr: '한국 시장' };
+            const marketOrder = ['us', 'kr'];
+            let marketChart, categoryChart, reinvestmentChart;
+            let totalMonthlyDividendKRW = 0;
+            
+            Chart.register(ChartDataLabels);
+
+            const formatCurrency = (num, currency = 'USD') => {
+                const options = currency === 'USD' 
+                    ? { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 } 
+                    : { style: 'currency', currency: 'KRW' };
+                return num.toLocaleString(currency === 'USD' ? 'en-US' : 'ko-KR', options);
+            };
+            
+            const formatNumber = (num, fractionDigits = 2) => num.toLocaleString('ko-KR', {minimumFractionDigits: fractionDigits, maximumFractionDigits: fractionDigits});
+
+            function calculateTotals() {
+                const totals = { monthly: { us: 0, kr: 0 }, category: { core: 0, satellite: 0, 'high-risk': 0 } };
+                stocks.forEach(stock => {
+                    const monthlyDividend = (stock.shares * stock.annualDividendPerShare) / 12;
+                    if (stock.market === 'us') {
+                        totals.monthly.us += monthlyDividend;
+                        totals.category[stock.category] += monthlyDividend * USD_KRW_EXCHANGE_RATE;
+                    } else {
+                        totals.monthly.kr += monthlyDividend;
+                        totals.category[stock.category] += monthlyDividend;
+                    }
+                });
+                totalMonthlyDividendKRW = totals.monthly.kr + (totals.monthly.us * USD_KRW_EXCHANGE_RATE);
+                document.getElementById('dashboard-total-monthly').textContent = formatCurrency(totalMonthlyDividendKRW, 'KRW');
+                document.getElementById('us-market-total').textContent = formatCurrency(totals.monthly.us, 'USD');
+                document.getElementById('kr-market-total').textContent = formatCurrency(totals.monthly.kr, 'KRW');
+                document.getElementById('exchange-rate-info').textContent = `※ USD/KRW 환율 ${formatNumber(USD_KRW_EXCHANGE_RATE, 0)}원 적용`;
+                document.getElementById('reinv-monthly-dividend').value = formatCurrency(totalMonthlyDividendKRW, 'KRW');
+                updateCharts(totals);
+                renderCalculationBasis();
+                renderTop10List();
+            }
+
+            function updateCharts(totals) {
+                if (marketChart) marketChart.destroy();
+                if (categoryChart) categoryChart.destroy();
+
+                const pieOptions = { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { position: 'bottom', labels: { font: { size: 12 } } },
+                        datalabels: {
+                            formatter: (value, ctx) => {
+                                let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                if (sum === 0) return '0.0%';
+                                let percentage = (value * 100 / sum).toFixed(1) + "%";
+                                return percentage;
+                            },
+                            color: '#fff',
+                            font: { weight: 'bold' }
+                        }
+                    } 
+                };
+                const marketData = { labels: ['미국 시장', '한국 시장'], datasets: [{ data: [totals.monthly.us * USD_KRW_EXCHANGE_RATE, totals.monthly.kr], backgroundColor: ['#4338ca', '#be123c'] }] };
+                marketChart = new Chart(document.getElementById('market-chart'), { type: 'pie', data: marketData, options: pieOptions });
+                
+                const categoryData = { labels: ['핵심 자산', '위성 자산', '고위험 자산'], datasets: [{ data: [totals.category.core, totals.category.satellite, totals.category['high-risk']], backgroundColor: ['#0e7490', '#1d4ed8', '#f59e0b'] }] };
+                categoryChart = new Chart(document.getElementById('category-chart'), { type: 'pie', data: categoryData, options: pieOptions });
+            }
+
+            function renderPortfolio() {
+                const stockListEl = document.getElementById('stock-list');
+                stockListEl.innerHTML = '';
+
+                marketOrder.forEach(marketKey => {
+                    const marketStocks = stocks.filter(s => s.market === marketKey);
+                    if (marketStocks.length === 0) return;
+                    
+                    const marketSection = document.createElement('div');
+                    marketSection.innerHTML = `<h2 class="text-3xl font-bold mb-4 text-gray-900">${marketMap[marketKey]}</h2>`;
+                    const listContainer = document.createElement('div');
+                    listContainer.className = 'bg-white rounded-xl shadow-lg p-4 space-y-2';
+                    
+                    marketStocks.forEach(stock => {
+                        const index = stocks.indexOf(stock);
+                        const monthlyDividend = (stock.shares * stock.annualDividendPerShare) / 12;
+                        const currencySymbol = stock.currency === 'USD' ? '$' : '₩';
+                        const currencyFormatOptions = stock.currency === 'USD' ? { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 } : { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 0 };
+                        const row = document.createElement('div');
+                        row.className = 'stock-row flex items-center gap-x-4 p-2 border-b border-gray-100 fade-in';
+                        row.innerHTML = `
+                            <div class="flex-grow">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-indigo-700">${stock.ticker}</span>
+                                    <span class="category-badge ${categoryClasses[stock.category]}">${categoryMap[stock.category]}</span>
+                                </div>
+                                <p class="text-xs text-gray-600 truncate" title="${stock.name}">${stock.name}</p>
+                            </div>
+                            <div class="w-auto flex items-center gap-2">
+                                <label for="shares-input-${index}" class="text-sm text-gray-600 sr-only">수량</label>
+                                <input type="number" min="0" max="5000" value="${stock.shares}" data-index="${index}" id="shares-input-${index}" class="w-24 text-center border border-gray-300 rounded-md py-1">
+                                <span class="text-sm text-gray-600">주</span>
+                            </div>
+                            <div class="w-2/12 text-right">
+                                <p id="monthly-dividend-${index}" class="text-sm font-semibold text-gray-800">${currencySymbol}${monthlyDividend.toLocaleString('en-US', currencyFormatOptions)}</p>
+                                <p class="text-xs text-gray-500">월 배당</p>
+                            </div>
+                            <div class="w-auto">
+                                <button data-index="${index}" class="remove-btn text-gray-300 hover:text-red-500 text-xl font-bold">&times;</button>
+                            </div>
+                        `;
+                        listContainer.appendChild(row);
+                    });
+                    
+                    marketSection.appendChild(listContainer);
+                    stockListEl.appendChild(marketSection);
+                });
+                
+                addEventListenersToControls();
+            }
+            
+            function renderCalculationBasis() {
+                const container = document.getElementById('calculation-basis-table');
+                let tableHTML = `<table class="w-full text-sm text-left text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-2">티커</th>
+                            <th class="px-4 py-2">보유 수량</th>
+                            <th class="px-4 py-2 text-right">주당 연배당금</th>
+                            <th class="px-4 py-2 text-right">주당 월배당금</th>
+                            <th class="px-4 py-2 text-right">예상 월배당금</th>
+                        </tr>
+                    </thead><tbody>`;
+                let usTotal = 0;
+                let krTotal = 0;
+                marketOrder.forEach(marketKey => {
+                    const marketStocks = stocks.filter(s => s.market === marketKey && s.shares > 0);
+                    if (marketStocks.length > 0) {
+                        tableHTML += `<tr class="bg-gray-100"><td colspan="5" class="px-4 py-2 font-bold text-gray-800">${marketMap[marketKey]}</td></tr>`;
+                        let marketSubtotal = 0;
+                        marketStocks.forEach(stock => {
+                            const annualDiv = stock.annualDividendPerShare;
+                            const monthlyDivPerShare = annualDiv / 12;
+                            const totalMonthlyDiv = monthlyDivPerShare * stock.shares;
+                            marketSubtotal += totalMonthlyDiv;
+                            tableHTML += `<tr class="bg-white border-b">
+                                <td class="px-4 py-2 font-medium text-gray-900">${stock.ticker}</td>
+                                <td class="px-4 py-2">${formatNumber(stock.shares, 0)}</td>
+                                <td class="px-4 py-2 text-right">${formatCurrency(annualDiv, stock.currency)}</td>
+                                <td class="px-4 py-2 text-right">${formatCurrency(monthlyDivPerShare, stock.currency)}</td>
+                                <td class="px-4 py-2 text-right font-semibold">${formatCurrency(totalMonthlyDiv, stock.currency)}</td>
+                            </tr>`;
+                        });
+                        if (marketKey === 'us') usTotal = marketSubtotal;
+                        if (marketKey === 'kr') krTotal = marketSubtotal;
+                        tableHTML += `<tr class="bg-gray-50"><td colspan="4" class="px-4 py-2 font-bold text-right">소계</td><td class="px-4 py-2 text-right font-bold">${formatCurrency(marketSubtotal, marketKey === 'us' ? 'USD' : 'KRW')}</td></tr>`;
+                    }
+                });
+                tableHTML += `</tbody><tfoot>
+                    <tr class="bg-indigo-100 border-t-2 border-indigo-200">
+                        <td colspan="4" class="px-4 py-3 font-extrabold text-right text-indigo-800">총합 (KRW 환산)</td>
+                        <td class="px-4 py-3 text-right font-extrabold text-indigo-800">${formatCurrency(krTotal + (usTotal * USD_KRW_EXCHANGE_RATE), 'KRW')}</td>
+                    </tr>
+                </tfoot></table>`;
+                container.innerHTML = tableHTML;
+            }
+
+            function renderTop10List() {
+                const top10ListEl = document.getElementById('top-10-list');
+                top10ListEl.innerHTML = '';
+
+                if (totalMonthlyDividendKRW === 0) {
+                    top10ListEl.innerHTML = '<li class="text-center text-gray-400">포트폴리오에 주식을 추가하여 배당 기여도를 확인하세요.</li>';
+                    return;
+                }
+
+                const dividendContributors = stocks
+                    .filter(s => s.shares > 0)
+                    .map(s => {
+                        const monthlyDividend = (s.shares * s.annualDividendPerShare) / 12;
+                        const monthlyDividendKRW = s.market === 'us' ? monthlyDividend * USD_KRW_EXCHANGE_RATE : monthlyDividend;
+                        return { ...s, monthlyDividendKRW };
+                    })
+                    .sort((a, b) => b.monthlyDividendKRW - a.monthlyDividendKRW)
+                    .slice(0, 10);
+
+                dividendContributors.forEach((stock, index) => {
+                    const contribution = (stock.monthlyDividendKRW / totalMonthlyDividendKRW) * 100;
+                    const li = document.createElement('li');
+                    li.className = 'flex items-center justify-between text-sm';
+                    li.innerHTML = `
+                        <div class="flex items-center">
+                            <span class="font-bold text-gray-500 w-6">${index + 1}.</span>
+                            <span class="font-semibold text-gray-800">${stock.ticker}</span>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold text-indigo-600">${formatCurrency(stock.monthlyDividendKRW, 'KRW')}</p>
+                            <p class="text-xs text-gray-400">${contribution.toFixed(1)}%</p>
+                        </div>
+                    `;
+                    top10ListEl.appendChild(li);
+                });
+            }
+
+            function debounce(func, delay) {
+                let timeout;
+                return function(...args) {
+                    const context = this;
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(context, args), delay);
+                };
+            }
+
+            const debouncedCalculateTotals = debounce(calculateTotals, 250);
+
+            function addEventListenersToControls() {
+                document.querySelectorAll('input[type="number"]').forEach(input => {
+                    input.addEventListener('input', (e) => {
+                        const index = e.target.dataset.index;
+                        if (stocks[index] === undefined) return;
+                        let value = parseInt(e.target.value.replace(/,/g, ''), 10) || 0;
+                        if (value < 0) value = 0;
+                        if (value > 5000) value = 5000;
+                        stocks[index].shares = value;
+                        
+                        const monthlyDividend = (stocks[index].shares * stocks[index].annualDividendPerShare) / 12;
+                        const currencySymbol = stocks[index].currency === 'USD' ? '$' : '₩';
+                        const currencyFormatOptions = stocks[index].currency === 'USD' ? { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 } : { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 0 };
+                        const parentRow = e.target.closest('.stock-row');
+                        parentRow.querySelector(`#shares-input-${index}`).value = value;
+                        parentRow.querySelector(`#monthly-dividend-${index}`).textContent = `${currencySymbol}${monthlyDividend.toLocaleString('en-US', currencyFormatOptions)}`;
+                        
+                        debouncedCalculateTotals();
+                    });
+                });
+                
+                document.querySelectorAll('.remove-btn').forEach(button => {
+                    button.addEventListener('click', (e) => openDeleteModal(e.target.dataset.index));
+                });
+            }
+
+            const reinvControls = {
+                monthlyDividendEl: document.getElementById('reinv-monthly-dividend'),
+                expensesEl: document.getElementById('reinv-expenses'),
+                ratioEl: document.getElementById('reinv-ratio'),
+                ratioLabel: document.getElementById('reinv-ratio-label'),
+                cagrEl: document.getElementById('reinv-cagr'),
+                cagrLabel: document.getElementById('reinv-cagr-label'),
+                yearsEl: document.getElementById('reinv-years'),
+                yearsLabel: document.getElementById('reinv-years-label'),
+                runBtn: document.getElementById('run-reinv-simulation'),
+                tableBody: document.getElementById('reinvestment-table-body'),
+            };
+
+            function runReinvestmentSimulation() {
+                const monthlyDividend = totalMonthlyDividendKRW;
+                const monthlyExpenses = parseFloat(reinvControls.expensesEl.value) || 0;
+                const reinvestRatio = parseFloat(reinvControls.ratioEl.value) / 100;
+                const annualReturnRate = parseFloat(reinvControls.cagrEl.value) / 100;
+                const years = parseInt(reinvControls.yearsEl.value);
+                const monthlyNet = monthlyDividend - monthlyExpenses;
+                const monthlyReinvestment = monthlyNet > 0 ? monthlyNet * reinvestRatio : 0;
+                const annualReinvestment = monthlyReinvestment * 12;
+                let principal = 0;
+                const results = [];
+                for (let i = 0; i <= years; i++) {
+                    if (i === 0) {
+                         results.push({ year: 0, start: 0, reinvested: 0, gain: 0, end: 0 });
+                         continue;
+                    }
+                    const startPrincipal = principal;
+                    const investmentGain = startPrincipal * annualReturnRate;
+                    principal = startPrincipal + investmentGain + annualReinvestment;
+                    results.push({ year: i, start: startPrincipal, reinvested: annualReinvestment, gain: investmentGain, end: principal });
+                }
+                reinvControls.tableBody.innerHTML = '';
+                results.forEach(res => {
+                    const row = `
+                        <tr class="bg-white border-b">
+                            <td class="px-4 py-2 font-medium text-gray-900">${res.year}</td>
+                            <td class="px-4 py-2 text-right">${formatCurrency(res.start, 'KRW')}</td>
+                            <td class="px-4 py-2 text-right text-blue-600">+${formatCurrency(res.reinvested, 'KRW')}</td>
+                            <td class="px-4 py-2 text-right text-green-600">+${formatCurrency(res.gain, 'KRW')}</td>
+                            <td class="px-4 py-2 text-right font-bold">${formatCurrency(res.end, 'KRW')}</td>
+                        </tr>
+                    `;
+                    reinvControls.tableBody.innerHTML += row;
+                });
+                const chartData = {
+                    labels: results.map(r => `${r.year}년`),
+                    datasets: [{
+                        label: '예상 자산 총액',
+                        data: results.map(r => r.end),
+                        borderColor: '#4f46e5',
+                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                        fill: true,
+                        tension: 0.1,
+                    }]
+                };
+                const chartOptions = {
+                    responsive: true,
+                    scales: { y: { ticks: { callback: (value) => `${(value / 1000000).toLocaleString()}백만` } } },
+                    plugins: {
+                        datalabels: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += formatCurrency(context.parsed.y, 'KRW');
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                };
+                if (!reinvestmentChart) {
+                    reinvestmentChart = new Chart(document.getElementById('reinvestment-chart'), { type: 'line', data: chartData, options: chartOptions });
+                } else {
+                    reinvestmentChart.data = chartData;
+                    reinvestmentChart.options = chartOptions;
+                    reinvestmentChart.update();
+                }
+            }
+
+            const tabs = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => { t.classList.remove('active'); t.classList.add('text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300'); });
+                    tab.classList.add('active');
+                    tab.classList.remove('text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                    const target = tab.getAttribute('data-tab');
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === `${target}-content`) {
+                            content.classList.add('active');
+                        }
+                    });
+                    if(target === 'dashboard' || target === 'reinvestment' || target === 'calculation-basis') {
+                        calculateTotals();
+                        if (target === 'reinvestment') runReinvestmentSimulation();
+                    }
+                });
+            });
+            
+            reinvControls.ratioEl.addEventListener('input', (e) => { reinvControls.ratioLabel.textContent = e.target.value; });
+            reinvControls.cagrEl.addEventListener('input', (e) => { reinvControls.cagrLabel.textContent = e.target.value; });
+            reinvControls.yearsEl.addEventListener('input', (e) => { reinvControls.yearsLabel.textContent = e.target.value; });
+            reinvControls.runBtn.addEventListener('click', runReinvestmentSimulation);
+
+            const addModal = document.getElementById('add-stock-modal');
+            document.getElementById('add-stock-btn').addEventListener('click', () => addModal.classList.replace('hidden', 'flex'));
+            document.getElementById('cancel-add-btn').addEventListener('click', () => addModal.classList.replace('flex', 'hidden'));
+            addModal.addEventListener('click', (e) => { if (e.target === addModal) addModal.classList.replace('flex', 'hidden'); });
+            document.getElementById('add-stock-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const market = document.getElementById('add-market').value;
+                const newStock = {
+                    ticker: document.getElementById('add-ticker').value.toUpperCase(),
+                    name: document.getElementById('add-name').value,
+                    currentPrice: parseFloat(document.getElementById('add-current-price').value),
+                    annualDividendPerShare: parseFloat(document.getElementById('add-annualDividend').value),
+                    shares: 0,
+                    category: document.getElementById('add-category').value,
+                    market: market,
+                    currency: market === 'us' ? 'USD' : 'KRW'
+                };
+                stocks.push(newStock);
+                e.target.reset();
+                addModal.classList.replace('flex', 'hidden');
+                renderPortfolio();
+                calculateTotals();
+            });
+
+            const deleteModal = document.getElementById('delete-modal');
+            const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+            const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+            const deleteModalText = document.getElementById('delete-modal-text');
+
+            function openDeleteModal(index) {
+                deleteModalText.textContent = `'${stocks[index].ticker}' 주식을 포트폴리오에서 제거합니다.`;
+                confirmDeleteBtn.dataset.index = index;
+                deleteModal.classList.replace('hidden', 'flex');
+            }
+
+            function closeDeleteModal() {
+                deleteModal.classList.replace('flex', 'hidden');
+            }
+
+            cancelDeleteBtn.addEventListener('click', closeDeleteModal);
+            deleteModal.addEventListener('click', (e) => { if (e.target === deleteModal) closeDeleteModal(); });
+            confirmDeleteBtn.addEventListener('click', (e) => {
+                const index = e.target.dataset.index;
+                stocks.splice(index, 1);
+                closeDeleteModal();
+                renderPortfolio();
+                calculateTotals();
+            });
+
+            document.getElementById('save-json-btn').addEventListener('click', () => {
+                const dataStr = JSON.stringify(stocks, null, 2);
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr));
+                linkElement.setAttribute('download', 'my_portfolio.json');
+                linkElement.click();
+            });
+
+            document.getElementById('load-json-input').addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const loadedStocks = JSON.parse(e.target.result);
+                        if (Array.isArray(loadedStocks) && loadedStocks.every(s => 'ticker' in s && 'category' in s && 'market' in s)) {
+                            stocks = loadedStocks;
+                            renderPortfolio();
+                            calculateTotals();
+                        } else {
+                            alert('잘못된 형식의 JSON 파일입니다.');
+                        }
+                    } catch (error) {
+                        alert('파일을 읽는 중 오류가 발생했습니다.');
+                    }
+                };
+                reader.readAsText(file);
+                event.target.value = '';
+            });
+
+            renderPortfolio();
+            calculateTotals();
+        });
+    </script>
+</body>
+</html>
