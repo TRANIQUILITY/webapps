@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>미국 주요 경제지표 발표 캘린더 (13F 보고서)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .event {
+            font-size: 0.7rem;
+            padding: 2px 4px;
+            border-radius: 4px;
+            margin-top: 2px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
+        }
+        .event-cpi { background-color: #fee2e2; color: #991b1b; }
+        .event-cpi:hover { background-color: #fecaca; }
+        .event-gdp { background-color: #dbeafe; color: #1e40af; }
+        .event-gdp:hover { background-color: #bfdbfe; }
+        .event-emp { background-color: #d1fae5; color: #065f46; }
+        .event-emp:hover { background-color: #a7f3d0; }
+        .event-fomc { background-color: #fef9c3; color: #854d0e; }
+        .event-fomc:hover { background-color: #fef08a; }
+        .event-retail { background-color: #e0e7ff; color: #3730a3; }
+        .event-retail:hover { background-color: #c7d2fe; }
+        .event-ism { background-color: #f3e8ff; color: #581c87; }
+        .event-ism:hover { background-color: #e9d5ff; }
+        .event-jobless { background-color: #e5e7eb; color: #374151; }
+        .event-jobless:hover { background-color: #d1d5db; }
+        .event-investor { background-color: #e2e8f0; color: #475569; }
+        .event-investor:hover { background-color: #cbd5e1; }
+
+        .memo-indicator {
+            width: 6px;
+            height: 6px;
+            background-color: #f59e0b;
+            border-radius: 50%;
+            margin-right: 4px;
+            flex-shrink: 0;
+        }
+
+        .modal-body::-webkit-scrollbar { width: 8px; }
+        .modal-body::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .modal-body::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+        .modal-body::-webkit-scrollbar-thumb:hover { background: #555; }
+        
+        .loader {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3498db;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <!-- 헤더 -->
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900" id="calendar-title"></h1>
+                <div class="flex items-center space-x-2">
+                    <button id="prev-month" class="p-2 rounded-full text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <button id="today" class="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition">오늘</button>
+                    <button id="next-month" class="p-2 rounded-full text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 요일 헤더 -->
+            <div class="grid grid-cols-7 gap-2 text-center font-semibold text-sm text-gray-500 mb-2">
+                <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+            </div>
+
+            <!-- 날짜 그리드 -->
+            <div id="calendar-grid" class="grid grid-cols-7 gap-1 sm:gap-2"></div>
+        </div>
+
+        <!-- 데이터 관리 섹션 -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 mt-6">
+            <h2 class="text-lg font-bold text-gray-800 mb-4">메모 데이터 관리</h2>
+            <div class="flex flex-col sm:flex-row gap-4">
+                <button id="export-json" class="flex-1 px-4 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition">메모 전체 내보내기 (JSON)</button>
+                <button id="import-json" class="flex-1 px-4 py-2 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition">메모 불러오기 (JSON)</button>
+                <input type="file" id="import-file" class="hidden" accept=".json">
+            </div>
+            <p id="import-status" class="text-sm text-gray-500 mt-3 text-center"></p>
+        </div>
+    </div>
+
+    <!-- 이벤트 상세 정보 및 메모 모달 -->
+    <div id="event-modal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md transform transition-all" data-event-key="" data-event-date="" data-event-name="">
+            <div class="p-6">
+                <div class="flex items-start justify-between">
+                    <h2 id="modal-title" class="text-xl font-bold text-gray-900"></h2>
+                    <button id="modal-close" class="p-1 rounded-full text-gray-400 hover:bg-gray-200 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                <div class="mt-4 pr-2 max-h-[400px] overflow-y-auto modal-body">
+                    <p id="modal-description" class="text-gray-600 mb-4"></p>
+                    <a id="modal-link" href="#" target="_blank" rel="noopener noreferrer" class="block w-full text-center px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition mb-4">
+                        공식 발표 확인하기
+                    </a>
+                    <hr class="my-4">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                           <label for="memo-input" class="block text-sm font-medium text-gray-700">투자 메모</label>
+                           <button id="fetch-assessment" class="px-3 py-1 text-xs font-semibold text-purple-700 bg-purple-100 hover:bg-purple-200 rounded-full transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
+                                <span id="assessment-loader" class="loader hidden"></span>
+                                <span id="assessment-text">시장 평가 요약</span>
+                           </button>
+                        </div>
+                        <textarea id="memo-input" rows="4" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="이 지표에 대한 생각이나 투자 전략을 기록하세요..."></textarea>
+                        <button id="save-memo" class="mt-3 w-full px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition">메모 저장</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 데이터 영역 ---
+        const events = [
+            // (이전과 동일한 이벤트 데이터)
+            { date: '2025-08-01', name: '고용 보고서', type: 'emp', desc: '실업률, 비농업부문 고용자 수 변동 등 미국 고용 시장의 건강 상태를 나타내는 가장 중요한 지표 중 하나입니다.', link: 'https://www.bls.gov/news.release/empsit.nr0.htm' },
+            { date: '2025-08-01', name: 'ISM 제조업 PMI', type: 'ism', desc: '제조업 분야의 경기 동향을 보여주는 지표로, 50 이상이면 경기 확장을 의미합니다.', link: 'https://www.ismworld.org/supply-management-news-and-reports/reports/ism-report-on-business/' },
+            { date: '2025-08-05', name: 'ISM 비제조업 PMI', type: 'ism', desc: '서비스업 분야의 경기 동향을 보여주는 지표로, 미국 경제의 큰 부분을 차지합니다.', link: 'https://www.ismworld.org/supply-management-news-and-reports/reports/ism-report-on-business/' },
+            { date: '2025-08-13', name: '소비자물가지수 (CPI)', type: 'cpi', desc: '소비자 관점에서의 물가 변동을 측정하는 인플레이션 핵심 지표입니다. 연준의 금리 결정에 큰 영향을 미칩니다.', link: 'https://www.bls.gov/cpi/' },
+            { date: '2025-08-14', name: '13F 보고서 마감', type: 'investor', desc: '1억 달러 이상을 운용하는 기관 투자자들이 분기별(2분기) 보유 종목을 SEC에 의무적으로 보고하는 마감일입니다. 워렌 버핏 등 거물급 투자자들의 포트폴리오를 엿볼 수 있습니다.', link: 'https://www.sec.gov/edgar/searchedgar/companysearch' },
+            { date: '2025-08-14', name: '생산자물가지수 (PPI)', type: 'cpi', desc: '생산자 관점에서의 물가 변동을 측정하며, CPI의 선행 지표로 간주됩니다.', link: 'https://www.bls.gov/ppi/' },
+            { date: '2025-08-15', name: '소매판매', type: 'retail', desc: '소비자 지출의 척도로, 미국 경제의 약 70%를 차지하는 소비 동향을 파악할 수 있습니다.', link: 'https://www.census.gov/retail/index.html' },
+            { date: '2025-08-28', name: '2분기 GDP (수정치)', type: 'gdp', desc: '국가 경제의 전반적인 성과를 측정하는 가장 포괄적인 지표인 국내총생산(GDP)의 수정치입니다.', link: 'https://www.bea.gov/data/gdp/gross-domestic-product' },
+            { date: '2025-09-02', name: 'ISM 제조업 PMI', type: 'ism', desc: '제조업 분야의 경기 동향을 보여주는 지표로, 50 이상이면 경기 확장을 의미합니다.', link: 'https://www.ismworld.org/supply-management-news-and-reports/reports/ism-report-on-business/' },
+            { date: '2025-09-04', name: 'ISM 비제조업 PMI', type: 'ism', desc: '서비스업 분야의 경기 동향을 보여주는 지표로, 미국 경제의 큰 부분을 차지합니다.', link: 'https://www.ismworld.org/supply-management-news-and-reports/reports/ism-report-on-business/' },
+            { date: '2025-09-05', name: '고용 보고서', type: 'emp', desc: '실업률, 비농업부문 고용자 수 변동 등 미국 고용 시장의 건강 상태를 나타내는 가장 중요한 지표 중 하나입니다.', link: 'https://www.bls.gov/news.release/empsit.nr0.htm' },
+            { date: '2025-09-12', name: '소비자물가지수 (CPI)', type: 'cpi', desc: '소비자 관점에서의 물가 변동을 측정하는 인플레이션 핵심 지표입니다.', link: 'https://www.bls.gov/cpi/' },
+            { date: '2025-09-15', name: '소매판매', type: 'retail', desc: '소비자 지출의 척도로, 소비 동향을 파악할 수 있습니다.', link: 'https://www.census.gov/retail/index.html' },
+            { date: '2025-09-17', name: 'FOMC 회의 결과', type: 'fomc', desc: '미국 연방공개시장위원회(FOMC)의 기준금리 결정 및 경제 전망 발표가 있습니다.', link: 'https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm' },
+            { date: '2025-09-25', name: '2분기 GDP (확정치)', type: 'gdp', desc: '2분기 국내총생산(GDP)의 최종 확정치입니다.', link: 'https://www.bea.gov/data/gdp/gross-domestic-product' },
+            { date: '2025-10-01', name: 'ISM 제조업 PMI', type: 'ism', desc: '제조업 분야의 경기 동향을 보여주는 지표로, 50 이상이면 경기 확장을 의미합니다.', link: 'https://www.ismworld.org/supply-management-news-and-reports/reports/ism-report-on-business/' },
+            { date: '2025-10-03', name: '고용 보고서', type: 'emp', desc: '실업률, 비농업부문 고용자 수 변동 등 미국 고용 시장의 건강 상태를 나타내는 가장 중요한 지표 중 하나입니다.', link: 'https://www.bls.gov/news.release/empsit.nr0.htm' },
+            { date: '2025-10-10', name: '소비자물가지수 (CPI)', type: 'cpi', desc: '소비자 관점에서의 물가 변동을 측정하는 인플레이션 핵심 지표입니다.', link: 'https://www.bls.gov/cpi/' },
+            { date: '2025-10-15', name: '소매판매', type: 'retail', desc: '소비자 지출의 척도로, 소비 동향을 파악할 수 있습니다.', link: 'https://www.census.gov/retail/index.html' },
+            { date: '2025-10-30', name: '3분기 GDP (잠정치)', type: 'gdp', desc: '3분기 국내총생산(GDP)의 최초 잠정치입니다.', link: 'https://www.bea.gov/data/gdp/gross-domestic-product' },
+            { date: '2025-11-03', name: 'ISM 제조업 PMI', type: 'ism', desc: '제조업 분야의 경기 동향을 보여주는 지표로, 50 이상이면 경기 확장을 의미합니다.', link: 'https://www.ismworld.org/supply-management-news-and-reports/reports/ism-report-on-business/' },
+            { date: '2025-11-06', name: 'FOMC 회의 결과', type: 'fomc', desc: '미국 연방공개시장위원회(FOMC)의 기준금리 결정 및 경제 전망 발표가 있습니다.', link: 'https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm' },
+            { date: '2025-11-07', name: '고용 보고서', type: 'emp', desc: '실업률, 비농업부문 고용자 수 변동 등 미국 고용 시장의 건강 상태를 나타내는 가장 중요한 지표 중 하나입니다.', link: 'https://www.bls.gov/news.release/empsit.nr0.htm' },
+            { date: '2025-11-13', name: '소비자물가지수 (CPI)', type: 'cpi', desc: '소비자 관점에서의 물가 변동을 측정하는 인플레이션 핵심 지표입니다.', link: 'https://www.bls.gov/cpi/' },
+            { date: '2025-11-14', name: '13F 보고서 마감', type: 'investor', desc: '1억 달러 이상을 운용하는 기관 투자자들이 분기별(3분기) 보유 종목을 SEC에 의무적으로 보고하는 마감일입니다. 워렌 버핏 등 거물급 투자자들의 포트폴리오를 엿볼 수 있습니다.', link: 'https://www.sec.gov/edgar/searchedgar/companysearch' },
+            { date: '2025-11-14', name: '소매판매', type: 'retail', desc: '소비자 지출의 척도로, 소비 동향을 파악할 수 있습니다.', link: 'https://www.census.gov/retail/index.html' },
+            { date: '2025-11-26', name: '3분기 GDP (수정치)', type: 'gdp', desc: '3분기 국내총생산(GDP)의 수정치입니다.', link: 'https://www.bea.gov/data/gdp/gross-domestic-product' },
+            { date: '2025-12-01', name: 'ISM 제조업 PMI', type: 'ism', desc: '제조업 분야의 경기 동향을 보여주는 지표로, 50 이상이면 경기 확장을 의미합니다.', link: 'https://www.ismworld.org/supply-management-news-and-reports/reports/ism-report-on-business/' },
+            { date: '2025-12-05', name: '고용 보고서', type: 'emp', desc: '실업률, 비농업부문 고용자 수 변동 등 미국 고용 시장의 건강 상태를 나타내는 가장 중요한 지표 중 하나입니다.', link: 'https://www.bls.gov/news.release/empsit.nr0.htm' },
+            { date: '2025-12-11', name: '소비자물가지수 (CPI)', type: 'cpi', desc: '소비자 관점에서의 물가 변동을 측정하는 인플레이션 핵심 지표입니다.', link: 'https://www.bls.gov/cpi/' },
+            { date: '2025-12-12', name: '소매판매', type: 'retail', desc: '소비자 지출의 척도로, 소비 동향을 파악할 수 있습니다.', link: 'https://www.census.gov/retail/index.html' },
+            { date: '2025-12-17', name: 'FOMC 회의 결과', type: 'fomc', desc: '미국 연방공개시장위원회(FOMC)의 기준금리 결정 및 경제 전망 발표가 있습니다.', link: 'https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm' },
+            { date: '2025-12-23', name: '3분기 GDP (확정치)', type: 'gdp', desc: '3분기 국내총생산(GDP)의 최종 확정치입니다.', link: 'https://www.bea.gov/data/gdp/gross-domestic-product' },
+            { date: '2026-01-02', name: '고용 보고서', type: 'emp', desc: '실업률, 비농업부문 고용자 수 변동 등 미국 고용 시장의 건강 상태를 나타내는 가장 중요한 지표 중 하나입니다.', link: 'https://www.bls.gov/news.release/empsit.nr0.htm' },
+            { date: '2026-01-14', name: '소비자물가지수 (CPI)', type: 'cpi', desc: '소비자 관점에서의 물가 변동을 측정하는 인플레이션 핵심 지표입니다.', link: 'https://www.bls.gov/cpi/' },
+            { date: '2026-01-16', name: '소매판매', type: 'retail', desc: '소비자 지출의 척도로, 소비 동향을 파악할 수 있습니다.', link: 'https://www.census.gov/retail/index.html' },
+            { date: '2026-01-28', name: 'FOMC 회議 결과', type: 'fomc', desc: '미국 연방공개시장위원회(FOMC)의 기준금리 결정 및 경제 전망 발표가 있습니다.', link: 'https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm' },
+            { date: '2026-01-30', name: '4분기 GDP (잠정치)', type: 'gdp', desc: '4분기 국내총생산(GDP)의 최초 잠정치입니다.', link: 'https://www.bea.gov/data/gdp/gross-domestic-product' },
+            { date: '2026-02-06', name: '고용 보고서', type: 'emp', desc: '실업률, 비농업부문 고용자 수 변동 등 미국 고용 시장의 건강 상태를 나타내는 가장 중요한 지표 중 하나입니다.', link: 'https://www.bls.gov/news.release/empsit.nr0.htm' },
+            { date: '2026-02-12', name: '소비자물가지수 (CPI)', type: 'cpi', desc: '소비자 관점에서의 물가 변동을 측정하는 인플레이션 핵심 지표입니다.', link: 'https://www.bls.gov/cpi/' },
+            { date: '2026-02-13', name: '13F 보고서 마감', type: 'investor', desc: '1억 달러 이상을 운용하는 기관 투자자들이 분기별(4분기) 보유 종목을 SEC에 의무적으로 보고하는 마감일입니다. 워렌 버핏 등 거물급 투자자들의 포트폴리오를 엿볼 수 있습니다.', link: 'https://www.sec.gov/edgar/searchedgar/companysearch' },
+            { date: '2026-02-26', name: '4분기 GDP (수정치)', type: 'gdp', desc: '4분기 국내총생산(GDP)의 수정치입니다.', link: 'https://www.bea.gov/data/gdp/gross-domestic-product' },
+            { date: '2026-03-06', name: '고용 보고서', type: 'emp', desc: '실업률, 비농업부문 고용자 수 변동 등 미국 고용 시장의 건강 상태를 나타내는 가장 중요한 지표 중 하나입니다.', link: 'https://www.bls.gov/news.release/empsit.nr0.htm' },
+            { date: '2026-03-18', name: 'FOMC 회의 결과', type: 'fomc', desc: '미국 연방공개시장위원회(FOMC)의 기준금리 결정 및 경제 전망 발표가 있습니다.', link: 'https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm' },
+            { date: '2026-03-26', name: '4분기 GDP (확정치)', type: 'gdp', desc: '4분기 국내총생산(GDP)의 최종 확정치입니다.', link: 'https://www.bea.gov/data/gdp/gross-domestic-product' },
+            { date: '2026-04-03', name: '고용 보고서', type: 'emp', desc: '실업률, 비농업부문 고용자 수 변동 등 미국 고용 시장의 건강 상태를 나타내는 가장 중요한 지표 중 하나입니다.', link: 'https://www.bls.gov/news.release/empsit.nr0.htm' },
+            { date: '2026-04-29', name: 'FOMC 회의 결과', type: 'fomc', desc: '미국 연방공개시장위원회(FOMC)의 기준금리 결정 및 경제 전망 발표가 있습니다.', link: 'https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm' },
+            { date: '2026-04-30', name: '1분기 GDP (잠정치)', type: 'gdp', desc: '1분기 국내총생산(GDP)의 최초 잠정치입니다.', link: 'https://www.bea.gov/data/gdp/gross-domestic-product' },
+            { date: '2026-05-01', name: '고용 보고서', type: 'emp', desc: '실업률, 비농업부문 고용자 수 변동 등 미국 고용 시장의 건강 상태를 나타내는 가장 중요한 지표 중 하나입니다.', link: 'https://www.bls.gov/news.release/empsit.nr0.htm' },
+            { date: '2026-05-15', name: '13F 보고서 마감', type: 'investor', desc: '1억 달러 이상을 운용하는 기관 투자자들이 분기별(1분기) 보유 종목을 SEC에 의무적으로 보고하는 마감일입니다. 워렌 버핏 등 거물급 투자자들의 포트폴리오를 엿볼 수 있습니다.', link: 'https://www.sec.gov/edgar/searchedgar/companysearch' },
+            { date: '2026-05-28', name: '1분기 GDP (수정치)', type: 'gdp', desc: '1분기 국내총생산(GDP)의 수정치입니다.', link: 'https://www.bea.gov/data/gdp/gross-domestic-product' },
+            { date: '2026-06-05', name: '고용 보고서', type: 'emp', desc: '실업률, 비농업부문 고용자 수 변동 등 미국 고용 시장의 건강 상태를 나타내는 가장 중요한 지표 중 하나입니다.', link: 'https://www.bls.gov/news.release/empsit.nr0.htm' },
+            { date: '2026-06-17', name: 'FOMC 회의 결과', type: 'fomc', desc: '미국 연방공개시장위원회(FOMC)의 기준금리 결정 및 경제 전망 발표가 있습니다.', link: 'https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm' },
+            { date: '2026-06-25', name: '1분기 GDP (확정치)', type: 'gdp', desc: '1분기 국내총생산(GDP)의 최종 확정치입니다.', link: 'https://www.bea.gov/data/gdp/gross-domestic-product' },
+            { date: '2026-07-02', name: '고용 보고서', type: 'emp', desc: '실업률, 비농업부문 고용자 수 변동 등 미국 고용 시장의 건강 상태를 나타내는 가장 중요한 지표 중 하나입니다.', link: 'https://www.bls.gov/news.release/empsit.nr0.htm' },
+            { date: '2026-07-29', name: 'FOMC 회의 결과', type: 'fomc', desc: '미국 연방공개시장위원회(FOMC)의 기준금리 결정 및 경제 전망 발표가 있습니다.', link: 'https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm' },
+            { date: '2026-07-30', name: '2분기 GDP (잠정치)', type: 'gdp', desc: '2분기 국내총생산(GDP)의 최초 잠정치입니다.', link: 'https://www.bea.gov/data/gdp/gross-domestic-product' },
+        ];
+        
+        function addWeeklyJoblessClaims() {
+            const startDate = new Date('2025-08-01');
+            const endDate = new Date('2026-07-31');
+            let currentDate = new Date(startDate);
+            while (currentDate <= endDate) {
+                if (currentDate.getDay() === 4) {
+                    events.push({ date: currentDate.toISOString().split('T')[0], name: '실업수당 청구', type: 'jobless', desc: '주 단위의 고용 시장 변화를 가장 빠르게 보여주는 지표입니다.', link: 'https://www.dol.gov/ui/data.pdf' });
+                }
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+        }
+        addWeeklyJoblessClaims();
+
+        // --- 캘린더 및 메모 로직 ---
+        const assessmentCache = {}; // 시장 평가 요약 캐시 객체
+        const calendarTitle = document.getElementById('calendar-title');
+        const calendarGrid = document.getElementById('calendar-grid');
+        const [prevMonthBtn, nextMonthBtn, todayBtn] = [document.getElementById('prev-month'), document.getElementById('next-month'), document.getElementById('today')];
+        
+        const modal = document.getElementById('event-modal');
+        const [modalTitle, modalDescription, modalLink, modalCloseBtn] = [document.getElementById('modal-title'), document.getElementById('modal-description'), document.getElementById('modal-link'), document.getElementById('modal-close')];
+        const [memoInput, saveMemoBtn] = [document.getElementById('memo-input'), document.getElementById('save-memo')];
+        const [fetchAssessmentBtn, assessmentLoader, assessmentText] = [document.getElementById('fetch-assessment'), document.getElementById('assessment-loader'), document.getElementById('assessment-text')];
+
+        const [exportBtn, importBtn, importFile, importStatus] = [document.getElementById('export-json'), document.getElementById('import-json'), document.getElementById('import-file'), document.getElementById('import-status')];
+
+        let currentDate = new Date();
+
+        const getMemoKey = (event) => `memo-${event.date}-${event.name}`;
+
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            calendarTitle.textContent = `${year}년 ${month + 1}월`;
+            calendarGrid.innerHTML = '';
+            const firstDayOfMonth = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+
+            for (let i = 0; i < firstDayOfMonth; i++) calendarGrid.appendChild(document.createElement('div'));
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateCell = document.createElement('div');
+                dateCell.className = 'relative p-2 border border-gray-200 rounded-lg min-h-[100px] sm:min-h-[120px]';
+                const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                
+                const dayNumber = document.createElement('span');
+                dayNumber.textContent = day;
+                if (year === today.getFullYear() && month === today.getMonth() && day === today.getDate()) {
+                    dayNumber.className = 'bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold';
+                    dateCell.classList.add('bg-blue-50');
+                } else {
+                    dayNumber.className = 'text-gray-700';
+                }
+                dateCell.appendChild(dayNumber);
+
+                const dayEvents = events.filter(e => e.date === dateString);
+                if (dayEvents.length > 0) {
+                    const eventsContainer = document.createElement('div');
+                    eventsContainer.className = 'mt-1 space-y-1';
+                    dayEvents.forEach(event => {
+                        const eventDiv = document.createElement('div');
+                        const memoKey = getMemoKey(event);
+                        const hasMemo = localStorage.getItem(memoKey);
+
+                        if (hasMemo) {
+                            const memoIndicator = document.createElement('span');
+                            memoIndicator.className = 'memo-indicator';
+                            eventDiv.appendChild(memoIndicator);
+                        }
+                        
+                        const eventName = document.createElement('span');
+                        eventName.textContent = event.name;
+                        eventDiv.appendChild(eventName);
+
+                        eventDiv.className = `event event-${event.type}`;
+                        eventDiv.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            openModal(event);
+                        });
+                        eventsContainer.appendChild(eventDiv);
+                    });
+                    dateCell.appendChild(eventsContainer);
+                }
+                calendarGrid.appendChild(dateCell);
+            }
+        }
+
+        function openModal(event) {
+            const memoKey = getMemoKey(event);
+            modal.dataset.eventKey = memoKey;
+            modal.dataset.eventDate = event.date;
+            modal.dataset.eventName = event.name;
+            modal.dataset.eventType = event.type;
+
+            modalTitle.textContent = event.name;
+            modalDescription.textContent = event.desc;
+            modalLink.href = event.link;
+            
+            const savedMemo = localStorage.getItem(memoKey) || '';
+            memoInput.value = savedMemo;
+
+            const eventDate = new Date(event.date + "T23:59:59"); // 이벤트 날짜의 마지막 시간
+            const now = new Date();
+            fetchAssessmentBtn.disabled = eventDate > now; // 미래 이벤트 비활성화
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+            modal.dataset.eventKey = '';
+            modal.dataset.eventDate = '';
+            modal.dataset.eventName = '';
+            modal.dataset.eventType = '';
+        }
+
+        function saveMemo() {
+            const memoKey = modal.dataset.eventKey;
+            const memoText = memoInput.value.trim();
+            if (memoKey) {
+                if (memoText) {
+                    localStorage.setItem(memoKey, memoText);
+                } else {
+                    localStorage.removeItem(memoKey);
+                }
+                
+                const originalText = saveMemoBtn.textContent;
+                saveMemoBtn.textContent = '저장 완료!';
+                saveMemoBtn.classList.replace('bg-indigo-600', 'bg-green-600');
+                saveMemoBtn.classList.replace('hover:bg-indigo-700', 'hover:bg-green-700');
+
+                setTimeout(() => {
+                    saveMemoBtn.textContent = originalText;
+                    saveMemoBtn.classList.replace('bg-green-600', 'bg-indigo-600');
+                    saveMemoBtn.classList.replace('hover:bg-green-700', 'hover:bg-indigo-700');
+                    closeModal();
+                    renderCalendar();
+                }, 1000);
+            }
+        }
+
+        async function fetchMarketAssessment() {
+            const eventKey = modal.dataset.eventKey;
+            
+            if (assessmentCache[eventKey] && !memoInput.value.includes(assessmentCache[eventKey])) {
+                memoInput.value += assessmentCache[eventKey];
+                return;
+            }
+            if (assessmentCache[eventKey]) return;
+
+            const eventType = modal.dataset.eventType;
+            const eventName = modal.dataset.eventName;
+            
+            assessmentLoader.classList.remove('hidden');
+            assessmentText.textContent = '요약 중...';
+            fetchAssessmentBtn.disabled = true;
+
+            await new Promise(resolve => setTimeout(resolve, 1500)); 
+
+            let summaryPoints = [];
+            let sentimentEmoji = '😐';
+            const outcomes = ['예상치를 상회하여', '예상치를 하회하여', '예상치에 부합하여'];
+            const randomOutcome = outcomes[Math.floor(Math.random() * outcomes.length)];
+
+            const sources = [
+                { name: 'Bloomberg', link: 'https://www.bloomberg.com/markets' },
+                { name: 'Reuters', link: 'https://www.reuters.com/markets/' },
+                { name: 'Wall Street Journal', link: 'https://www.wsj.com/news/markets' }
+            ];
+            const randomSource = sources[Math.floor(Math.random() * sources.length)];
+
+            switch(eventType) {
+                case 'cpi':
+                    summaryPoints = [
+                        `${randomOutcome} 인플레이션 압력에 대한 시장의 우려와 안도 교차`,
+                        `국채 금리 변동성 확대`,
+                        `기술주 중심 차익 실현 매물 출회`
+                    ];
+                    if (randomOutcome === '예상치를 상회하여') sentimentEmoji = '👎';
+                    else if (randomOutcome === '예상치를 하회하여') sentimentEmoji = '👍';
+                    break;
+                case 'gdp':
+                case 'emp':
+                case 'retail':
+                case 'ism':
+                    summaryPoints = [
+                        `${randomOutcome} 경기 펀더멘털에 대한 투자자 신뢰도에 영향`,
+                        `경기 민감주 상승했으나, 일부 섹터는 관망세`,
+                        `향후 경제 데이터에 대한 시장의 주목도 증가`
+                    ];
+                    if (randomOutcome === '예상치를 상회하여') sentimentEmoji = '👍';
+                    else if (randomOutcome === '예상치를 하회하여') sentimentEmoji = '👎';
+                    break;
+                case 'fomc':
+                    summaryPoints = [
+                        `연준, 예상대로 금리 동결 발표`,
+                        `기자회견에서 향후 데이터 의존적 스탠스 재확인`,
+                        `시장은 안도 랠리 후 숨 고르기 장세 진입`
+                    ];
+                    sentimentEmoji = '😐';
+                    break;
+                case 'investor':
+                    summaryPoints = [
+                        `버크셔 해서웨이, 기술주 비중 확대 동향`,
+                        `브리지워터, 신흥국 자산 비중 일부 조절`,
+                        `주요 투자사별 전략 차별화 관측`
+                    ];
+                    randomSource.name = 'SEC EDGAR Filings';
+                    randomSource.link = 'https://www.sec.gov/edgar/searchedgar/companysearch';
+                    sentimentEmoji = '😐';
+                    break;
+                default:
+                    summaryPoints = [
+                        `${eventName} 발표 이후 관련 섹터 관심 집중`,
+                        `시장의 전반적인 영향은 제한적`
+                    ];
+                    sentimentEmoji = '😐';
+            }
+
+            const summary = summaryPoints.join('\n• ');
+            const currentDate = new Date().toLocaleString('ko-KR');
+            const formattedSummary = `\n\n--- [시장 평가 요약: ${currentDate}] ---\n${sentimentEmoji}\n• ${summary}\n(출처: ${randomSource.name} - ${randomSource.link})`;
+            
+            assessmentCache[eventKey] = formattedSummary;
+            memoInput.value += formattedSummary;
+            
+            assessmentLoader.classList.add('hidden');
+            assessmentText.textContent = '시장 평가 요약';
+            fetchAssessmentBtn.disabled = false;
+        }
+
+        function exportMemos() {
+            const memoData = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('memo-')) {
+                    memoData[key] = localStorage.getItem(key);
+                }
+            }
+            if (Object.keys(memoData).length === 0) {
+                alert('내보낼 메모가 없습니다.');
+                return;
+            }
+            const jsonString = JSON.stringify(memoData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `economic_calendar_memos_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function importMemos(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    let importedCount = 0;
+                    for (const key in importedData) {
+                        if (key.startsWith('memo-')) {
+                            localStorage.setItem(key, importedData[key]);
+                            importedCount++;
+                        }
+                    }
+                    importStatus.textContent = `${importedCount}개의 메모를 성공적으로 불러왔습니다.`;
+                    renderCalendar();
+                } catch (error) {
+                    importStatus.textContent = '오류: 유효한 JSON 파일이 아닙니다.';
+                } finally {
+                    importFile.value = '';
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // --- 이벤트 리스너 ---
+        prevMonthBtn.addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); });
+        nextMonthBtn.addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); });
+        todayBtn.addEventListener('click', () => { currentDate = new Date(); renderCalendar(); });
+        modalCloseBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+        saveMemoBtn.addEventListener('click', saveMemo);
+        fetchAssessmentBtn.addEventListener('click', fetchMarketAssessment);
+        exportBtn.addEventListener('click', exportMemos);
+        importBtn.addEventListener('click', () => importFile.click());
+        importFile.addEventListener('change', importMemos);
+
+        // 초기 캘린더 렌더링
+        renderCalendar();
+    </script>
+</body>
+</html>
