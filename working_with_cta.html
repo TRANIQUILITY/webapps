@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1인 법인 대표를 위한 인터랙티브 세무 가이드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals (Beige, Muted Blue, Dark Gray) -->
+    <!-- Application Structure Plan: The app uses a thematic, interactive card-based structure instead of a static table. This allows a new CEO to explore specific tasks (e.g., "Expenses", "Investments") on-demand, preventing information overload. A visual workflow diagram reinforces the core principle, and an interactive chart clarifies a complex financial topic (covered calls), enhancing understanding and retention over a simple text document. -->
+    <!-- Visualization & Content Choices: Report Info: Role division -> Goal: Organize/Inform -> Viz: Interactive HTML cards -> Interaction: Click-to-expand -> Justification: Focused, self-paced learning. | Report Info: Core workflow -> Goal: Explain Process -> Viz: HTML/CSS diagram -> Justification: Visual reinforcement of the main principle. | Report Info: Covered Call ETF -> Goal: Explain Complex Concept -> Viz: Chart.js Bar Chart -> Interaction: Button-triggered update -> Justification: Makes abstract financial concept tangible. | Report Info: Tips -> Goal: Inform -> Viz: Styled HTML list -> Justification: High readability for actionable advice. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #FDFBF7;
+            color: #333;
+        }
+        .task-card.active {
+            border-color: #60A5FA;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        .task-card.active .details {
+            display: block;
+        }
+        .details {
+            display: none;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        .advice-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-10 shadow-sm">
+        <div class="container mx-auto px-6 py-4">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800">1인 법인 대표를 위한 세무 가이드</h1>
+            <p class="mt-1 text-gray-600">대표와 세무대리인, 성공적인 협업을 위한 역할 완벽정리</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 md:py-12">
+
+        <section id="intro" class="mb-16 text-center">
+            <h2 class="text-3xl font-bold mb-4 text-gray-800">세무 기장의 핵심 원칙</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-700 bg-blue-50 p-6 rounded-xl border border-blue-200">
+                <span class="font-bold text-blue-600">대표는 실행과 증빙 전달,</span> <span class="font-bold text-green-600">세무사는 기록과 신고.</span><br>
+                회사의 모든 경제 활동은 대표님이 직접 실행하고, 그 결과를 증빙과 함께 세무대리인에게 전달하여 장부에 기록하고 세법에 맞게 신고하도록 하는 것이 기본입니다.
+            </p>
+        </section>
+
+        <section id="role-explorer" class="mb-16">
+            <h2 class="text-3xl font-bold mb-8 text-center text-gray-800">업무별 역할 탐색기</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="task-grid">
+            </div>
+        </section>
+
+        <section id="visual-explanation" class="mb-16">
+            <h2 class="text-3xl font-bold mb-8 text-center text-gray-800">개념 시각화로 쉽게 이해하기</h2>
+            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200">
+                <h3 class="text-2xl font-semibold mb-2 text-gray-700">커버드콜 ETF 분배금, 왜 세금을 안 뗄까?</h3>
+                <p class="text-gray-600 mb-6">커버드콜 ETF의 분배금은 '배당'이 아닌 '투자 원금의 일부 환급'으로 취급되어 지급 시점에 세금을 떼지 않습니다. 대신, ETF의 취득가액(매입 단가)이 낮아져 나중에 매도할 때 양도차익이 더 크게 계산됩니다. 아래 차트에서 '분배금 받기'를 눌러 변화를 확인해보세요.</p>
+                
+                <div class="chart-container mb-4">
+                    <canvas id="coveredCallChart"></canvas>
+                </div>
+                <div class="text-center">
+                    <button id="updateChartBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">분배금 받기</button>
+                    <button id="resetChartBtn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg transition-colors ml-2">초기화</button>
+                </div>
+                 <div id="chart-explanation" class="mt-4 text-center text-gray-700 bg-gray-50 p-4 rounded-lg hidden"></div>
+            </div>
+        </section>
+
+        <section id="advice">
+            <h2 class="text-3xl font-bold mb-8 text-center text-gray-800">성공적인 협업을 위한 4가지 조언</h2>
+            <div class="space-y-6">
+                <div class="flex items-start bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+                    <div class="advice-icon bg-blue-100 text-blue-600">💬</div>
+                    <div class="ml-4">
+                        <h3 class="text-xl font-semibold text-gray-800">소통 규칙 정하기</h3>
+                        <p class="text-gray-600 mt-1">증빙 자료는 최소 월 1회, 정해진 날짜에 전달하는 규칙을 만드세요. 몰아서 처리하면 누락과 오류의 위험이 커집니다.</p>
+                    </div>
+                </div>
+                <div class="flex items-start bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+                    <div class="advice-icon bg-green-100 text-green-600">💻</div>
+                    <div class="ml-4">
+                        <h3 class="text-xl font-semibold text-gray-800">디지털 도구 활용</h3>
+                        <p class="text-gray-600 mt-1">홈택스, 인터넷 뱅킹, 증빙 관리 앱 등을 적극 활용하여 서류 작업을 최소화하고 효율을 높이세요.</p>
+                    </div>
+                </div>
+                 <div class="flex items-start bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+                    <div class="advice-icon bg-yellow-100 text-yellow-600">❓</div>
+                    <div class="ml-4">
+                        <h3 class="text-xl font-semibold text-gray-800">'애매하면 먼저 묻기' 원칙</h3>
+                        <p class="text-gray-600 mt-1">비용 지출이나 계약 체결 전, 판단이 서지 않는 부분은 세무대리인에게 먼저 문의하는 것이 가장 좋은 절세 방법입니다.</p>
+                    </div>
+                </div>
+                <div class="flex items-start bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+                    <div class="advice-icon bg-red-100 text-red-600">🏦</div>
+                    <div class="ml-4">
+                        <h3 class="text-xl font-semibold text-gray-800">법인과 개인의 철저한 분리</h3>
+                        <p class="text-gray-600 mt-1">1인 법인일수록 법인카드, 법인 계좌는 오직 사업 목적으로만 사용한다는 원칙을 철저히 지켜야 향후 세무 리스크를 방지할 수 있습니다.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-6 py-4 text-center text-gray-400">
+            <p>&copy; 2024 1인 법인 대표를 위한 세무 가이드. All Rights Reserved.</p>
+            <p class="text-sm mt-1">본 내용은 일반적인 정보 제공을 목적으로 하며, 실제 세무 관련 의사결정은 반드시 전문가와 상의하시기 바랍니다.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const taskData = [
+                {
+                    title: '급여 / 4대보험',
+                    icon: '💰',
+                    ceoTasks: ['본인 급여 결정 및 매월 직접 이체', '직원 채용/퇴사 시 정보 전달'],
+                    taxAccountantTasks: ['원천세 신고 및 납부 안내', '4대 보험 관리 및 신고', '급여대장 작성, 연말정산 진행'],
+                    keyPoint: '매월 정해진 날짜에 급여를 이체하고, 변동사항(입/퇴사) 발생 시 즉시 세무대리인에게 알립니다.'
+                },
+                {
+                    title: '경비 처리',
+                    icon: '💳',
+                    ceoTasks: ['법인카드 사용, 계좌 이체 등 직접 지출', '세금계산서, 영수증 등 모든 증빙을 수취하여 전달'],
+                    taxAccountantTasks: ['전달받은 증빙으로 장부 작성(전표 입력)', '증빙의 비용 인정 여부 검토 및 자문'],
+                    keyPoint: '모든 지출은 법인 명의로 하고, 관련 증빙을 빠짐없이 챙겨 주기적으로 전달하는 것이 핵심입니다.'
+                },
+                {
+                    title: '매출 / 매입',
+                    icon: '🧾',
+                    ceoTasks: ['(세금)계산서 직접 발행 및 대금 입금 확인', '거래처로부터 매입 (세금)계산서 수취'],
+                    taxAccountantTasks: ['매출/매입 내역 장부 반영', '분기별 부가가치세 신고 및 납부세액 안내'],
+                    keyPoint: '거래가 발생하면 즉시 (세금)계산서를 주고받고, 대금이 제대로 입금되었는지 확인합니다.'
+                },
+                {
+                    title: '투자 소득 (배당/이자)',
+                    icon: '📈',
+                    ceoTasks: ['국내/해외 주식 등 법인 명의로 투자', '증권사/은행의 배당/이자 지급 통지서 등 증빙 전달'],
+                    taxAccountantTasks: ['영업외수익으로 회계 처리', '원천징수세액, 외국납부세액 등 검토 및 세액 공제/익금불산입 적용'],
+                    keyPoint: '모든 금융소득 증빙(원천징수 내역 포함)을 전달하여, 누락되는 세금 혜택이 없도록 합니다.'
+                },
+                {
+                    title: '자금 관리',
+                    icon: '🏦',
+                    ceoTasks: ['법인 계좌 입출금 등 모든 자금 집행 및 관리', '대표-법인 간 자금 거래 내역 명확화'],
+                    taxAccountantTasks: ['통장 내역과 장부 대사(일치 여부 확인)', '가지급금 등 비정상적 자금 흐름 모니터링 및 리스크 자문'],
+                    keyPoint: '법인 자금과 개인 자금을 엄격히 분리하고, 용도가 불분명한 입출금을 만들지 않습니다.'
+                },
+                {
+                    title: '결산 / 법인세',
+                    icon: '📊',
+                    ceoTasks: ['연간 사업 실적 정보 제공', '세무대리인이 작성한 재무제표 최종 검토 및 확인'],
+                    taxAccountantTasks: ['1년치 장부 마감(결산) 및 재무제표 작성', '세무조정을 통한 법인세 산출 및 신고'],
+                    keyPoint: '세무대리인의 질문에 성실히 답변하고, 최종 재무제표 내용을 확인하여 법인의 한 해를 마무리합니다.'
+                }
+            ];
+
+            const taskGrid = document.getElementById('task-grid');
+            taskData.forEach(task => {
+                const card = document.createElement('div');
+                card.className = 'task-card bg-white p-6 rounded-2xl shadow-lg border border-gray-200 cursor-pointer transition-all duration-300 hover:shadow-xl hover:border-blue-300';
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xl font-bold text-gray-800">${task.title}</h3>
+                        <span class="text-3xl">${task.icon}</span>
+                    </div>
+                    <div class="details mt-4 pt-4 border-t border-gray-200">
+                        <div class="mb-4">
+                            <h4 class="font-semibold text-blue-600 mb-2">대표 역할 👨‍💼</h4>
+                            <ul class="list-disc list-inside text-gray-700 space-y-1">
+                                ${task.ceoTasks.map(t => `<li>${t}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="mb-4">
+                            <h4 class="font-semibold text-green-600 mb-2">세무대리인 역할 👩‍💼</h4>
+                            <ul class="list-disc list-inside text-gray-700 space-y-1">
+                                ${task.taxAccountantTasks.map(t => `<li>${t}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                            <p class="text-sm font-semibold text-yellow-800">⭐ 핵심 포인트</p>
+                            <p class="text-sm text-yellow-700 mt-1">${task.keyPoint}</p>
+                        </div>
+                    </div>
+                `;
+                taskGrid.appendChild(card);
+
+                card.addEventListener('click', () => {
+                    const wasActive = card.classList.contains('active');
+                    document.querySelectorAll('.task-card').forEach(c => c.classList.remove('active'));
+                    if (!wasActive) {
+                        card.classList.add('active');
+                    }
+                });
+            });
+
+            const ctx = document.getElementById('coveredCallChart').getContext('2d');
+            let coveredCallChart;
+            const initialData = {
+                labels: ['최초 취득가액', '분배금(현금)', '조정된 취득가액'],
+                datasets: [{
+                    label: '금액 (만원)',
+                    data: [1000, 0, 1000],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(255, 159, 64, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            };
+
+            function createChart() {
+                if (coveredCallChart) {
+                    coveredCallChart.destroy();
+                }
+                coveredCallChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: JSON.parse(JSON.stringify(initialData)),
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '만원';
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.dataset.label + ': ' + context.parsed.y + '만원';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            createChart();
+
+            document.getElementById('updateChartBtn').addEventListener('click', () => {
+                coveredCallChart.data.datasets[0].data = [1000, 100, 900];
+                coveredCallChart.update();
+                const explanation = document.getElementById('chart-explanation');
+                explanation.innerHTML = `<strong>100만원</strong>의 분배금을 받아 현금은 늘었지만, 투자 원금이 환급된 것으로 보아 취득가액은 <strong>900만원</strong>으로 낮아졌습니다.`;
+                explanation.classList.remove('hidden');
+            });
+
+            document.getElementById('resetChartBtn').addEventListener('click', () => {
+                createChart();
+                document.getElementById('chart-explanation').classList.add('hidden');
+            });
+        });
+    </script>
+</body>
+</html>
