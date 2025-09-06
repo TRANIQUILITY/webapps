@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>51labs | 법인 운영 전략 대시보드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f1f5f9; }
+        .chart-container { position: relative; height: 40vh; width: 100%; max-height: 450px; }
+        .kpi-card { transition: all 0.2s ease-in-out; }
+        .kpi-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+        .tab-button.active { border-color: #3b82f6; color: #2563eb; background-color: #eff6ff; }
+        .tooltip { position: relative; display: inline-block; }
+        .tooltip .tooltiptext {
+            visibility: hidden; width: 240px; background-color: #334155; color: #fff;
+            text-align: left; border-radius: 6px; padding: 8px; position: absolute;
+            z-index: 10; bottom: 125%; left: 50%; margin-left: -120px; opacity: 0; transition: opacity 0.3s;
+        }
+        .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="mb-10">
+            <div class="text-left mb-4">
+                <span class="text-xl font-bold text-gray-800">51labs</span>
+                <span class="text-xl font-light text-gray-500"> | toy project</span>
+            </div>
+            <div class="text-center">
+                <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight">
+                    법인 운영 전략 대시보드
+                </h1>
+                <p class="mt-3 text-lg text-gray-600 max-w-3xl mx-auto">
+                    단순한 성장 예측을 넘어, 현금흐름과 위기 대응 능력까지 분석하여 지속 가능한 법인 운영 전략을 수립합니다.
+                </p>
+            </div>
+        </header>
+
+        <main class="lg:flex lg:gap-8">
+            <!-- Left: Controls -->
+            <aside class="lg:w-1/3 xl:w-1/4 mb-8 lg:mb-0">
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 sticky top-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">전략 컨트롤 패널</h2>
+                    
+                    <div class="space-y-5">
+                        <div>
+                            <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">자산 및 수익</h3>
+                            <div class="space-y-4">
+                                <div class="space-y-1">
+                                    <label for="initialInvestment" class="text-sm font-medium text-gray-600">초기 총 투자금 (KRW)</label>
+                                    <input type="text" id="initialInvestment" value="559,630,190" class="w-full p-2 border border-gray-300 rounded-md text-right focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div class="space-y-1">
+                                    <label for="annualYield" class="text-sm font-medium text-gray-600">연평균 배당률 (%)</label>
+                                    <input type="number" id="annualYield" value="30.42" step="0.1" class="w-full p-2 border border-gray-300 rounded-md text-right focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">고정 지출</h3>
+                            <div class="space-y-4">
+                                <div class="space-y-1">
+                                    <label for="monthlyCosts" class="text-sm font-medium text-gray-600">월 고정 운영비 (KRW)</label>
+                                    <input type="text" id="monthlyCosts" value="5150000" class="w-full p-2 border border-gray-300 rounded-md text-right focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div class="space-y-1">
+                                    <label for="corporateTaxRate" class="text-sm font-medium text-gray-600">법인세율 (%)</label>
+                                    <input type="number" id="corporateTaxRate" value="9.0" step="0.1" class="w-full p-2 border border-gray-300 rounded-md text-right focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">자금 회수 및 절세 전략</h3>
+                            <div class="space-y-4">
+                                <div class="space-y-1">
+                                    <label for="initialGasugeum" class="text-sm font-medium text-gray-600">초기 가수금 잔액 (KRW)</label>
+                                    <input type="text" id="initialGasugeum" value="1005800000" class="w-full p-2 border border-gray-300 rounded-md text-right focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div class="space-y-1">
+                                    <label for="gasugeumWithdrawal" class="text-sm font-medium text-gray-600">연간 가수금 회수액 (KRW)</label>
+                                    <input type="text" id="gasugeumWithdrawal" value="0" class="w-full p-2 border border-gray-300 rounded-md text-right focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div class="space-y-1">
+                                    <label for="dividendPayout" class="text-sm font-medium text-gray-600">연간 배당금 지급액 (KRW)</label>
+                                    <input type="text" id="dividendPayout" value="0" class="w-full p-2 border border-gray-300 rounded-md text-right focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div class="space-y-1">
+                                    <label for="taxLossHarvesting" class="text-sm font-medium text-gray-600 flex items-center">연간 손실 확정액 (KRW)
+                                        <div class="tooltip ml-1.5"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg><span class="tooltiptext">연말 법인세 절감을 위한 절세 전략입니다. 과세 이익과 총자산에서 동시에 차감됩니다.</span></div>
+                                    </label>
+                                    <input type="text" id="taxLossHarvesting" value="0" class="w-full p-2 border border-gray-300 rounded-md text-right focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="reinvestmentRate" class="text-sm font-medium text-gray-600">잉여 현금 재투자 비율: <span id="reinvestmentRateValue" class="font-bold text-blue-600">50%</span></label>
+                                    <input type="range" id="reinvestmentRate" min="0" max="100" value="50" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">위기관리 (Stress Test)</h3>
+                             <div class="flex items-center mb-4">
+                                <input type="checkbox" id="enableStressTest" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <label for="enableStressTest" class="ml-3 text-sm font-medium text-gray-700">시장 하락 시나리오 활성화</label>
+                            </div>
+                            <div id="stressTestControls" class="space-y-4">
+                                <div class="space-y-1">
+                                    <label for="crashYear" class="text-sm font-medium text-gray-600">하락 시점 (N년차)</label>
+                                    <input type="number" id="crashYear" value="3" min="1" max="10" class="w-full p-2 border border-gray-300 rounded-md text-right focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div class="space-y-1">
+                                    <label for="crashMagnitude" class="text-sm font-medium text-gray-600">자산 하락 폭 (%)</label>
+                                    <input type="number" id="crashMagnitude" value="30" min="0" max="100" class="w-full p-2 border border-gray-300 rounded-md text-right focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div class="space-y-1">
+                                    <label for="recoveryYears" class="text-sm font-medium text-gray-600">자산 회복 기간 (년)</label>
+                                    <input type="number" id="recoveryYears" value="2" min="0" max="10" class="w-full p-2 border border-gray-300 rounded-md text-right focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="mt-6 flex justify-center items-center space-x-2">
+                        <button id="exportButton" class="flex items-center text-sm justify-center px-3 py-1.5 bg-gray-100 text-gray-600 font-semibold rounded-lg hover:bg-gray-200 transition">저장</button>
+                        <label class="flex items-center text-sm justify-center px-3 py-1.5 bg-gray-100 text-gray-600 font-semibold rounded-lg hover:bg-gray-200 transition cursor-pointer">
+                            불러오기
+                            <input type="file" id="importButton" accept=".json" class="hidden" />
+                        </label>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Right: Dashboard -->
+            <section class="lg:w-2/3 xl:w-3/4">
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2 text-center">전략 대시보드</h2>
+                    
+                    <!-- KPIs -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        <div class="kpi-card bg-gray-50 p-4 rounded-lg text-center shadow-sm">
+                            <h3 class="text-sm font-semibold text-gray-500">법인 생존성</h3>
+                            <p id="viabilityStatus" class="text-lg font-bold text-green-600">안정적</p>
+                        </div>
+                        <div class="kpi-card bg-gray-50 p-4 rounded-lg text-center shadow-sm">
+                            <h3 class="text-sm font-semibold text-gray-500">10년 후 총 자산</h3>
+                            <p id="futureAssets" class="text-lg font-bold text-blue-600">0 원</p>
+                        </div>
+                        <div class="kpi-card bg-gray-50 p-4 rounded-lg text-center shadow-sm">
+                            <h3 class="text-sm font-semibold text-gray-500">가수금 상환 완료</h3>
+                            <p id="gasugeumPayoffYear" class="text-lg font-bold text-yellow-600">N/A</p>
+                        </div>
+                        <div class="kpi-card bg-gray-50 p-4 rounded-lg text-center shadow-sm">
+                            <h3 class="text-sm font-semibold text-gray-500">월 평균 현금 회수액</h3>
+                            <p id="monthlyTakeHome" class="text-lg font-bold text-indigo-600">0 원</p>
+                        </div>
+                         <div class="kpi-card bg-gray-50 p-4 rounded-lg text-center shadow-sm">
+                            <h3 class="text-sm font-semibold text-gray-500">10년차 연간 배당금</h3>
+                            <p id="futureDividends" class="text-lg font-bold text-green-600">0 원</p>
+                        </div>
+                        <div class="kpi-card bg-gray-50 p-4 rounded-lg text-center shadow-sm">
+                            <h3 class="text-sm font-semibold text-gray-500">10년 후 가수금 잔액</h3>
+                            <p id="futureGasugeum" class="text-lg font-bold text-yellow-600">0 원</p>
+                        </div>
+                        <div class="kpi-card bg-gray-50 p-4 rounded-lg text-center shadow-sm col-span-2 md:col-span-2">
+                            <h3 class="text-sm font-semibold text-gray-500">10년 누적 법인세</h3>
+                            <p id="totalTaxPaid" class="text-lg font-bold text-red-600">0 원</p>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="flex border-b border-gray-200">
+                        <button id="tab-growth" class="tab-button active px-4 py-2 text-sm font-semibold border-b-2">성장 시뮬레이션</button>
+                        <button id="tab-cashflow" class="tab-button px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-gray-500">연간 현금흐름</button>
+                        <button id="tab-stress" class="tab-button px-4 py-2 text-sm font-semibold border-b-2 border-transparent text-gray-500">위기관리</button>
+                    </div>
+
+                    <!-- Tab Content -->
+                    <div id="content-growth" class="tab-content mt-6">
+                        <div class="chart-container"><canvas id="growthChart"></canvas></div>
+                    </div>
+                    <div id="content-cashflow" class="tab-content mt-6 hidden">
+                        <div class="chart-container"><canvas id="cashflowChart"></canvas></div>
+                    </div>
+                    <div id="content-stress" class="tab-content mt-6 hidden">
+                        <div class="bg-orange-50 p-4 rounded-lg text-center shadow-inner col-span-2">
+                            <h3 class="text-lg font-semibold text-orange-800 mb-2">스트레스 테스트 결과</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-sm text-gray-600">최저 자산 가치</p>
+                                    <p id="lowestAssetValue" class="text-2xl font-bold text-orange-600">0 원</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600">회복 시점</p>
+                                    <p id="recoveryResult" class="text-2xl font-bold text-orange-600">N/A</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 text-gray-500 text-sm leading-relaxed">
+            <p>서울시 서초구 사임당로8길 13, 4층</p>
+            <p>오일랩스 유한회사 | 51labs LLC. All Rights Reserved</p>
+        </footer>
+    </div>
+
+    <script>
+        const inputIds = [
+            'initialInvestment', 'monthlyCosts', 'annualYield', 'gasugeumWithdrawal', 
+            'dividendPayout', 'initialGasugeum', 'taxLossHarvesting', 'corporateTaxRate', 'reinvestmentRate',
+            'enableStressTest', 'crashYear', 'crashMagnitude', 'recoveryYears'
+        ];
+        
+        const elementIds = [
+            ...inputIds,
+            'reinvestmentRateValue', 'futureAssets', 'monthlyTakeHome', 'gasugeumPayoffYear',
+            'viabilityStatus', 'futureDividends', 'futureGasugeum', 'totalTaxPaid',
+            'lowestAssetValue', 'recoveryResult',
+            'exportButton', 'importButton', 'stressTestControls',
+            'growthChart', 'cashflowChart'
+        ];
+        const elements = {};
+        elementIds.forEach(id => elements[id] = document.getElementById(id));
+        
+        const growthCtx = elements.growthChart.getContext('2d');
+        const cashflowCtx = elements.cashflowChart.getContext('2d');
+        let growthChart, cashflowChart;
+
+        const formatCurrency = (value) => {
+            if (isNaN(value)) return '0 원';
+            return `${Math.round(value).toLocaleString('ko-KR')} 원`;
+        };
+        
+        const formatCurrencyShort = (value) => {
+            if (isNaN(value)) return '0 원';
+            const absValue = Math.abs(value);
+            if (absValue >= 100000000) {
+                return `${(value / 100000000).toFixed(1)}억 원`;
+            }
+            if (absValue >= 10000) {
+                return `${Math.round(value / 10000).toLocaleString('ko-KR')}만 원`;
+            }
+            return `${Math.round(value).toLocaleString('ko-KR')} 원`;
+        };
+
+        const formatInput = (inputEl) => {
+            if (inputEl.type !== 'text') return;
+            const value = parseInt(inputEl.value.replace(/,/g, ''), 10) || 0;
+            inputEl.value = value.toLocaleString('ko-KR');
+        };
+
+        const runSimulation = () => {
+            const params = {};
+            inputIds.forEach(id => {
+                const el = elements[id];
+                if (el.type === 'checkbox') {
+                    params[id] = el.checked;
+                } else if (el.type === 'text') {
+                    params[id] = parseInt(el.value.replace(/,/g, ''), 10) || 0;
+                } else {
+                    params[id] = parseFloat(el.value) || 0;
+                }
+            });
+
+            elements.reinvestmentRateValue.textContent = `${params.reinvestmentRate}%`;
+            const reinvestmentRateDecimal = params.reinvestmentRate / 100;
+            const annualYieldDecimal = params.annualYield / 100;
+            const corporateTaxRateDecimal = params.corporateTaxRate / 100;
+
+            const years = 10;
+            const standardData = [];
+            const stressData = [];
+            const cashflowData = [];
+            
+            const simulateYear = (currentAssets, currentGasugeum, isCrashed, recoveryProgress) => {
+                let assets = currentAssets;
+                let gasugeum = currentGasugeum;
+                
+                if (isCrashed && recoveryProgress.yearsLeft > 0) {
+                    assets += recoveryProgress.amountPerYear;
+                    recoveryProgress.yearsLeft--;
+                }
+
+                const annualDividends = assets * annualYieldDecimal;
+                const actualTaxLoss = Math.min(params.taxLossHarvesting, assets);
+                let tempAssets = assets - actualTaxLoss;
+                
+                const taxableIncome = annualDividends - (params.monthlyCosts * 12) - actualTaxLoss;
+                const corporateTax = taxableIncome > 0 ? taxableIncome * corporateTaxRateDecimal : 0;
+                let cashAvailable = annualDividends - (params.monthlyCosts * 12) - corporateTax;
+                let annualTakeHome = 0;
+                let cashOut = (params.monthlyCosts * 12) + corporateTax;
+
+                if (cashAvailable > 0) {
+                    const actualGasugeumRepayment = Math.min(cashAvailable, params.gasugeumWithdrawal, gasugeum);
+                    cashAvailable -= actualGasugeumRepayment;
+                    gasugeum -= actualGasugeumRepayment;
+                    annualTakeHome += actualGasugeumRepayment;
+                    cashOut += actualGasugeumRepayment;
+                    
+                    const actualDividendPayout = Math.min(cashAvailable, params.dividendPayout);
+                    cashAvailable -= actualDividendPayout;
+                    annualTakeHome += actualDividendPayout;
+                    cashOut += actualDividendPayout;
+
+                    if (cashAvailable > 0) {
+                        const amountToReinvest = cashAvailable * reinvestmentRateDecimal;
+                        const nonReinvestedIncome = cashAvailable * (1 - reinvestmentRateDecimal);
+                        tempAssets += amountToReinvest;
+                        annualTakeHome += nonReinvestedIncome;
+                        cashOut += nonReinvestedIncome;
+                    }
+                }
+                return { assets: tempAssets, gasugeum, corporateTax, annualTakeHome, cashIn: annualDividends, cashOut };
+            };
+            
+            let totalAssetsStd = params.initialInvestment;
+            for (let i = 0; i <= years; i++) {
+                standardData.push({ x: i, y: totalAssetsStd });
+                const simResult = simulateYear(totalAssetsStd, 0, false, {});
+                totalAssetsStd = simResult.assets;
+            }
+
+            let totalAssetsStress = params.initialInvestment;
+            let gasugeumBalance = params.initialGasugeum;
+            let lowestAssetValue = params.initialInvestment;
+            let preCrashAssets = 0;
+            let recoveryProgress = { yearsLeft: 0, amountPerYear: 0 };
+            let recoveredYear = null;
+            let gasugeumPayoffYear = null;
+            let isViable = true;
+            let totalTaxPaid = 0;
+
+            for (let i = 0; i <= years; i++) {
+                stressData.push({ x: i, y: totalAssetsStress });
+                
+                if (params.enableStressTest && i === params.crashYear) {
+                    preCrashAssets = totalAssetsStress;
+                    const lossAmount = totalAssetsStress * (params.crashMagnitude / 100);
+                    totalAssetsStress -= lossAmount;
+                    if (params.recoveryYears > 0) {
+                        recoveryProgress = { yearsLeft: params.recoveryYears, amountPerYear: lossAmount / params.recoveryYears };
+                    }
+                }
+
+                const simResult = simulateYear(totalAssetsStress, gasugeumBalance, params.enableStressTest, recoveryProgress);
+                totalAssetsStress = simResult.assets;
+                let prevGasugeum = gasugeumBalance;
+                gasugeumBalance = simResult.gasugeum;
+                totalTaxPaid += simResult.corporateTax;
+
+                if (i > 0) {
+                   cashflowData.push({year: i, cashIn: simResult.cashIn, cashOut: simResult.cashOut});
+                   if (simResult.cashIn < simResult.cashOut) isViable = false;
+                }
+
+                if (params.enableStressTest && i >= params.crashYear) {
+                    lowestAssetValue = Math.min(lowestAssetValue, totalAssetsStress);
+                    if (!recoveredYear && totalAssetsStress >= preCrashAssets) recoveredYear = i;
+                }
+                
+                if (!gasugeumPayoffYear && prevGasugeum > 0 && gasugeumBalance <= 0) {
+                    gasugeumPayoffYear = i;
+                }
+
+                if (i === years - 1) {
+                   lastYearDividends = totalAssetsStress * annualYieldDecimal;
+                   lastYearTakeHome = simResult.annualTakeHome;
+                }
+            }
+
+            elements.futureAssets.textContent = formatCurrencyShort(totalAssetsStress);
+            elements.futureDividends.textContent = formatCurrencyShort(lastYearDividends);
+            elements.monthlyTakeHome.textContent = formatCurrencyShort(lastYearTakeHome / 12);
+            elements.futureGasugeum.textContent = formatCurrencyShort(gasugeumBalance);
+            elements.totalTaxPaid.textContent = formatCurrencyShort(totalTaxPaid);
+
+            elements.viabilityStatus.textContent = isViable ? '안정적' : '주의 필요';
+            elements.viabilityStatus.className = isViable ? 'text-lg font-bold text-green-600' : 'text-lg font-bold text-orange-600';
+            elements.gasugeumPayoffYear.textContent = gasugeumPayoffYear ? `${gasugeumPayoffYear}년차` : '10년 초과';
+
+            if (params.enableStressTest) {
+                document.getElementById('content-stress').classList.remove('hidden');
+                elements.lowestAssetValue.textContent = formatCurrencyShort(lowestAssetValue);
+                elements.recoveryResult.textContent = recoveredYear ? `${recoveredYear}년차` : '10년 초과';
+            } else {
+                document.getElementById('content-stress').classList.add('hidden');
+            }
+            
+            updateGrowthChart(standardData, stressData, params.enableStressTest);
+            updateCashflowChart(cashflowData);
+        };
+
+        const updateGrowthChart = (standardData, stressData, isStressTestEnabled) => {
+            const labels = standardData.map(d => `${d.x}년차`);
+            const stressValues = stressData.map(d => d.y);
+            const datasets = [{
+                label: '총 자산 (KRW)', data: stressValues, borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.4,
+                pointRadius: 3, pointBackgroundColor: '#3b82f6'
+            }];
+
+            if (isStressTestEnabled) {
+                datasets.push({
+                    label: '기본 성장 (KRW)', data: standardData.map(d => d.y), borderColor: '#9ca3af',
+                    backgroundColor: 'transparent', borderDash: [5, 5], fill: false, tension: 0.4, pointRadius: 0
+                });
+            }
+
+            if (growthChart) {
+                growthChart.data.labels = labels;
+                growthChart.data.datasets = datasets;
+                growthChart.update();
+            } else {
+                growthChart = new Chart(growthCtx, {
+                    type: 'line', data: { labels, datasets },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        scales: { y: { ticks: { callback: value => formatCurrencyShort(value) } } },
+                        plugins: { tooltip: { callbacks: { label: context => `${context.dataset.label}: ${formatCurrency(context.raw)}` } } }
+                    }
+                });
+            }
+        };
+
+        const updateCashflowChart = (data) => {
+            const labels = data.map(d => `${d.year}년차`);
+            const cashInValues = data.map(d => d.cashIn);
+            const cashOutValues = data.map(d => d.cashOut);
+
+            if (cashflowChart) {
+                cashflowChart.data.labels = labels;
+                cashflowChart.data.datasets[0].data = cashInValues;
+                cashflowChart.data.datasets[1].data = cashOutValues;
+                cashflowChart.update();
+            } else {
+                cashflowChart = new Chart(cashflowCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            { label: '연간 총수입 (배당)', data: cashInValues, backgroundColor: '#10b981' },
+                            { label: '연간 총지출 (비용+세금+회수)', data: cashOutValues, backgroundColor: '#ef4444' }
+                        ]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        scales: { y: { ticks: { callback: value => formatCurrencyShort(value) } } },
+                        plugins: { tooltip: { callbacks: { label: context => `${context.dataset.label}: ${formatCurrency(context.raw)}` } } }
+                    }
+                });
+            }
+        };
+
+        const handleExport = () => {
+            const dataToExport = {};
+            inputIds.forEach(id => {
+                const el = elements[id];
+                dataToExport[id] = el.type === 'checkbox' ? el.checked : el.value;
+            });
+            const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(dataToExport, null, 2))}`;
+            const link = document.createElement('a');
+            link.href = jsonString;
+            link.download = `corp_strategy_params_${new Date().toISOString().slice(0,10)}.json`;
+            link.click();
+        };
+
+        const handleImport = (event) => {
+            const fileReader = new FileReader();
+            fileReader.readAsText(event.target.files[0], 'UTF-8');
+            fileReader.onload = e => {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    inputIds.forEach(id => {
+                        if (importedData[id] !== undefined) {
+                            const el = elements[id];
+                            if (el.type === 'checkbox') el.checked = importedData[id];
+                            else el.value = importedData[id];
+                        }
+                    });
+                    toggleStressTestControls();
+                    Object.values(elements).forEach(el => formatInput(el));
+                    runSimulation();
+                    alert('데이터를 성공적으로 불러왔습니다.');
+                } catch (error) {
+                    alert(`데이터 불러오기 실패: ${error.message}`);
+                }
+            };
+            event.target.value = null;
+        };
+        
+        const toggleStressTestControls = () => {
+            if (elements.enableStressTest.checked) {
+                elements.stressTestControls.style.maxHeight = '500px';
+                elements.stressTestControls.style.opacity = '1';
+            } else {
+                elements.stressTestControls.style.maxHeight = '0';
+                elements.stressTestControls.style.opacity = '0';
+            }
+            runSimulation();
+        };
+        
+        const tabs = document.querySelectorAll('.tab-button');
+        const contents = document.querySelectorAll('.tab-content');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                contents.forEach(c => c.classList.add('hidden'));
+                document.getElementById(tab.id.replace('tab-', 'content-')).classList.remove('hidden');
+            });
+        });
+
+        inputIds.forEach(id => {
+            const el = elements[id];
+            if (el.type === 'text') {
+                el.addEventListener('input', () => formatInput(el));
+                el.addEventListener('change', runSimulation);
+            } else if (el.id === 'enableStressTest') {
+                el.addEventListener('change', toggleStressTestControls);
+            } else {
+                el.addEventListener('input', runSimulation);
+            }
+        });
+        
+        elements.exportButton.addEventListener('click', handleExport);
+        elements.importButton.addEventListener('change', handleImport);
+
+        // 초기 실행
+        Object.values(elements).forEach(el => formatInput(el));
+        toggleStressTestControls();
+    </script>
+
+</body>
+</html>
