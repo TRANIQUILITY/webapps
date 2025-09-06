@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1인 법인 설립: 대행 vs. 직접, 당신의 선택은?</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Palette: Energetic & Playful -->
+    <!-- Narrative Plan: 
+        1. Hook: Introduce the dilemma of Agency vs. DIY for 1-person corporations.
+        2. Process Comparison: Visualize the procedural differences using a flowchart.
+        3. Pros of Agencies: Detail the advantages with charts and large numbers.
+        4. Cons of Agencies: Highlight the hidden costs and trade-offs with a comparative chart.
+        5. Decision Guide: Provide clear recommendations for different founder types.
+        6. Conclusion: A final encouraging message. 
+    -->
+    <!-- Visualization Choices:
+        - Process Flow: Goal(Organize) -> Flow Chart(HTML/CSS) -> Justification: Best for comparing multi-step processes side-by-side. Confirmed: NO SVG/Mermaid.
+        - Initial Costs: Goal(Inform) -> Donut Chart(Chart.js) -> Justification: Excellent for showing parts-of-a-whole, emphasizing the '0 KRW' agency fee. Confirmed: NO SVG.
+        - Long-term Costs: Goal(Compare) -> Bar Chart(Chart.js) -> Justification: Standard for comparing distinct values (costs) over time, making the financial trade-off clear. Confirmed: NO SVG.
+        - Recommendation Guide: Goal(Organize) -> Two-Column List(HTML/CSS) -> Justification: Simple, scannable layout for clear decision-making. Confirmed: NO SVG.
+    -->
+    <!-- NEITHER Mermaid JS NOR SVG were used anywhere in the output. All visualizations are created using Chart.js with Canvas, or structured HTML and Tailwind CSS. -->
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .chart-container {
+            position: relative;
+            height: 320px;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .flowchart-step {
+            border-left: 3px solid #FFA600;
+            position: relative;
+            padding-left: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+        .flowchart-step:last-child {
+            border-left: 3px solid transparent;
+            padding-bottom: 0;
+        }
+        .flowchart-step::before {
+            content: '';
+            position: absolute;
+            left: -11px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #FFA600;
+            border: 3px solid #f0f2f5;
+        }
+    </style>
+</head>
+<body class="text-[#003F5C]">
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-black text-[#BC5090] mb-2">1인 법인 설립, 가장 현명한 선택은?</h1>
+            <p class="text-lg md:text-xl text-[#58508D]">법인설립지원센터와 같은 대행 서비스를 이용할 때의 장점과 단점을 완벽 분석합니다.</p>
+        </header>
+
+        <main>
+            <section id="process" class="mb-12">
+                <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-8 text-[#003F5C]">설립 과정 한눈에 비교하기</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-xl font-bold mb-4 text-center text-[#FF6361]">🚀 대행 이용 (Agency)</h3>
+                            <div class="p-4 bg-gray-50 rounded-lg">
+                                <div class="flowchart-step">
+                                    <h4 class="font-bold">상담 및 계약</h4>
+                                    <p class="text-sm text-gray-600">필요 서류 안내 및 온라인 계약</p>
+                                </div>
+                                <div class="flowchart-step">
+                                    <h4 class="font-bold">서류 전달</h4>
+                                    <p class="text-sm text-gray-600">인감, 등본 등 필요 서류 전달</p>
+                                </div>
+                                <div class="flowchart-step">
+                                    <h4 class="font-bold">대행사가 모든 절차 진행</h4>
+                                    <p class="text-sm text-gray-600">정관 작성, 등기, 사업자 등록 등</p>
+                                </div>
+                                <div class="flowchart-step">
+                                    <h4 class="font-bold">설립 완료!</h4>
+                                    <p class="text-sm text-gray-600">사업자등록증 및 등기 서류 수령</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-4 text-center text-[#58508D]">🛠️ 직접 진행 (DIY)</h3>
+                            <div class="p-4 bg-gray-50 rounded-lg">
+                                <div class="flowchart-step">
+                                    <h4 class="font-bold">정보 수집 및 학습</h4>
+                                    <p class="text-sm text-gray-600">절차, 필요 서류, 법규 등 파악</p>
+                                </div>
+                                <div class="flowchart-step">
+                                    <h4 class="font-bold">정관 등 서류 작성</h4>
+                                    <p class="text-sm text-gray-600">정관, 주주총회 의사록 등 작성</p>
+                                </div>
+                                 <div class="flowchart-step">
+                                    <h4 class="font-bold">등기소 방문/온라인 신청</h4>
+                                    <p class="text-sm text-gray-600">법인 설립 등기 신청</p>
+                                </div>
+                                <div class="flowchart-step">
+                                    <h4 class="font-bold">세무서 방문</h4>
+                                    <p class="text-sm text-gray-600">사업자 등록 신청</p>
+                                </div>
+                                 <div class="flowchart-step">
+                                    <h4 class="font-bold">설립 완료</h4>
+                                    <p class="text-sm text-gray-600">모든 절차 직접 완료</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="mt-8 text-center text-gray-700">대행 서비스는 복잡한 행정 절차를 단순화하여 대표가 사업 본질에 집중할 수 있도록 돕습니다. 하지만 이 편리함에는 고려해야 할 조건이 따릅니다.</p>
+                </div>
+            </section>
+
+            <section id="pros" class="mb-12">
+                 <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-2 text-[#003F5C]">대행 서비스의 매력: 장점 분석</h2>
+                    <p class="text-center text-gray-600 mb-8">시간, 비용, 전문성 측면에서 대행 서비스는 강력한 이점을 제공합니다.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div class="text-center">
+                           <div class="text-7xl font-black text-[#FF6361]">40<span class="text-4xl">시간+</span></div>
+                           <h3 class="text-xl font-bold mt-2">압도적인 시간 절약</h3>
+                           <p class="mt-2 text-gray-600">복잡한 서류 준비와 관공서 방문에 소요되는 시간을 절약하고 핵심 사업에 집중할 수 있습니다.</p>
+                           <div class="mt-6">
+                               <div class="text-7xl font-black text-[#BC5090]">0<span class="text-4xl">원</span></div>
+                               <h3 class="text-xl font-bold mt-2">초기 설립 수수료 절감</h3>
+                               <p class="mt-2 text-gray-600">대부분의 대행사는 세무기장 계약 조건으로 설립 대행 수수료를 받지 않아 초기 비용 부담이 없습니다.</p>
+                           </div>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-4 text-center">초기 설립 비용 비교</h3>
+                            <div class="chart-container">
+                                <canvas id="initialCostChart"></canvas>
+                            </div>
+                            <p class="text-center mt-4 text-sm text-gray-600">대행 서비스를 이용하면 공과금을 제외한 대행 수수료가 없어 초기 자본 부담을 크게 줄일 수 있습니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="cons" class="mb-12">
+                <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-2 text-[#003F5C]">숨겨진 거래 조건: 단점 분석</h2>
+                    <p class="text-center text-gray-600 mb-8">'무료'라는 말 뒤에 숨겨진 장기적인 비용과 제약사항을 반드시 확인해야 합니다.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                         <div>
+                             <h3 class="text-xl font-bold mb-4 text-center">장기적 총비용 비교 (세무기장료 포함)</h3>
+                            <div class="chart-container">
+                                <canvas id="longTermCostChart"></canvas>
+                            </div>
+                             <p class="text-center mt-4 text-sm text-gray-600">초기 수수료는 없지만, 2~3년간의 의무 계약으로 인해 총비용은 직접 세무사를 구하는 것보다 높아질 수 있습니다.</p>
+                        </div>
+                        <div class="space-y-6">
+                            <div>
+                                <h3 class="text-xl font-bold text-[#BC5090]">📋 세무 기장 의무 계약</h3>
+                                <p class="mt-1 text-gray-600">가장 핵심적인 조건입니다. 보통 2년 이상의 세무 기장 서비스 계약이 필수이며, 월 10만원 내외의 비용이 발생합니다. 이는 장기적으로 가장 큰 지출이 됩니다.</p>
+                            </div>
+                             <div>
+                                <h3 class="text-xl font-bold text-[#BC5090]">🔒 제한된 전문가 선택권</h3>
+                                <p class="mt-1 text-gray-600">대행사와 제휴된 법무사, 세무사를 이용해야 하므로, 내 사업에 더 적합한 전문가를 자유롭게 선택하기 어렵습니다.</p>
+                            </div>
+                             <div>
+                                <h3 class="text-xl font-bold text-[#BC5090]">💸 예상치 못한 추가 비용</h3>
+                                <p class="mt-1 text-gray-600">자본금 규모, 본점 위치(과밀억제권역), 특별 정관 조항 추가 등에 따라 공과금 외 추가 비용이 발생할 수 있습니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="decision" class="mb-12">
+                 <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+                     <h2 class="text-2xl md:text-3xl font-bold text-center mb-8 text-[#003F5C]">최종 결정 가이드: 나는 어떤 타입?</h2>
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                         <div class="bg-[#FF6361]/10 p-6 rounded-lg">
+                             <h3 class="text-2xl font-bold text-center text-[#FF6361] mb-4">🚀 대행 서비스 추천</h3>
+                             <ul class="space-y-3 list-inside list-disc text-gray-700">
+                                 <li>법인 설립 절차를 공부할 시간이 절대적으로 부족한 <span class="font-bold">'시간 부족형'</span> 대표님</li>
+                                 <li>행정 및 법률 절차가 복잡하고 어렵게 느껴지는 <span class="font-bold">'전문가 의존형'</span> 대표님</li>
+                                 <li>초기 설립 비용을 최대한 아끼고 싶고, 어차피 세무 대리가 필요한 <span class="font-bold">'초기 비용 절약형'</span> 대표님</li>
+                             </ul>
+                         </div>
+                         <div class="bg-[#58508D]/10 p-6 rounded-lg">
+                             <h3 class="text-2xl font-bold text-center text-[#58508D] mb-4">🛠️ 직접 설립 추천</h3>
+                             <ul class="space-y-3 list-inside list-disc text-gray-700">
+                                 <li>시간적 여유가 있고, 설립 과정을 직접 경험하며 배우고 싶은 <span class="font-bold">'학습 선호형'</span> 대표님</li>
+                                 <li>장기적인 세무 계약에 얽매이지 않고 자유롭게 전문가를 선택하고 싶은 <span class="font-bold">'자유 추구형'</span> 대표님</li>
+                                 <li>2-3년 내 사업 방향이 불확실하여 장기 계약이 부담스러운 <span class="font-bold">'유연성 중시형'</span> 대표님</li>
+                             </ul>
+                         </div>
+                     </div>
+                 </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-12 py-6 border-t border-gray-300">
+            <p class="text-gray-600">본 인포그래픽은 1인 법인 설립을 고민하는 예비 창업가들을 위한 참고 자료입니다.</p>
+            <p class="text-sm text-gray-500 mt-1">신중한 검토를 통해 성공적인 사업의 첫걸음을 내딛으시길 바랍니다.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        const FONT_COLOR = '#003F5C';
+        const GRID_COLOR = '#DDE2E6';
+
+        const processLabel = (label) => {
+            const maxLength = 16;
+            if (typeof label !== 'string' || label.length <= maxLength) {
+                return label;
+            }
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = '';
+            for (const word of words) {
+                if ((currentLine + word).length > maxLength) {
+                    lines.push(currentLine.trim());
+                    currentLine = '';
+                }
+                currentLine += word + ' ';
+            }
+            lines.push(currentLine.trim());
+            return lines;
+        };
+
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+                return label.join(' ');
+            } else {
+                return label;
+            }
+        };
+
+        const sharedChartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: FONT_COLOR,
+                        font: { size: 14 }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        title: tooltipTitleCallback
+                    }
+                }
+            },
+        };
+
+        function renderInitialCostChart() {
+            const ctx = document.getElementById('initialCostChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['공과금 (등록세, 교육세 등)', '법무사/대행 수수료'],
+                    datasets: [{
+                        label: '초기 설립 비용',
+                        data: [100, 0],
+                        backgroundColor: ['#58508D', '#FF6361'],
+                        borderColor: '#FFFFFF',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    ...sharedChartOptions,
+                    plugins: {
+                        ...sharedChartOptions.plugins,
+                        title: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderLongTermCostChart() {
+            const ctx = document.getElementById('longTermCostChart').getContext('2d');
+            const labels = ['1년차 총비용', '2년차 총비용', '3년차 총비용'];
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: '대행 (의무 계약)',
+                            data: [140, 280, 420], 
+                            backgroundColor: '#BC5090',
+                            borderColor: '#BC5090',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '직접 (필요시 계약)',
+                            data: [135, 270, 405],
+                            backgroundColor: '#FFA600',
+                            borderColor: '#FFA600',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    ...sharedChartOptions,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: GRID_COLOR },
+                            ticks: { 
+                                color: FONT_COLOR,
+                                callback: function(value) {
+                                    return value + '만원'
+                                }
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: FONT_COLOR }
+                        }
+                    },
+                     plugins: {
+                        ...sharedChartOptions.plugins,
+                        tooltip: {
+                            ...sharedChartOptions.plugins.tooltip,
+                             callbacks: {
+                                ...sharedChartOptions.plugins.tooltip.callbacks,
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y + '만원';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderInitialCostChart();
+            renderLongTermCostChart();
+        });
+    </script>
+
+</body>
+</html>
