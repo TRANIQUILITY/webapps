@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>51labs | 법인 운영 전략 인포그래픽</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8fafc;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 250px;
+            height: 250px;
+            margin: auto;
+        }
+        .tab-button.active {
+            background-color: #0d6efd;
+            color: white;
+        }
+        .timeline-item {
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .timeline-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .timeline-item.active {
+             border-color: #0d6efd;
+             border-width: 2px;
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+    <div class="container mx-auto p-4 md:p-8">
+        
+        <header class="text-center mb-12">
+            <div class="text-left mb-4">
+                <span class="text-xl font-bold text-slate-800">51labs</span>
+                <span class="text-xl font-light text-slate-500"> | toy project</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">법인 운영 전략 로드맵</h1>
+            <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">세무 일정부터 투자 전략까지, 법인의 연간 운영 흐름을 한눈에 파악하고 미래를 계획합니다.</p>
+        </header>
+
+        <main>
+            <section id="core-principles" class="mb-16">
+                <h2 class="text-3xl font-bold text-center mb-8">핵심 운영 원칙 3가지</h2>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200 text-center">
+                        <div class="text-4xl mb-4">💰</div>
+                        <h3 class="text-xl font-bold mb-2">선(先)비용, 후(後)이익</h3>
+                        <p class="text-slate-600">모든 비용을 최우선으로 지출하여 과세표준을 합법적으로 관리하고, 법인의 재무 건전성을 확보합니다.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200 text-center">
+                        <div class="text-4xl mb-4">🔄</div>
+                        <h3 class="text-xl font-bold mb-2">기계적 재투자</h3>
+                        <p class="text-slate-600">감정적 판단을 배제하고 원칙에 따라 매월 발생하는 배당금을 재투자하여 복리 효과를 극대화합니다.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200 text-center">
+                        <div class="text-4xl mb-4">📉</div>
+                        <h3 class="text-xl font-bold mb-2">연말 절세 전략</h3>
+                        <p class="text-slate-600">연말 포트폴리오 점검을 통해 계획된 손실을 확정하여 전체 법인세를 최적화하는 전략을 실행합니다.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="annual-roadmap">
+                <div class="flex justify-center mb-8">
+                    <div class="inline-flex rounded-lg shadow-sm">
+                        <button id="tab-2025" class="tab-button active py-2 px-6 font-semibold rounded-l-lg focus:outline-none">2025년</button>
+                        <button id="tab-2026" class="tab-button py-2 px-6 font-semibold rounded-r-lg bg-white text-slate-700 focus:outline-none">2026년</button>
+                    </div>
+                </div>
+
+                <div id="content-2025" class="space-y-8">
+                    <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-800 p-6 rounded-r-lg">
+                        <h3 class="font-bold text-xl mb-2">2025년 핵심 목표</h3>
+                        <p id="goal-2025"></p>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div id="timeline-2025" class="md:col-span-2 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4"></div>
+                        <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200">
+                             <h3 class="text-xl font-bold text-center mb-4">연간 과업 분포</h3>
+                            <div class="chart-container"><canvas id="chart-2025"></canvas></div>
+                        </div>
+                    </div>
+                     <div id="details-2025" class="bg-white p-6 rounded-xl shadow-md border-slate-200 min-h-[200px]"></div>
+                </div>
+
+                <div id="content-2026" class="space-y-8 hidden">
+                     <div class="bg-green-50 border-l-4 border-green-500 text-green-800 p-6 rounded-r-lg">
+                        <h3 class="font-bold text-xl mb-2">2026년 핵심 목표</h3>
+                        <p id="goal-2026"></p>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div id="timeline-2026" class="md:col-span-2 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4"></div>
+                        <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200">
+                            <h3 class="text-xl font-bold text-center mb-4">연간 과업 분포</h3>
+                            <div class="chart-container"><canvas id="chart-2026"></canvas></div>
+                        </div>
+                    </div>
+                     <div id="details-2026" class="bg-white p-6 rounded-xl shadow-md border-slate-200 min-h-[200px]"></div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="text-center mt-16 text-slate-500 text-sm leading-relaxed">
+            <p>서울시 서초구 사임당로8길 13, 4층</p>
+            <p>오일랩스 유한회사 | 51labs LLC. All Rights Reserved</p>
+        </footer>
+    </div>
+
+    <script>
+        const calendarData = {
+            2025: {
+                goal: '10억 원 규모의 가수금을 활용하여, 미국 주식 10만 달러 및 한국 주식 2억 원의 추가 투자를 연내에 성공적으로 집행하고, 안정적인 월배당 현금흐름 시스템을 구축합니다.',
+                months: [
+                    { month: '8월', tax: ['7월 법인설립 관련 제반 비용 신고', '첫 급여 지급', '8월분 급여 원천세/4대보험 신고납부 준비'], investment: ['초기 포트폴리오 구축 시작 (분할매수)', '첫 배당금 수령 및 즉시 재투자'] },
+                    { month: '9월', tax: ['8월분 원천세/4대보험 납부', '9월분 급여 지급'], investment: ['포트폴리오 집행 지속', '분기 배당주(SCHD 등) 검토 및 리스트 관리'] },
+                    { month: '10월', tax: ['9월분 원천세/4대보험 납부', '10월분 급여 지급'], investment: ['추가 투자 80% 이상 완료 목표', '월배당 현금흐름 규모 점검 및 분석'] },
+                    { month: '11월', tax: ['10월분 원천세/4대보험 납부', '11월분 급여 지급'], investment: ['연말 절세(손실확정) 대상 종목 선정', '계획된 추가 투자 완료'] },
+                    { month: '12월', tax: ['11월분 원천세/4대보험 납부', '12월분 급여 지급'], investment: ['손실 확정 실행 (배당락일 전, 폐장일 전)', '연간 결산 자료 정리 및 준비'] }
+                ]
+            },
+            2026: {
+                goal: '안정적인 배당금 재투자를 통해 복리 효과를 극대화하고, 법인 이익 2억 원 초과 시 외국납부세액공제 혜택을 활용할 수 있는 기반을 마련합니다.',
+                months: [
+                    { month: '1월', tax: ['12월분 원천세/4대보험 납부', '1월분 급여 지급'], investment: ['새해 투자 계획 및 목표 재점검', '시장 전망에 따른 리밸런싱 검토'] },
+                    { month: '2월', tax: ['1월분 원천세/4대보험 납부', '지급명세서 제출 마감'], investment: ['월배당금 기계적 재투자 지속'] },
+                    { month: '3월', tax: ['2월분 원천세/4대보험 납부', '2025년 귀속 법인세 신고 및 납부'], investment: ['2025년 투자 성과 최종 분석 및 전략 반영'] },
+                    { month: '4월', tax: ['3월분 원천세/4대보험 납부'], investment: ['1분기 포트폴리오 성과 검토 및 자산배분 점검'] },
+                    { month: '5월', tax: ['4월분 원천세/4대보험 납부'], investment: ['월배당금 기계적 재투자 지속'] },
+                    { month: '6월', tax: ['5월분 원천세/4대보험 납부'], investment: ['상반기 결산 및 연간 목표 달성 가능성 예측'] },
+                    { month: '7월', tax: ['6월분 원천세/4대보험 납부'], investment: ['월배당금 기계적 재투자 지속'] },
+                    { month: '8월', tax: ['7월분 원천세/4대보험 납부', '법인세 중간예납'], investment: ['중간예납 세액 확인 및 하반기 수익 관리 계획'] },
+                    { month: '9월', tax: ['8월분 원천세/4대보험 납부'], investment: ['3분기 포트폴리오 및 분기 배당주 재점검'] },
+                    { month: '10월', tax: ['9월분 원천세/4대보험 납부'], investment: ['월배당금 재투자 및 현금 보유 비중 검토'] },
+                    { month: '11월', tax: ['10월분 원천세/4대보험 납부'], investment: ['연말 절세(손실확정) 필요 여부 검토'] },
+                    { month: '12월', tax: ['11월분 원천세/4대보험 납부'], investment: ['연말 절세 전략 실행 및 연간 결산 자료 준비'] }
+                ]
+            }
+        };
+
+        let activeYear = 2025;
+        const charts = {};
+
+        const createDonutChart = (canvasId, year) => {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            const yearData = calendarData[year];
+            const taxTasks = yearData.months.reduce((acc, m) => acc + m.tax.length, 0);
+            const investmentTasks = yearData.months.reduce((acc, m) => acc + m.investment.length, 0);
+
+            charts[year] = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['세무 과업', '투자 전략'],
+                    datasets: [{
+                        data: [taxTasks, investmentTasks],
+                        backgroundColor: ['#ff6384', '#36a2eb'],
+                        borderColor: '#f8fafc',
+                        borderWidth: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 14 } } },
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const item = tooltipItems[0];
+                                    let label = item.chart.data.labels[item.dataIndex];
+                                    if (Array.isArray(label)) {
+                                      return label.join(' ');
+                                    } else {
+                                      return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        };
+
+        const renderTimeline = (year) => {
+            const timelineContainer = document.getElementById(`timeline-${year}`);
+            timelineContainer.innerHTML = '';
+            calendarData[year].months.forEach((item, index) => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'timeline-item bg-white p-4 rounded-lg shadow-sm border border-slate-200';
+                itemEl.dataset.year = year;
+                itemEl.dataset.index = index;
+                itemEl.innerHTML = `<h4 class="font-bold text-lg">${item.month}</h4>`;
+                timelineContainer.appendChild(itemEl);
+            });
+        };
+        
+        const renderDetails = (year, monthIndex) => {
+            const detailsContainer = document.getElementById(`details-${year}`);
+            const data = calendarData[year].months[monthIndex];
+            
+            detailsContainer.innerHTML = `
+                <h3 class="text-2xl font-bold mb-4 text-slate-800">${data.month} 주요 과업</h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-semibold text-lg mb-2 text-red-600">🚨 주요 세무 일정</h4>
+                        <ul class="list-disc list-inside space-y-1 text-slate-600">
+                            ${data.tax.map(task => `<li>${task}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-lg mb-2 text-blue-600">📈 배당주 운영 전략</h4>
+                        <ul class="list-disc list-inside space-y-1 text-slate-600">
+                            ${data.investment.map(task => `<li>${task}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            `;
+
+            document.querySelectorAll(`#timeline-${year} .timeline-item`).forEach(el => el.classList.remove('active'));
+            document.querySelector(`#timeline-${year} .timeline-item[data-index='${monthIndex}']`).classList.add('active');
+        };
+
+
+        const switchTab = (year) => {
+            activeYear = year;
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`tab-${year}`).classList.add('active');
+            
+            if(year === 2025) {
+                document.getElementById('content-2025').classList.remove('hidden');
+                document.getElementById('content-2026').classList.add('hidden');
+            } else {
+                document.getElementById('content-2025').classList.add('hidden');
+                document.getElementById('content-2026').classList.remove('hidden');
+            }
+            renderDetails(year, 0);
+        };
+
+        const init = () => {
+            document.getElementById('goal-2025').textContent = calendarData[2025].goal;
+            document.getElementById('goal-2026').textContent = calendarData[2026].goal;
+            
+            renderTimeline(2025);
+            renderTimeline(2026);
+
+            createDonutChart('chart-2025', 2025);
+            createDonutChart('chart-2026', 2026);
+            
+            switchTab(2025);
+            
+            document.getElementById('tab-2025').addEventListener('click', () => switchTab(2025));
+            document.getElementById('tab-2026').addEventListener('click', () => switchTab(2026));
+
+            document.getElementById('timeline-2025').addEventListener('click', (e) => {
+                const item = e.target.closest('.timeline-item');
+                if (item) renderDetails(2025, item.dataset.index);
+            });
+            document.getElementById('timeline-2026').addEventListener('click', (e) => {
+                const item = e.target.closest('.timeline-item');
+                if(item) renderDetails(2026, item.dataset.index);
+            });
+        };
+
+        window.onload = init;
+    </script>
+</body>
+</html>
+
