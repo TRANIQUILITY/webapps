@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025년 세제개편안 오일랩스 영향 분석</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 40vh;
+            width: 100%;
+            max-height: 400px;
+        }
+        .flowchart-node {
+            border: 2px solid;
+            padding: 1rem;
+            text-align: center;
+            border-radius: 0.5rem;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .flowchart-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #7a5195;
+            padding: 0 1rem;
+        }
+        @media (max-width: 767px) {
+            .flowchart-arrow {
+                transform: rotate(90deg);
+                padding: 1rem 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100" style="background-color: #f0f2f5;">
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold mb-2" style="color: #003f5c;">2025 세제개편안 핵심 분석</h1>
+            <p class="text-xl md:text-2xl font-semibold" style="color: #374c80;">오일랩스(Oil Labs) 맞춤 전략 인포그래픽</p>
+        </header>
+
+        <section class="mb-12">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold" style="color: #003f5c;">Executive Summary: 주요 변경점과 기회</h2>
+                <p class="text-lg text-gray-600 mt-2">이번 개편안은 오일랩스의 양대 사업 축에 긍정적 신호입니다. 핵심 기회를 포착해야 합니다.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-lg text-center transform hover:scale-105 transition-transform duration-300">
+                    <div class="text-5xl mb-4" style="color: #ffa600;">📈</div>
+                    <h3 class="text-xl font-bold mb-2" style="color: #003f5c;">금융투자소득세 폐지</h3>
+                    <p class="text-gray-700">개인 명의 투자의 매력도가 유지되어, 법인/개인 포트폴리오를 유연하게 운용할 수 있는 전략적 이점이 발생했습니다.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg text-center transform hover:scale-105 transition-transform duration-300">
+                    <div class="text-5xl mb-4" style="color: #ef5675;">💡</div>
+                    <h3 class="text-xl font-bold mb-2" style="color: #003f5c;">R&D 세액공제 확대</h3>
+                    <p class="text-gray-700">AI 에이전트 개발 비용에 대한 세금 절감 효과가 극대화되어, 기술 개발에 대한 재투자 여력이 크게 확보되었습니다.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg text-center transform hover:scale-105 transition-transform duration-300">
+                    <div class="text-5xl mb-4" style="color: #7a5195;">⚖️</div>
+                    <h3 class="text-xl font-bold mb-2" style="color: #003f5c;">세율 구조 유지</h3>
+                    <p class="text-gray-700">법인세율(9%)과 개인 종합소득세율(최대 45%)의 격차가 유지되므로, 법인 내 이익 유보 전략이 여전히 유효합니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold" style="color: #003f5c;">금융 투자 부문: 최적의 절세 구조</h2>
+                <p class="text-lg text-gray-600 mt-2">법인과 개인의 세율 차이를 활용한 투자 수익 극대화 전략이 중요합니다.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-bold text-center mb-4" style="color: #003f5c;">소득 귀속 주체별 세율 비교</h3>
+                    <p class="text-center text-gray-600 mb-4">법인이 수취하는 배당금은 낮은 법인세율을 적용받아 개인보다 압도적으로 유리합니다. 이는 이익잉여금을 통한 재투자의 핵심 동력입니다.</p>
+                    <div class="chart-container">
+                        <canvas id="taxRateChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-bold text-center mb-4" style="color: #003f5c;">금투세 폐지에 따른 전략적 포트폴리오</h3>
+                     <p class="text-center text-gray-600 mb-4">금투세가 폐지됨에 따라, 단기 차익과 장기 배당 수익을 목표로 하는 투자를 법인과 개인으로 명확히 구분하여 운용하는 것이 효과적입니다.</p>
+                    <div class="mt-8 space-y-6">
+                        <div class="p-4 rounded-md" style="background-color: #e6f0ff; border-left: 5px solid #003f5c;">
+                            <h4 class="font-bold text-lg" style="color: #003f5c;">🏢 법인 명의 투자 전략</h4>
+                            <p class="mt-1 text-gray-800">장기적인 배당금 수취 및 법인세 이연 효과를 극대화하는 데 집중합니다. (예: 미국 고배당주, 국내 배당주)</p>
+                        </div>
+                        <div class="p-4 rounded-md" style="background-color: #fff0e6; border-left: 5px solid #ff764a;">
+                            <h4 class="font-bold text-lg" style="color: #ff764a;">👤 대표 개인 명의 투자 전략</h4>
+                            <p class="mt-1 text-gray-800">단기 차익 실현을 목표로 하는 유연한 투자를 진행합니다. (양도소득세 비과세 혜택 활용)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold" style="color: #003f5c;">AI 개발 부문: R&D 투자 선순환 구조 구축</h2>
+                <p class="text-lg text-gray-600 mt-2">강화된 세제 혜택은 AI 기술 개발의 가속 페달이 될 것입니다.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                 <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-bold text-center mb-4" style="color: #003f5c;">R&D 비용 세액공제 확대 효과</h3>
+                     <p class="text-center text-gray-600 mb-4">오일랩스의 AI 에이전트 개발은 신성장·원천기술 R&D로 분류될 가능성이 높습니다. 이는 직접적인 법인세 절감으로 이어져 재투자 여력을 확보하는 핵심 요소입니다.</p>
+                    <div class="chart-container">
+                        <canvas id="rdChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg flex flex-col justify-center">
+                    <h3 class="text-xl font-bold text-center mb-4" style="color: #003f5c;">임시투자세액공제 연장 시 기대효과</h3>
+                    <p class="text-center text-gray-600 mb-4">제도가 연장될 경우, AI 개발에 필수적인 고성능 자산 투자 부담이 완화됩니다.</p>
+                    <div class="space-y-4 text-center">
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <span class="text-4xl">🖥️</span>
+                            <p class="font-bold text-lg mt-2" style="color: #374c80;">고성능 서버</p>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <span class="text-4xl">💾</span>
+                             <p class="font-bold text-lg mt-2" style="color: #374c80;">업무용 소프트웨어</p>
+                        </div>
+                         <p class="mt-4 text-lg font-semibold text-center" style="color: #ef5675;">
+                            → 투자금액의 일정 비율 법인세 공제
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold" style="color: #003f5c;">결론: 오일랩스 추천 전략 플로우</h2>
+                <p class="text-lg text-gray-600 mt-2">세제개편안에 맞춰 사업 부문별 자금 관리 및 투자 전략을 체계화해야 합니다.</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <div class="flex flex-col md:flex-row justify-center items-center">
+                    <div class="flowchart-node w-full md:w-1/4" style="border-color: #003f5c; background-color: #e6f0ff;">
+                        <p class="font-bold" style="color: #003f5c;">AI 개발 비용 발생 (인건비, 외주비 등)</p>
+                    </div>
+                    <div class="flowchart-arrow">→</div>
+                    <div class="flowchart-node w-full md:w-1/4" style="border-color: #7a5195; background-color: #f3e6ff;">
+                         <p class="font-bold" style="color: #7a5195;">'연구 및 인력개발비'로 철저히 회계 처리 및 증빙</p>
+                    </div>
+                    <div class="flowchart-arrow">→</div>
+                    <div class="flowchart-node w-full md:w-1/4" style="border-color: #ef5675; background-color: #ffe6eb;">
+                        <p class="font-bold" style="color: #ef5675;">확대된 R&D 세액공제 혜택 극대화 (법인세 절감)</p>
+                    </div>
+                </div>
+                <div class="flex justify-center my-4">
+                     <div class="flowchart-arrow transform md:rotate-90">↓</div>
+                </div>
+                 <div class="flex flex-col-reverse md:flex-row justify-center items-center">
+                    <div class="flowchart-node w-full md:w-1/4" style="border-color: #ff764a; background-color: #fff0e6;">
+                        <p class="font-bold" style="color: #ff764a;">투자 포트폴리오 전략적 배분 (법인/개인)</p>
+                    </div>
+                    <div class="flowchart-arrow transform rotate-180 md:rotate-0">→</div>
+                     <div class="flowchart-node w-full md:w-1/4" style="border-color: #ffa600; background-color: #fff8e6;">
+                        <p class="font-bold" style="color: #ffa600;">절감된 세금 및 투자 수익을 법인 내 이익잉여금으로 축적</p>
+                    </div>
+                    <div class="flowchart-arrow transform rotate-180 md:rotate-0">→</div>
+                    <div class="flowchart-node w-full md:w-1/4" style="border-color: #003f5c; background-color: #e6f0ff;">
+                        <p class="font-bold" style="color: #003f5c;">AI 개발 및 사업 확장에 재투자 (선순환 구조)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center mt-12 py-6 border-t">
+            <p class="text-sm text-gray-500">
+                <strong>※ 중요:</strong> 본 인포그래픽은 2025.08.04 기준으로 발표된 '세제개편안'을 바탕으로 제작되었으며, 실제 법률로 확정되는 과정에서 내용이 변경될 수 있습니다.
+            </p>
+        </footer>
+
+    </div>
+
+    <script>
+        (function() {
+            const wrapLabel = (str, maxWidth) => {
+                if (str.length <= maxWidth) {
+                    return str;
+                }
+                const words = str.split(' ');
+                const lines = [];
+                let currentLine = '';
+                words.forEach(word => {
+                    if ((currentLine + word).length > maxWidth && currentLine.length > 0) {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    } else {
+                        currentLine += (currentLine ? ' ' : '') + word;
+                    }
+                });
+                lines.push(currentLine);
+                return lines;
+            };
+            
+            const tooltipTitleCallback = (tooltipItems) => {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                if (Array.isArray(label)) {
+                    return label.join(' ');
+                } else {
+                    return label;
+                }
+            };
+
+            const defaultTooltipOptions = {
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            title: tooltipTitleCallback
+                        }
+                    }
+                }
+            };
+
+            const taxRateData = {
+                labels: [
+                    wrapLabel('법인세율 (과세표준 2억 이하)', 16),
+                    wrapLabel('미국 배당소득 원천징수세율', 16),
+                    wrapLabel('개인 종합소득세율 (최대)', 16)
+                ],
+                datasets: [{
+                    label: '세율 (%)',
+                    data: [9, 15, 45],
+                    backgroundColor: [
+                        '#7a5195',
+                        '#ef5675',
+                        '#003f5c',
+                    ],
+                    borderColor: [
+                        '#7a5195',
+                        '#ef5675',
+                        '#003f5c',
+                    ],
+                    borderWidth: 1
+                }]
+            };
+
+            const taxRateCtx = document.getElementById('taxRateChart').getContext('2d');
+            new Chart(taxRateCtx, {
+                type: 'bar',
+                data: taxRateData,
+                options: {
+                    ...defaultTooltipOptions,
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        ...defaultTooltipOptions.plugins,
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '세율 (%)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            const rdData = {
+                labels: ['기존 세액공제', '확대된 세액공제'],
+                datasets: [{
+                    label: '세금 절감 효과',
+                    data: [100, 150],
+                    backgroundColor: [
+                        '#ffa600',
+                        '#ff764a'
+                    ],
+                    borderColor: [
+                        '#ffa600',
+                        '#ff764a'
+                    ],
+                    borderWidth: 1
+                }]
+            };
+
+            const rdCtx = document.getElementById('rdChart').getContext('2d');
+            new Chart(rdCtx, {
+                type: 'doughnut',
+                data: rdData,
+                options: {
+                    ...defaultTooltipOptions,
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        ...defaultTooltipOptions.plugins,
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'R&D 세액공제에 따른 세금 절감 효과 (상대적 비교)'
+                        }
+                    }
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
