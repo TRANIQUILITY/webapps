@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[최종 수정판] 진화된 배당 투자 전략 인포그래픽</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .chart-container {
+            position: relative;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            width: 100%;
+            max-width: 500px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .kpi-value {
+            font-size: 2.25rem;
+            font-weight: 900;
+            color: #008DDA;
+            line-height: 1.2;
+        }
+        .strategy-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .strategy-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .barbell-bar {
+            border: 2px solid;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-[#004AAD] mb-4">배당 투자의 진화</h1>
+            <p class="text-xl md:text-2xl font-light text-[#008DDA]">핵심-위성을 넘어: 고급 인컴 포트폴리오 전략 가이드</p>
+        </header>
+        
+        <section class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-16">
+            <h2 class="text-2xl font-bold text-[#004AAD] mb-4 text-center">전략 전환의 필요성</h2>
+            <ul class="list-disc ml-5 space-y-2 max-w-3xl mx-auto text-lg text-left">
+                <li><b>전통적 모델의 한계:</b> '핵심-위성' 모델, 저금리·고변동성 시대에 수익성 한계 봉착</li>
+                <li><b>진화된 접근법 요구:</b> 고배당 자산 심층 이해 및 유기적 결합을 통한 위험 대비 수익 최적화 필요</li>
+                <li><b>신규 전략 부상:</b> '바벨 전략' 등 현대 포트폴리오 이론에 기반한 접근법 각광</li>
+            </ul>
+        </section>
+
+        <section id="asset-classes" class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8 text-[#004AAD]">현대적 인컴 엔진: 고배당 자산군 심층 분석</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                <div class="strategy-card"><h3 class="font-bold text-xl mb-4 text-center text-[#008DDA]">배당 성장 ETF (DGI)</h3><ul class="text-sm list-disc ml-5 space-y-2 flex-grow"><li><b>핵심:</b> 지속적 배당 '성장' 기업에 장기 투자</li><li><b>목표:</b> 복리 효과 극대화 및 인플레이션 방어</li><li><b>특징:</b> SCHD(가치/품질), VIG(성장/품질) 등 명확한 차이 존재</li></ul><div class="chart-container mt-4"><canvas id="dgiRadarChart"></canvas></div></div>
+                <div class="strategy-card"><h3 class="font-bold text-xl mb-4 text-center text-[#008DDA]">실물/사모 자산: 리츠 & BDC</h3><ul class="text-sm list-disc ml-5 space-y-2 flex-grow"><li><b>수익원:</b> 부동산 임대료(리츠), 중소기업 대출 이자(BDC)</li><li><b>핵심 위험:</b> 금리 변동성, 경기 침체에 따른 신용 위험</li><li><b>선별 기준:</b> 자산 유형별(에쿼티/모기지 리츠) 특성 이해 필수</li></ul><div class="overflow-x-auto mt-4"><table class="w-full text-sm text-left"><thead class="bg-gray-100"><tr><th class="p-3">자산군</th><th class="p-3">수익률 전망</th><th class="p-3">주요 위험</th></tr></thead><tbody><tr class="border-b"><td class="p-3 font-medium">에쿼티 리츠</td><td class="p-3">중간 (약 4%)</td><td class="p-3">공실, 경기 변동</td></tr><tr class="border-b"><td class="p-3 font-medium">모기지 리츠</td><td class="p-3">최상 (약 12%+)</td><td class="p-3">금리 변동, 레버리지</td></tr><tr><td class="p-3 font-medium">BDC</td><td class="p-3">상 (약 10%+)</td><td class="p-3">기업 부도, 경기 침체</td></tr></tbody></table></div></div>
+                <div class="strategy-card"><h3 class="font-bold text-xl mb-4 text-center text-[#008DDA]">커버드콜 ETF</h3><ul class="text-sm list-disc ml-5 space-y-2 flex-grow"><li><b>수익 구조:</b> 옵션 매도 프리미엄을 분배금 재원으로 활용</li><li><b>핵심 상충관계:</b> 높은 인컴 수취 vs. 기초자산 주가 상승 제한</li><li><b>시장 국면:</b> 횡보장 또는 완만한 상승장에서 성과 극대화</li></ul><div class="chart-container h-80 mt-4"><canvas id="coveredCallChart"></canvas></div></div>
+                <div class="strategy-card"><h3 class="font-bold text-xl mb-4 text-center text-[#008DDA]">합성 커버드콜 ETF (Single-Stock)</h3><ul class="text-sm list-disc ml-5 space-y-2 flex-grow"><li><b>구조:</b> 기초자산 없이 옵션만으로 포지션 복제</li><li><b>위험:</b> 기초자산 하락 시 NAV 급락 (자본 잠식)</li><li><b>경고:</b> 높은 분배율이 총수익률을 보장하지 않음 (예: NVDY, CONY)</li></ul><div class="text-center my-4"><p class="text-gray-600 text-sm">NVDY 연환산 분배율</p><p class="kpi-value">50%+</p></div><div class="chart-container h-48 -mt-4"><canvas id="capitalDecayChart"></canvas></div></div>
+
+                <div class="strategy-card md:col-span-2">
+                    <h3 class="font-bold text-xl mb-4 text-center text-[#008DDA]">라운드힐(Roundhill) Income ETF 분석</h3>
+                    <p class="text-center text-sm mb-6">주간 분배(Weekly Pay) 시리즈(QDTE, XDTE 등)는 합성 ETF와 구조적으로 다릅니다.</p>
+                    <div class="flex flex-col md:flex-row items-center justify-center gap-4 p-4 bg-gray-50 rounded-lg">
+                        <div class="w-full md:w-3/5 text-center border-2 border-blue-500 bg-blue-50 rounded-lg p-4">
+                            <h4 class="font-bold text-blue-800">자산의 95%+ : 국채 담보 (Collateral)</h4>
+                            <ul class="text-sm list-disc ml-6 text-left mt-2">
+                                <li>미국 단기 국채(T-Bills) 또는 관련 ETF(USFR 등) 보유</li>
+                                <li>안정적인 이자 수익 발생 (포트폴리오의 기초)</li>
+                            </ul>
+                        </div>
+                        <div class="text-2xl font-bold text-gray-500 mx-2">+</div>
+                        <div class="w-full md:w-2/5 text-center border-2 border-yellow-500 bg-yellow-50 rounded-lg p-4">
+                            <h4 class="font-bold text-yellow-800">옵션 오버레이 (Overlay)</h4>
+                            <ul class="text-sm list-disc ml-6 text-left mt-2">
+                                <li>개별 주식(TSLA, XOM 등) 옵션 거래</li>
+                                <li>옵션 프리미엄 수익 추구</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="text-center text-2xl font-bold my-3">▼</div>
+                    <div class="text-center font-bold text-xl text-green-700 bg-green-100 p-3 rounded-lg">총 수익 = 국채 이자 + 옵션 프리미엄 → 주간 분배</div>
+                    <ul class="text-sm list-disc ml-5 mt-4 space-y-1">
+                        <li><b>핵심 차이:</b> 기초자산을 직접 보유/복제하지 않고, 안전자산 위에서 옵션만 운용</li>
+                        <li><b>자본 보존:</b> NAV 대부분이 국채이므로, 옵션 대상 주가 급락 시 자본 잠식 위험이 합성 ETF 대비 제한적</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="barbell" class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8 text-[#004AAD]">고급 플레이북: 바벨 (Barbell) 전략</h2>
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <ul class="text-center max-w-3xl mx-auto mb-8 space-y-1"><li><b>개념:</b> '중간 위험' 자산 배제, 포트폴리오 양극화 전략</li><li><b>구성:</b> '극도의 안전' (80-90%) + '고위험/고수익' (10-20%)</li><li><b>운용:</b> 동적 리밸런싱으로 위험 관리 및 기회 포착</li></ul>
+                <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-0">
+                    <div class="w-full md:w-2/5 barbell-bar border-[#004AAD] bg-blue-50"><h4 class="font-bold text-xl mb-2 text-[#004AAD]">안전한 바 (Safe Bar)</h4><p class="font-semibold text-2xl mb-2">80-90%</p><p class="text-sm">꾸준한 현금흐름, 낮은 변동성</p><p class="font-bold mt-4">SCHD, VIG, 우량 리츠 등</p></div>
+                    <div class="w-16 h-1 bg-gray-300 hidden md:block"></div><div class="w-px h-8 bg-gray-300 md:hidden"></div>
+                    <div class="w-full md:w-2/5 barbell-bar border-[#E53E3E] bg-red-50"><h4 class="font-bold text-xl mb-2 text-[#E53E3E]">위험한 바 (Risky Bar)</h4><p class="font-semibold text-2xl mb-2">10-20%</p><p class="text-sm">높은 수익 잠재력, 높은 위험</p><p class="font-bold mt-4">BDC, mREITs, 옵션전략 ETF 등</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tax" class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8 text-[#004AAD]">한국 투자자를 위한 세금 최적화</h2>
+             <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <table class="w-full text-center text-sm md:text-base">
+                    <thead class="bg-[#004AAD] text-white"><tr><th class="p-3 font-semibold">구분</th><th class="p-3 font-semibold">개인 투자자</th><th class="p-3 font-semibold">법인 투자자</th></tr></thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <tr class="bg-gray-50"><td class="p-3 font-medium">자본이득</td><td class="p-3">양도소득세 22% (분리과세)</td><td class="p-3" rowspan="2">모든 손익 합산, 법인세율 (9~24%) 적용</td></tr>
+                        <tr><td class="p-3 font-medium">배당소득</td><td class="p-3">배당소득세 15.4% (종합과세 가능)</td></tr>
+                        <tr class="bg-gray-50"><td class="p-3 font-medium">손익통산</td><td class="p-3">해외주식 간 가능 (당해 연도)</td><td class="p-3"><span class="font-bold text-green-600">모든 사업소득과 가능 (15년 이월)</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+             <p class="text-xs text-gray-500 mt-4 text-center">법인은 손실 이월 공제 등 세금 관리 측면에서 구조적 우위 보유</p>
+        </section>
+
+        <section id="models" class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-8 text-[#004AAD]">투자 목표별 모델 포트폴리오</h2>
+             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="strategy-card"><h3 class="font-bold text-xl mb-2 text-center">보수적 인컴</h3><div class="chart-container h-64 flex-grow"><canvas id="conservativeChart"></canvas></div><p class="text-center text-sm mt-4"><b>키워드:</b> 안정성, 배당 성장, 변동성 최소화</p></div>
+                <div class="strategy-card"><h3 class="font-bold text-xl mb-2 text-center">균형 성장 & 인컴</h3><div class="chart-container h-64 flex-grow"><canvas id="balancedChart"></canvas></div><p class="text-center text-sm mt-4"><b>키워드:</b> 바벨 전략, 위험 관리, 수익 기회 포착</p></div>
+                <div class="strategy-card"><h3 class="font-bold text-xl mb-2 text-center">공격적 고배당</h3><div class="chart-container h-64 flex-grow"><canvas id="aggressiveChart"></canvas></div><p class="text-center text-sm mt-4"><b>키워드:</b> 현금흐름 극대화, 높은 위험 감수</p></div>
+            </div>
+        </section>
+
+        <footer class="text-center mt-12 pt-8 border-t border-gray-300">
+            <h2 class="text-2xl font-bold text-[#004AAD] mb-4">최종 제언</h2>
+            <ul class="list-none space-y-2 max-w-3xl mx-auto text-gray-700 mb-6">
+                <li>✔️ <b>탈피:</b> 맹목적인 고수익률 추종 지양</li>
+                <li>✔️ <b>핵심:</b> 자산 본질 이해 및 목표 기반 포트폴리오 구성</li>
+                <li>✔️ <b>전략:</b> 세금 변수 최적화 및 지속적 학습, 분석 필수</li>
+            </ul>
+            <p class="text-sm text-gray-500">본 정보는 투자 참고 자료이며, 법률 및 세무 관련 최종 결정은 반드시 전문가와 상의하시기 바랍니다.</p>
+        </footer>
+
+    </div>
+
+<script>
+    const brandColors = { deepBlue: '#004AAD', brightBlue: '#008DDA', cyan: '#41C9E2', lightCyan: '#ACE2E1', red: '#E53E3E', gray: '#A0AEC0', green: '#38A169', yellow: '#F6E05E' };
+    const tooltipCallbacks = { plugins: { tooltip: { callbacks: { title: function(tooltipItems) { const item = tooltipItems[0]; let label = item.chart.data.labels[item.dataIndex]; if (Array.isArray(label)) { return label.join(' '); } return label; } } }, legend: { labels: { font: { size: 12, family: "'Noto Sans KR', sans-serif" }, boxWidth: 15, padding: 20, } } }, maintainAspectRatio: false, responsive: true, };
+    new Chart(document.getElementById('dgiRadarChart'), { type: 'radar', data: { labels: ['배당수익률', '가치 지향', '품질 지향', '성장 지향', '저비용'], datasets: [{ label: 'SCHD', data: [4, 5, 5, 2, 5], backgroundColor: 'rgba(0, 74, 173, 0.2)', borderColor: brandColors.deepBlue, pointBackgroundColor: brandColors.deepBlue, }, { label: 'VIG', data: [2, 2, 4, 5, 5], backgroundColor: 'rgba(65, 201, 226, 0.2)', borderColor: brandColors.cyan, pointBackgroundColor: brandColors.cyan, }] }, options: { ...tooltipCallbacks, scales: { r: { min: 0, max: 5, ticks: { stepSize: 1 } } } } });
+    new Chart(document.getElementById('coveredCallChart'), { type: 'bar', data: { labels: ['JEPQ (커버드콜)', 'QQQ (기초자산)'], datasets: [ { label: '연환산 분배율', data: [11.43, 0.51], backgroundColor: brandColors.brightBlue, }, { label: '연평균 총수익률(CAGR)', data: [13.32, 11.00], backgroundColor: brandColors.lightCyan, } ] }, options: { ...tooltipCallbacks, indexAxis: 'y', scales: { x: { ticks: { callback: v => v + '%' } } } } });
+    new Chart(document.getElementById('capitalDecayChart'), { type: 'line', data: { labels: ['시작', '1년 후', '2년 후', '3년 후'], datasets: [{ label: '이론적 NAV 추이', data: [100, 85, 75, 68], borderColor: brandColors.red, backgroundColor: 'rgba(229, 62, 62, 0.1)', fill: true, tension: 0.1, }] }, options: { ...tooltipCallbacks, plugins: { ...tooltipCallbacks.plugins, legend: { display: false } }, scales: { y: { display: false }, x: { display: false } } } });
+    const portfolioOptions = { ...tooltipCallbacks, plugins: { ...tooltipCallbacks.plugins, legend: { position: 'bottom' } } };
+    new Chart(document.getElementById('conservativeChart'), { type: 'doughnut', data: { labels: ['배당성장 ETF', '우량 리츠', '우량 BDC'], datasets: [{ data: [60, 30, 10], backgroundColor: [brandColors.deepBlue, brandColors.brightBlue, brandColors.cyan] }] }, options: portfolioOptions });
+    new Chart(document.getElementById('balancedChart'), { type: 'doughnut', data: { labels: ['배당성장 ETF', '리츠/BDC', '커버드콜 ETF', '라운드힐 ETF'], datasets: [{ data: [50, 20, 15, 15], backgroundColor: [brandColors.deepBlue, brandColors.brightBlue, brandColors.cyan, brandColors.lightCyan] }] }, options: portfolioOptions });
+    new Chart(document.getElementById('aggressiveChart'), { type: 'doughnut', data: { labels: ['라운드힐 ETF', '합성 ETF', 'mREITs/BDC'], datasets: [{ data: [40, 20, 40], backgroundColor: [brandColors.yellow, brandColors.red, brandColors.cyan] }] }, options: portfolioOptions });
+</script>
+</body>
+</html>
