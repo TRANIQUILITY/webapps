@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1인 법인 필수 세무 정보 인포그래픽</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .gradient-text {
+            background: linear-gradient(to right, #0077b6, #00b4d8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .card {
+             background-color: white;
+             border-radius: 0.75rem;
+             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+             padding: 2rem;
+             height: 100%;
+             transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.6rem;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: white;
+            border: 4px solid #00b4d8;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-3">1인 법인 <span class="gradient-text">핵심 세무</span> 한눈에 보기</h1>
+            <p class="text-lg text-gray-600">대표님이 꼭 알아야 할 필수 정보 요약</p>
+        </header>
+
+        <section id="key-terms" class="mb-20">
+            <h2 class="text-3xl font-bold text-center mb-10">I. 자금 & 비용 핵심 용어</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="card border-l-4 border-red-500">
+                    <h3 class="text-xl font-bold mb-3">🚨 가지급금 (대표이사가 빌려 쓴 돈)</h3>
+                    <p class="text-gray-600 mb-4">법인 자금을 대표가 개인적으로 사용한 금액. 세무조사의 주요 원인이 되며, 법인과 대표 모두에게 세금 부담을 가중시키는 가장 위험한 항목입니다.</p>
+                    <ul class="text-sm space-y-2 text-red-700">
+                        <li>- 연 4.6% 인정이자 계산 (법인세 증가)</li>
+                        <li>- 법인 대출이자 비용 불인정</li>
+                    </ul>
+                </div>
+                <div class="card border-l-4 border-green-500">
+                    <h3 class="text-xl font-bold mb-3">✅ 가수금 (대표이사가 빌려준 돈)</h3>
+                    <p class="text-gray-600 mb-4">운영 자금이 부족할 때 대표가 법인에 빌려준 금액. 유연한 자금 조달 방법이지만, 과도할 경우 재무구조에 부담이 될 수 있습니다.</p>
+                    <ul class="text-sm space-y-2 text-green-700">
+                        <li>+ 복잡한 절차 없이 자금 조달 가능</li>
+                        <li>+ 상환 시 대표 개인에게 세금 없음</li>
+                    </ul>
+                </div>
+                <div class="card md:col-span-2">
+                    <h3 class="text-xl font-bold mb-3">💰 비용 처리 기본 원칙</h3>
+                    <p class="text-gray-600 mb-6">법인의 모든 지출은 사업 관련성이 명확해야 하며, 정규 증빙(법인카드, 세금계산서)을 갖춰야 합니다. 특히 업무용 승용차는 연간 비용 한도가 정해져 있습니다.</p>
+                    <div class="chart-container h-64">
+                        <canvas id="expenseChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="compensation" class="mb-20">
+            <h2 class="text-3xl font-bold text-center mb-10">II. 대표이사 보수, 어떻게 받을까?</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">법인의 이익을 대표 개인에게 이전하는 방법은 크게 세 가지입니다. 각각의 세금 구조가 다르므로, 법인과 개인의 상황에 맞는 최적의 포트폴리오를 구성하는 것이 절세의 핵심입니다.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="card text-center">
+                    <p class="text-3xl mb-4">💵</p>
+                    <h3 class="text-xl font-bold mb-2">급여 / 상여</h3>
+                    <p class="text-gray-600 text-sm">법인의 비용으로 인정되어 법인세를 낮춥니다. 개인에게는 소득세와 4대 보험료가 부과됩니다.</p>
+                </div>
+                <div class="card text-center">
+                    <p class="text-3xl mb-4">🏦</p>
+                    <h3 class="text-xl font-bold mb-2">배당</h3>
+                    <p class="text-gray-600 text-sm">법인세 납부 후 남은 이익을 분배합니다. 개인에게는 배당소득세가 부과됩니다. (건보료 영향 없음)</p>
+                </div>
+                <div class="card text-center bg-sky-50 border-sky-200 border">
+                    <p class="text-3xl mb-4">📜</p>
+                    <h3 class="text-xl font-bold mb-2">정관</h3>
+                    <p class="text-gray-600 text-sm">모든 보수 지급의 법적 근거입니다. 정관에 관련 규정이 명확해야 안전하게 비용으로 인정받을 수 있습니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="financial-statements" class="mb-20">
+            <h2 class="text-3xl font-bold text-center mb-10">III. 우리 회사 건강검진표, 재무제표</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="card">
+                    <h3 class="text-xl font-bold mb-3">재무상태표 (재산 상태)</h3>
+                    <p class="text-gray-600 mb-4">특정 시점의 재산과 빚 현황을 보여주는 스냅샷입니다. 회사의 안정성을 파악할 수 있습니다.</p>
+                    <div class="bg-gray-100 p-4 rounded-lg text-center font-mono">
+                        자산 = 부채 + <span class="font-bold text-blue-600">자본</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 class="text-xl font-bold mb-3">손익계산서 (경영 성과)</h3>
+                    <p class="text-gray-600 mb-4">일정 기간 동안 얼마나 벌고 썼는지를 보여주는 성적표입니다. 회사의 수익성을 파악할 수 있습니다.</p>
+                    <div class="bg-gray-100 p-4 rounded-lg text-center font-mono">
+                        매출 - 비용 = <span class="font-bold text-blue-600">당기순이익</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tax-calendar" class="mb-20">
+            <h2 class="text-3xl font-bold text-center mb-10">IV. 연간 주요 세무 일정</h2>
+            <div class="max-w-2xl mx-auto">
+                <div class="relative border-l-4 border-gray-200 pl-12">
+                    <div class="timeline-item mb-8 relative">
+                        <h4 class="font-bold text-lg">매월 10일</h4>
+                        <p class="text-gray-600">원천세 신고 및 납부</p>
+                    </div>
+                    <div class="timeline-item mb-8 relative">
+                        <h4 class="font-bold text-lg">1월, 4월, 7월, 10월</h4>
+                        <p class="text-gray-600">부가가치세 신고 및 납부</p>
+                    </div>
+                    <div class="timeline-item mb-8 relative">
+                        <h4 class="font-bold text-lg text-blue-600">3월 31일</h4>
+                        <p class="text-gray-600">법인세 신고 및 납부 (연중 가장 중요)</p>
+                    </div>
+                    <div class="timeline-item mb-8 relative">
+                        <h4 class="font-bold text-lg">5월 31일</h4>
+                        <p class="text-gray-600">종합소득세 신고 (대표이사 개인)</p>
+                    </div>
+                     <div class="timeline-item relative">
+                        <h4 class="font-bold text-lg">8월 31일</h4>
+                        <p class="text-gray-600">법인세 중간예납</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <footer class="text-center mt-16 pt-8 border-t border-gray-200">
+            <p class="text-sm text-gray-500">본 자료는 일반적인 정보 제공을 목적으로 하며, 실제 의사결정은 반드시 세무 전문가와 상담 후 진행하시기 바랍니다.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+              return label.join(' ');
+            } else {
+              return label;
+            }
+        };
+
+        const chartColors = {
+            blue1: '#0077b6',
+            blue2: '#00b4d8',
+            blue3: '#90e0ef',
+        };
+
+        const expenseChartCtx = document.getElementById('expenseChart').getContext('2d');
+        new Chart(expenseChartCtx, {
+            type: 'bar',
+            data: {
+                labels: ['업무용 승용차', '법인카드 사용', '세금계산서 수취'],
+                datasets: [{
+                    label: '중요도',
+                    data: [80, 100, 100],
+                    backgroundColor: [chartColors.blue3, chartColors.blue2, chartColors.blue1],
+                    borderColor: '#ffffff',
+                    borderWidth: 2,
+                    barThickness: 50,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                    tooltip: {
+                        callbacks: { 
+                            title: tooltipTitleCallback,
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label === '업무용 승용차') {
+                                    return ' 연간 1,500만원 한도';
+                                }
+                                return ' 필수 증빙';
+                            }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: '비용 처리 핵심 요소',
+                        font: { size: 16 }
+                    }
+                },
+                scales: {
+                    x: {
+                        display: false,
+                    },
+                    y: {
+                         ticks: {
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
