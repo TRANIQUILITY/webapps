@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>법인세 예측 및 관리 시스템 - 51LABS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .tab-button.active {
+            border-color: #1e40af; /* 51LABS Blue */
+            background-color: #eff6ff;
+            color: #1e40af;
+            font-weight: 700;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .year-button.active {
+            background-color: #1e40af;
+            color: white;
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 50vh;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 flex flex-col min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a href="#" class="flex items-center space-x-2">
+                    <svg class="h-9 w-9 text-blue-800" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.08V7.92c0-.41.47-.65.8-.4l4.67 3.08c.31.2.31.64 0 .84l-4.67 3.08c-.33.22-.8.01-.8-.4z"/>
+                    </svg>
+                    <span class="text-3xl font-bold text-gray-800 tracking-tight">51LABS</span>
+                </a>
+                <nav class="hidden lg:flex items-center space-x-10">
+                    <a href="#" class="text-lg font-medium text-gray-600 hover:text-blue-800 transition-colors">51LABS 소개</a>
+                    <a href="#" class="text-lg font-medium text-gray-600 hover:text-blue-800 transition-colors">투자 포트폴리오</a>
+                    <a href="#" class="text-lg font-medium text-gray-600 hover:text-blue-800 transition-colors">AI 에이전트</a>
+                    <a href="#" class="text-lg font-bold text-blue-800">재무 대시보드</a>
+                </nav>
+                <div class="hidden lg:block">
+                    <a href="#" class="inline-block bg-blue-800 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-900 transition-colors">문의하기</a>
+                </div>
+                <button class="lg:hidden p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">법인 재무 관리 대시보드</h1>
+        <p class="text-gray-600 mb-6">배당금, 경비, 법인세 및 재무 상태를 시뮬레이션하고 관리합니다.</p>
+
+        <!-- Tabs -->
+        <div class="mb-6 border-b border-gray-200">
+            <nav class="-mb-px flex space-x-4 overflow-x-auto" aria-label="Tabs">
+                <button onclick="changeTab(event, 'tab-dashboard')" class="tab-button active whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm">
+                    비주얼 대시보드 📊
+                </button>
+                <button onclick="changeTab(event, 'tab-dividend')" class="tab-button whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    배당금 시뮬레이션
+                </button>
+                <button onclick="changeTab(event, 'tab-expenses')" class="tab-button whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    법인 경비 관리
+                </button>
+                <button onclick="changeTab(event, 'tab-tax')" class="tab-button whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    예상 법인세
+                </button>
+                <button onclick="changeTab(event, 'tab-financials')" class="tab-button whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    월별 재무제표
+                </button>
+                <button onclick="changeTab(event, 'tab-expert')" class="tab-button whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm border-transparent text-red-500 hover:text-red-700 hover:border-red-300">
+                    전문가 제안 ✨
+                </button>
+            </nav>
+        </div>
+
+        <!-- Tab Content -->
+        <div id="tab-content-container">
+            <!-- 0. 비주얼 대시보드 -->
+            <div id="tab-dashboard" class="tab-content active space-y-6">
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+                        <div>
+                            <h2 class="text-xl font-bold">연도별 재무 추이 분석</h2>
+                            <p class="text-sm text-gray-500">연도를 선택하여 해당 연도의 월별 재무 흐름을 확인하세요.</p>
+                        </div>
+                        <div id="year-selector" class="flex space-x-2 mt-4 sm:mt-0">
+                            <button onclick="updateDashboard(2025)" class="year-button active px-4 py-2 text-sm font-medium rounded-md bg-white border border-gray-300 hover:bg-gray-50">2025년</button>
+                            <button onclick="updateDashboard(2026)" class="year-button px-4 py-2 text-sm font-medium rounded-md bg-white border border-gray-300 hover:bg-gray-50">2026년</button>
+                            <button onclick="updateDashboard(2027)" class="year-button px-4 py-2 text-sm font-medium rounded-md bg-white border border-gray-300 hover:bg-gray-50">2027년</button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="dashboard-chart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h2 class="text-xl font-bold mb-2">데이터 관리</h2>
+                    <p class="text-sm text-gray-600 mb-4">현재 입력된 모든 데이터(보유 종목, 경비 항목)를 JSON 파일로 백업하거나 외부에서 활용할 수 있습니다.</p>
+                    <button onclick="exportDataAsJSON()" class="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 flex items-center space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                        <span>데이터 JSON으로 내보내기</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 1. 배당금 시뮬레이션 -->
+            <div id="tab-dividend" class="tab-content space-y-6">
+                 <!-- 기존 배당금 시뮬레이션 탭 내용 -->
+                 <div class="bg-white p-6 rounded-lg shadow">
+                    <h2 class="text-xl font-bold mb-4">보유 종목 및 예상 배당금</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">종목</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">구분</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">보유 수량</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">현재가</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">평가액</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">연간 배당률</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">연간 예상 배당금</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stock-table-body" class="bg-white divide-y divide-gray-200">
+                                <!-- JS로 동적 생성 -->
+                            </tbody>
+                            <tfoot class="bg-gray-50">
+                                <tr>
+                                    <th colspan="4" class="px-6 py-3 text-left text-sm font-bold text-gray-700">합계</th>
+                                    <th id="total-valuation" class="px-6 py-3 text-right text-sm font-bold text-gray-700"></th>
+                                    <th></th>
+                                    <th id="total-annual-dividend" class="px-6 py-3 text-right text-sm font-bold text-gray-700"></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h2 class="text-xl font-bold mb-4">배당금 재투자 시뮬레이션</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label for="reinvest-rate" class="block text-sm font-medium text-gray-700">배당금 재투자 비율 (%)</label>
+                            <input type="number" id="reinvest-rate" value="50" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="reinvest-years" class="block text-sm font-medium text-gray-700">투자기간 (년)</label>
+                            <input type="number" id="reinvest-years" value="10" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        </div>
+                        <div class="self-end">
+                            <button onclick="runReinvestmentSimulation()" class="w-full bg-blue-800 text-white py-2 px-4 rounded-md hover:bg-blue-900">시뮬레이션 실행</button>
+                        </div>
+                    </div>
+                    <div id="reinvestment-result-container" class="mt-6 hidden">
+                         <h3 class="text-lg font-bold mb-2">시뮬레이션 결과</h3>
+                         <p id="reinvestment-result-text" class="text-gray-700 mb-4"></p>
+                         <div class="chart-container" style="height:40vh">
+                            <canvas id="reinvestment-chart"></canvas>
+                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. 법인 경비 관리 -->
+            <div id="tab-expenses" class="tab-content space-y-6">
+                <!-- 기존 경비 관리 탭 내용 -->
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h2 class="text-xl font-bold mb-4">경비 항목 관리 (CRUD)</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">항목</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">금액 (원)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">구분</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">발생월</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">관리</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expense-table-body" class="bg-white divide-y divide-gray-200">
+                                <!-- JS로 동적 생성 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h2 class="text-xl font-bold mb-4">새 경비 항목 추가</h2>
+                    <form id="add-expense-form" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <input type="hidden" id="edit-index">
+                        <div class="md:col-span-2">
+                            <label for="expense-name" class="block text-sm font-medium text-gray-700">항목명</label>
+                            <input type="text" id="expense-name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="expense-amount" class="block text-sm font-medium text-gray-700">금액</label>
+                            <input type="number" id="expense-amount" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="expense-type" class="block text-sm font-medium text-gray-700">구분</label>
+                            <select id="expense-type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                <option value="Monthly">월별</option>
+                                <option value="One-time">1회성</option>
+                            </select>
+                        </div>
+                        <div class="self-end">
+                            <button type="submit" id="add-expense-btn" class="w-full bg-blue-800 text-white py-2 px-4 rounded-md hover:bg-blue-900">추가</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 3. 예상 법인세 -->
+            <div id="tab-tax" class="tab-content">
+                 <!-- 기존 법인세 탭 내용 -->
+                 <div class="bg-white p-6 rounded-lg shadow">
+                    <h2 class="text-xl font-bold mb-4">연간 예상 법인세 시뮬레이션</h2>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                            <span class="font-medium text-gray-600">연간 총 예상 매출 (배당 수익)</span>
+                            <span id="tax-total-revenue" class="text-xl font-bold text-green-600">0 원</span>
+                        </div>
+                        <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                            <span class="font-medium text-gray-600">연간 총 예상 경비</span>
+                            <span id="tax-total-expense" class="text-xl font-bold text-red-600">0 원</span>
+                        </div>
+                        <div class="flex justify-between items-center p-4 bg-blue-50 rounded-lg">
+                            <span class="font-medium text-blue-800">과세 표준 (매출 - 경비)</span>
+                            <span id="tax-taxable-income" class="text-2xl font-bold text-blue-800">0 원</span>
+                        </div>
+                        <div class="mt-6 border-t pt-6">
+                            <h3 class="font-medium text-lg mb-2">예상 법인세 산출</h3>
+                            <p class="text-sm text-gray-500 mb-4">과세표준 2억원 이하 <strong class="text-red-600">10%</strong>, 2억원 초과 19% 등 2025년 세제개편안 기준 구간세율 적용</p>
+                            <div class="flex justify-between items-center p-4 bg-blue-100 rounded-lg">
+                                <span class="font-bold text-blue-800">예상 법인세</span>
+                                <span id="tax-estimated-tax" class="text-3xl font-extrabold text-blue-800">0 원</span>
+                            </div>
+                            <div class="flex justify-between items-center p-4 bg-sky-100 rounded-lg mt-2">
+                                <span class="font-bold text-sky-800">예상 법인지방소득세 (법인세의 10%)</span>
+                                <span id="tax-local-tax" class="text-2xl font-bold text-sky-800">0 원</span>
+                            </div>
+                             <div class="flex justify-between items-center p-4 bg-gray-200 rounded-lg mt-4">
+                                <span class="font-bold text-gray-900">총 납부 예상 세액</span>
+                                <span id="tax-total-liability" class="text-3xl font-extrabold text-gray-900">0 원</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. 월별 재무제표 -->
+            <div id="tab-financials" class="tab-content">
+                 <!-- 기존 재무제표 탭 내용 -->
+                 <div class="bg-white p-6 rounded-lg shadow">
+                    <h2 class="text-xl font-bold mb-4">월별 예상 재무 상태</h2>
+                     <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">월</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">예상 매출 (배당)</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">예상 경비</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">월간 손익</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">누적 손익</th>
+                                </tr>
+                            </thead>
+                            <tbody id="financials-table-body" class="bg-white divide-y divide-gray-200">
+                                <!-- JS로 동적 생성 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 5. 전문가 제안 -->
+            <div id="tab-expert" class="tab-content space-y-6">
+                <!-- 기존 전문가 제안 탭 내용 -->
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg">
+                    <h2 class="text-xl font-bold text-blue-900">전문가 제안: 전략적 엑시트(Exit) 플랜 시뮬레이션</h2>
+                    <p class="mt-2 text-blue-800">대표님, 법인의 이익이 커질수록 출구 전략을 미리 설계하는 것이 중요합니다. 급여/상여 외에 낮은 세율로 자금을 개인화할 수 있는 가장 강력한 두 가지 방법인 '임원 퇴직금'과 'IP 로열티'를 시뮬레이션해 보십시오.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="text-lg font-bold mb-4">1. 임원 퇴직금 시뮬레이션</h3>
+                    <p class="text-sm text-gray-600 mb-4">정관에 규정된 지급 배수에 따라 은퇴 시점에 수령할 퇴직금을 계산합니다. 퇴직소득은 다른 소득과 합산과세되지 않고 낮은 세율이 적용되어 절세 효과가 매우 큽니다.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label for="retire-salary" class="block text-sm font-medium text-gray-700">월 평균 급여 (만원)</label>
+                            <input type="number" id="retire-salary" value="350" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                        </div>
+                        <div>
+                            <label for="retire-years" class="block text-sm font-medium text-gray-700">근속 연수</label>
+                            <input type="number" id="retire-years" value="10" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                        </div>
+                        <div>
+                            <label for="retire-multiple" class="block text-sm font-medium text-gray-700">지급 배수 (정관 규정, 최대 2~3배)</label>
+                            <input type="number" id="retire-multiple" value="2" step="0.1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                        </div>
+                    </div>
+                    <div class="mt-4 p-4 bg-gray-100 rounded-lg">
+                        <span class="font-medium">예상 퇴직금:</span>
+                        <span id="retire-result" class="text-2xl font-bold ml-2 text-blue-800">0 원</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="text-lg font-bold mb-4">2. 지식재산권(IP) 로열티 시뮬레이션</h3>
+                    <p class="text-sm text-gray-600 mb-4">대표님 개인 소유의 AI 기술(특허, 소스코드 등)을 법인에 사용하게 하고 로열티를 받을 수 있습니다. 로열티는 기타소득으로, 수입의 60%가 필요경비로 인정되어 절세에 매우 유리합니다.</p>
+                    <div>
+                        <label for="ip-royalty" class="block text-sm font-medium text-gray-700">연간 로열티 수입 (만원)</label>
+                        <input type="number" id="ip-royalty" value="2000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    </div>
+                    <div class="mt-4 p-4 bg-gray-100 rounded-lg space-y-2">
+                        <div class="flex justify-between">
+                            <span class="font-medium">과세 대상 소득 (40%):</span>
+                            <span id="ip-taxable" class="font-bold text-blue-800">0 원</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium">예상 소득세 (단순 세율 20% 가정):</span>
+                            <span id="ip-tax" class="font-bold text-red-600">0 원</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white mt-12">
+        <div class="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold">51LABS</h3>
+                    <p class="mt-2 text-gray-400">데이터 기반 금융 투자와 AI 에이전트 개발을 통해 안정적인 은퇴 설계를 연구합니다.</p>
+                </div>
+                <div class="md:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-8">
+                    <div>
+                        <h4 class="font-semibold tracking-wider uppercase">솔루션</h4>
+                        <ul class="mt-4 space-y-2">
+                            <li><a href="#" class="text-gray-400 hover:text-white">금융 투자</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-white">AI 에이전트</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-white">법인 컨설팅</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold tracking-wider uppercase">회사</h4>
+                        <ul class="mt-4 space-y-2">
+                            <li><a href="#" class="text-gray-400 hover:text-white">51LABS 소개</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-white">블로그</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-white">문의하기</a></li>
+                        </ul>
+                    </div>
+                     <div>
+                        <h4 class="font-semibold tracking-wider uppercase">법률 정보</h4>
+                        <ul class="mt-4 space-y-2">
+                            <li><a href="#" class="text-gray-400 hover:text-white">이용약관</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-white">개인정보처리방침</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 border-t border-gray-800 pt-8 text-center text-gray-500">
+                <p>&copy; 2025 51LABS Inc. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- 데이터 영역 ---
+        const exchangeRate = 1385.00;
+
+        // 보유 주식 데이터 (사용자 제공 이미지 기반)
+        const stocks = [
+            // 미국 주식
+            { name: 'JEPI', type: '미국', shares: 500, price: 56.68, yield: 0.0836, frequency: '월간' },
+            { name: 'JEPQ', type: '미국', shares: 2000, price: 55.75, yield: 0.1137, frequency: '월간' },
+            { name: 'SCHD', type: '미국', shares: 0, price: 27.46, yield: 0.0375, frequency: '분기' },
+            { name: 'QDTE', type: '미국', shares: 3000, price: 35.83, yield: 0.4232, frequency: '주간' },
+            { name: 'XDTE', type: '미국', shares: 2000, price: 44.49, yield: 0.3122, frequency: '주간' },
+            { name: 'CONY', type: '미국', shares: 4000, price: 7.51, yield: 0.7300, frequency: '월간' },
+            { name: 'NVDY', type: '미국', shares: 1500, price: 17.86, yield: 0.8130, frequency: '월간' },
+            { name: 'TLTW', type: '미국', shares: 500, price: 22.86, yield: 0.1727, frequency: '월간' },
+            { name: 'PLTW', type: '미국', shares: 550, price: 55.60, yield: 0.2122, frequency: '월간' },
+            { name: 'YBTC', type: '미국', shares: 150, price: 48.43, yield: 0.4597, frequency: '월간' },
+            { name: 'ULTY', type: '미국', shares: 4000, price: 6.09, yield: 0.8000, frequency: '월간' },
+            { name: 'TSLW', type: '미국', shares: 600, price: 33.92, yield: 0.2786, frequency: '월간' },
+            { name: 'AAPW', type: '미국', shares: 500, price: 39.21, yield: 0.1621, frequency: '월간' },
+            { name: 'SGOV', type: '미국', shares: 0, price: 100.51, yield: 0.0453, frequency: '월간' },
+            // 한국 주식
+            { name: 'PLUS 고배당', type: '한국', shares: 4500, price: 12155, yield: 0.1500, frequency: '월간' },
+            { name: 'KODEX 미국배당', type: '한국', shares: 4000, price: 11815, yield: 0.0927, frequency: '월간' },
+            { name: 'KODEX 미국+10', type: '한국', shares: 2250, price: 11770, yield: 0.1400, frequency: '월간' },
+            { name: 'RISE 200커버드콜', type: '한국', shares: 6250, price: 9690, yield: 0.1800, frequency: '월간' },
+            { name: 'TIGER 30년국채', type: '한국', shares: 3500, price: 7885, yield: 0.1200, frequency: '월간' },
+            { name: 'RISE 미국AI', type: '한국', shares: 3000, price: 12035, yield: 0.1468, frequency: '월간' },
+            { name: 'RISE 미국배당100', type: '한국', shares: 4000, price: 8910, yield: 0.1400, frequency: '월간' },
+        ];
+
+        // 법인 경비 데이터 (사용자 제공 정보 기반)
+        let expenses = [
+            { name: '대표 급여 (4대보험 포함)', amount: 4200000, type: 'Monthly', month: null, year: null }, // 350 + 4대보험료 약 70만원 가정
+            { name: '도서 및 사무 비품 구입', amount: 500000, type: 'Monthly', month: null, year: null },
+            { name: 'AI 서비스 구독', amount: 500000, type: 'Monthly', month: null, year: null },
+            { name: '장비 구입 (컴퓨터 등)', amount: 1500000, type: 'Monthly', month: null, year: null },
+            { name: '세무기장', amount: 165000, type: 'Monthly', month: null, year: null },
+            { name: '유럽 출장비', amount: 3500000, type: 'One-time', month: 9, year: 2025 },
+            { name: '일본 출장비', amount: 1500000, type: 'One-time', month: 11, year: 2025 },
+            { name: '사업초기 가수금 비용처리', amount: 5000000, type: 'One-time', month: 8, year: 2025 },
+        ];
+
+        // --- 전역 변수 ---
+        let reinvestmentChartInstance = null;
+        let dashboardChartInstance = null;
+        let currentDashboardYear = 2025;
+        
+        // --- 탭 관리 함수 ---
+        function changeTab(event, tabID) {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => button.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            document.getElementById(tabID).classList.add('active');
+            
+            // 탭 변경 시 관련 데이터 리프레시
+            if(tabID === 'tab-dashboard') updateDashboard(currentDashboardYear);
+            if(tabID === 'tab-tax') updateTaxTab();
+            if(tabID === 'tab-financials') updateFinancialsTab();
+            if(tabID === 'tab-expert') {
+                updateRetireResult();
+                updateIpRoyaltyResult();
+            }
+        }
+
+        // --- 공용 함수 ---
+        const formatCurrency = (amount, currency = 'KRW') => {
+            if (currency === 'USD') {
+                return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+            }
+            return new Intl.NumberFormat('ko-KR').format(Math.round(amount)) + ' 원';
+        };
+
+        // --- 비주얼 대시보드 관련 함수 ---
+        function updateDashboard(year) {
+            currentDashboardYear = year;
+            
+            // 버튼 활성화 상태 업데이트
+            const yearButtons = document.querySelectorAll('.year-button');
+            yearButtons.forEach(btn => {
+                if (parseInt(btn.innerText) === year) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            const startMonth = (year === 2025) ? 8 : 1;
+            const endMonth = 12;
+            
+            const labels = [];
+            const revenueData = [];
+            const expenseData = [];
+            const profitData = [];
+
+            const monthlyRevenue = calculateTotalAnnualRevenue() / 12;
+            const monthlyBaseExpense = expenses
+                .filter(e => e.type === 'Monthly')
+                .reduce((acc, e) => acc + e.amount, 0);
+
+            for (let month = startMonth; month <= endMonth; month++) {
+                labels.push(`${month}월`);
+                
+                const oneTimeExpense = expenses
+                    .filter(e => e.type === 'One-time' && e.year === year && e.month === month)
+                    .reduce((acc, e) => acc + e.amount, 0);
+                
+                const totalMonthlyExpense = monthlyBaseExpense + oneTimeExpense;
+                const monthlyProfit = monthlyRevenue - totalMonthlyExpense;
+                
+                revenueData.push(monthlyRevenue);
+                expenseData.push(totalMonthlyExpense);
+                profitData.push(monthlyProfit);
+            }
+            
+            renderDashboardChart(labels, revenueData, expenseData, profitData);
+        }
+
+        function renderDashboardChart(labels, revenueData, expenseData, profitData) {
+            const ctx = document.getElementById('dashboard-chart').getContext('2d');
+            if (dashboardChartInstance) {
+                dashboardChartInstance.destroy();
+            }
+            dashboardChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: '월간 손익',
+                            data: profitData,
+                            backgroundColor: profitData.map(p => p >= 0 ? 'rgba(22, 163, 74, 0.6)' : 'rgba(220, 38, 38, 0.6)'),
+                            borderColor: profitData.map(p => p >= 0 ? 'rgba(22, 163, 74, 1)' : 'rgba(220, 38, 38, 1)'),
+                            borderWidth: 1,
+                            order: 2
+                        },
+                        {
+                            label: '월별 매출',
+                            data: revenueData,
+                            type: 'line',
+                            borderColor: '#1e40af',
+                            backgroundColor: 'transparent',
+                            tension: 0.2,
+                            order: 1
+                        },
+                        {
+                            label: '월별 경비',
+                            data: expenseData,
+                            type: 'line',
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'transparent',
+                            tension: 0.2,
+                            order: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return (value / 1000000).toLocaleString() + '백만';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `${currentDashboardYear}년 월별 재무 추이`,
+                            font: { size: 18 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.dataset.label}: ${formatCurrency(context.raw)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function exportDataAsJSON() {
+            const dataToExport = {
+                stocks: stocks,
+                expenses: expenses
+            };
+            const jsonString = JSON.stringify(dataToExport, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `51labs_data_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // --- 배당금 시뮬레이션 관련 함수 ---
+        function renderStockTable() {
+            const tableBody = document.getElementById('stock-table-body');
+            tableBody.innerHTML = '';
+            let totalValuationKRW = 0;
+            let totalAnnualDividendKRW = 0;
+
+            stocks.forEach(stock => {
+                const isUSD = stock.type === '미국';
+                const valuation = stock.shares * stock.price;
+                const annualDividend = valuation * stock.yield;
+                
+                const valuationKRW = isUSD ? valuation * exchangeRate : valuation;
+                const annualDividendKRW = isUSD ? annualDividend * exchangeRate : annualDividend;
+
+                totalValuationKRW += valuationKRW;
+                totalAnnualDividendKRW += annualDividendKRW;
+
+                const row = `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${stock.name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${stock.type}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${stock.shares.toLocaleString()}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${isUSD ? formatCurrency(stock.price, 'USD') : formatCurrency(stock.price)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${formatCurrency(valuationKRW)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${(stock.yield * 100).toFixed(2)}%</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${formatCurrency(annualDividendKRW)}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+
+            document.getElementById('total-valuation').textContent = formatCurrency(totalValuationKRW);
+            document.getElementById('total-annual-dividend').textContent = formatCurrency(totalAnnualDividendKRW);
+        }
+
+        function runReinvestmentSimulation() {
+            const reinvestRate = parseFloat(document.getElementById('reinvest-rate').value) / 100;
+            const years = parseInt(document.getElementById('reinvest-years').value);
+            
+            let currentValuation = stocks.reduce((acc, stock) => {
+                const valuation = stock.shares * stock.price;
+                return acc + (stock.type === '미국' ? valuation * exchangeRate : valuation);
+            }, 0);
+
+            const annualYield = stocks.reduce((acc, stock) => {
+                 const valuation = stock.shares * stock.price;
+                 const annualDividend = valuation * stock.yield;
+                 const valuationKRW = stock.type === '미국' ? valuation * exchangeRate : valuation;
+                 return acc + (valuationKRW * stock.yield);
+            }, 0) / currentValuation;
+
+            let history = [{ year: 0, value: currentValuation }];
+            let futureValue = currentValuation;
+
+            for (let i = 1; i <= years; i++) {
+                const annualDividend = futureValue * annualYield;
+                const reinvestmentAmount = annualDividend * reinvestRate;
+                futureValue += reinvestmentAmount;
+                history.push({ year: i, value: futureValue });
+            }
+
+            const resultContainer = document.getElementById('reinvestment-result-container');
+            const resultText = document.getElementById('reinvestment-result-text');
+            resultText.textContent = `${years}년 후, 배당금의 ${reinvestRate*100}%를 재투자할 경우 총 자산은 약 ${formatCurrency(futureValue)}가 될 것으로 예상됩니다. (초기 자산: ${formatCurrency(currentValuation)})`;
+            resultContainer.classList.remove('hidden');
+            
+            renderReinvestmentChart(history);
+        }
+        
+        function renderReinvestmentChart(history) {
+            const ctx = document.getElementById('reinvestment-chart').getContext('2d');
+            if (reinvestmentChartInstance) {
+                reinvestmentChartInstance.destroy();
+            }
+            reinvestmentChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: history.map(h => `${h.year}년차`),
+                    datasets: [{
+                        label: '예상 자산 가치',
+                        data: history.map(h => h.value),
+                        borderColor: '#1e40af',
+                        backgroundColor: 'rgba(30, 64, 175, 0.1)',
+                        fill: true,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    return (value / 1000000).toLocaleString() + '백만';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.dataset.label}: ${formatCurrency(context.raw)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- 경비 관리 관련 함수 ---
+        function renderExpenseTable() {
+            const tableBody = document.getElementById('expense-table-body');
+            tableBody.innerHTML = '';
+            expenses.forEach((expense, index) => {
+                const row = `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${expense.name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${formatCurrency(expense.amount)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${expense.type === 'Monthly' ? '월별' : '1회성'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${expense.month ? `${expense.year || 'N/A'}-${expense.month}` : '-'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="editExpense(${index})" class="text-blue-800 hover:text-blue-900">수정</button>
+                            <button onclick="deleteExpense(${index})" class="text-red-600 hover:text-red-900 ml-4">삭제</button>
+                        </td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        function handleExpenseFormSubmit(event) {
+            event.preventDefault();
+            const name = document.getElementById('expense-name').value;
+            const amount = parseFloat(document.getElementById('expense-amount').value);
+            const type = document.getElementById('expense-type').value;
+            const editIndex = document.getElementById('edit-index').value;
+
+            const newExpense = {
+                name,
+                amount,
+                type,
+                month: type === 'One-time' ? (new Date().getMonth() + 1) : null,
+                year: type === 'One-time' ? new Date().getFullYear() : null
+            };
+
+            if (editIndex) { // 수정 모드
+                expenses[editIndex] = { ...expenses[editIndex], name, amount, type };
+                document.getElementById('add-expense-btn').textContent = '추가';
+                document.getElementById('add-expense-btn').classList.replace('bg-green-600', 'bg-blue-800');
+            } else { // 추가 모드
+                expenses.push(newExpense);
+            }
+            
+            document.getElementById('add-expense-form').reset();
+            document.getElementById('edit-index').value = '';
+            renderExpenseTable();
+            updateDashboard(currentDashboardYear); // 대시보드 업데이트
+        }
+
+        function editExpense(index) {
+            const expense = expenses[index];
+            document.getElementById('expense-name').value = expense.name;
+            document.getElementById('expense-amount').value = expense.amount;
+            document.getElementById('expense-type').value = expense.type;
+            document.getElementById('edit-index').value = index;
+            document.getElementById('add-expense-btn').textContent = '수정 완료';
+            document.getElementById('add-expense-btn').classList.replace('bg-blue-800', 'bg-green-600');
+            document.getElementById('expense-name').focus();
+        }
+
+        function deleteExpense(index) {
+            if (confirm(`'${expenses[index].name}' 항목을 정말 삭제하시겠습니까?`)) {
+                expenses.splice(index, 1);
+                renderExpenseTable();
+                updateDashboard(currentDashboardYear); // 대시보드 업데이트
+            }
+        }
+
+        // --- 법인세 시뮬레이션 관련 함수 ---
+        function calculateTotalAnnualRevenue() {
+            return stocks.reduce((acc, stock) => {
+                const valuation = stock.shares * stock.price;
+                const annualDividend = valuation * stock.yield;
+                const annualDividendKRW = stock.type === '미국' ? annualDividend * exchangeRate : annualDividend;
+                return acc + annualDividendKRW;
+            }, 0);
+        }
+
+        function calculateTotalAnnualExpense() {
+            return expenses.reduce((acc, expense) => {
+                if (expense.type === 'Monthly') {
+                    return acc + (expense.amount * 12);
+                }
+                // 1회성 비용은 해당 연도에만 포함되도록 가정 (여기서는 전체를 더함)
+                return acc + expense.amount;
+            }, 0);
+        }
+
+        function calculateCorporateTax(taxableIncome) {
+            if (taxableIncome <= 0) return 0;
+            // 2025년 세제개편안 반영: 2억 이하 구간 세율 9% -> 10%
+            const rate_under_200m = 0.10; 
+            if (taxableIncome <= 200000000) { // 2억 이하
+                return taxableIncome * rate_under_200m;
+            } else if (taxableIncome <= 20000000000) { // 2억 초과 200억 이하
+                return (200000000 * rate_under_200m) + (taxableIncome - 200000000) * 0.19;
+            } else { // 200억 초과
+                 return (200000000 * rate_under_200m) + (19800000000 * 0.19) + (taxableIncome - 20000000000) * 0.21;
+            }
+        }
+
+        function updateTaxTab() {
+            const totalRevenue = calculateTotalAnnualRevenue();
+            const totalExpense = calculateTotalAnnualExpense();
+            const taxableIncome = totalRevenue - totalExpense;
+            const corporateTax = calculateCorporateTax(taxableIncome);
+            const localTax = corporateTax * 0.1;
+            const totalTax = corporateTax + localTax;
+
+            document.getElementById('tax-total-revenue').textContent = formatCurrency(totalRevenue);
+            document.getElementById('tax-total-expense').textContent = formatCurrency(totalExpense);
+            document.getElementById('tax-taxable-income').textContent = formatCurrency(taxableIncome);
+            document.getElementById('tax-estimated-tax').textContent = formatCurrency(corporateTax);
+            document.getElementById('tax-local-tax').textContent = formatCurrency(localTax);
+            document.getElementById('tax-total-liability').textContent = formatCurrency(totalTax);
+        }
+        
+        // --- 월별 재무제표 관련 함수 ---
+        function updateFinancialsTab() {
+            const tableBody = document.getElementById('financials-table-body');
+            tableBody.innerHTML = '';
+            
+            const monthlyRevenue = calculateTotalAnnualRevenue() / 12;
+            const monthlyBaseExpense = expenses
+                .filter(e => e.type === 'Monthly')
+                .reduce((acc, e) => acc + e.amount, 0);
+
+            let cumulativeProfit = 0;
+
+            for (let month = 1; month <= 12; month++) {
+                const oneTimeExpense = expenses
+                    .filter(e => e.type === 'One-time' && e.month === month)
+                    .reduce((acc, e) => acc + e.amount, 0);
+                
+                const totalMonthlyExpense = monthlyBaseExpense + oneTimeExpense;
+                const monthlyProfit = monthlyRevenue - totalMonthlyExpense;
+                cumulativeProfit += monthlyProfit;
+
+                const row = `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${month}월</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${formatCurrency(monthlyRevenue)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${formatCurrency(totalMonthlyExpense)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-right ${monthlyProfit >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(monthlyProfit)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-right ${cumulativeProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}">${formatCurrency(cumulativeProfit)}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            }
+        }
+        
+        // --- 전문가 제안 관련 함수 ---
+        function updateRetireResult() {
+            const salary = parseFloat(document.getElementById('retire-salary').value) * 10000;
+            const years = parseFloat(document.getElementById('retire-years').value);
+            const multiple = parseFloat(document.getElementById('retire-multiple').value);
+            
+            const annualSalary = salary * 12;
+            const retirementPay = annualSalary * years * (multiple/10); 
+            
+            document.getElementById('retire-result').textContent = formatCurrency(retirementPay);
+        }
+
+        function updateIpRoyaltyResult() {
+            const royalty = parseFloat(document.getElementById('ip-royalty').value) * 10000;
+            const taxableIncome = royalty * 0.4; // 60% 필요경비 제외
+            const estimatedTax = taxableIncome * 0.2; // 단순 세율 20% 가정
+            
+            document.getElementById('ip-taxable').textContent = formatCurrency(taxableIncome);
+            document.getElementById('ip-tax').textContent = formatCurrency(estimatedTax);
+        }
+
+
+        // --- 초기화 ---
+        window.onload = () => {
+            renderStockTable();
+            renderExpenseTable();
+            updateDashboard(2025); // 초기 대시보드 로드
+            document.getElementById('add-expense-form').addEventListener('submit', handleExpenseFormSubmit);
+            
+            // 전문가 제안 탭 이벤트 리스너
+            document.getElementById('retire-salary').addEventListener('input', updateRetireResult);
+            document.getElementById('retire-years').addEventListener('input', updateRetireResult);
+            document.getElementById('retire-multiple').addEventListener('input', updateRetireResult);
+            document.getElementById('ip-royalty').addEventListener('input', updateIpRoyaltyResult);
+
+            // 초기 탭 활성화
+            changeTab({ currentTarget: document.querySelector('.tab-button.active') }, 'tab-dashboard');
+        };
+    </script>
+</body>
+</html>
