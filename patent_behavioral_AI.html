@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>행동 분석 AI 알고리즘 구현 방법과 시스템</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans KR', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 640px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .heavy-shadow {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .tab-button.active {
+            border-color: #004AAD;
+            background-color: #004AAD;
+            color: white;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header class="bg-[#004AAD] text-white text-center p-8 md:p-12">
+        <h1 class="text-3xl md:text-5xl font-black leading-tight">행동 분석 AI 알고리즘 구현 방법과 시스템</h1>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+        
+        <div class="w-full">
+            <div class="mb-4 border-b border-gray-200">
+                <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="myTab" role="tablist">
+                    <li class="mr-2" role="presentation">
+                        <button class="tab-button inline-block p-4 border-b-2 rounded-t-lg active" id="claims-tab" type="button" role="tab" aria-controls="claims" aria-selected="true">청구항 및 차별점</button>
+                    </li>
+                    <li class="mr-2" role="presentation">
+                        <button class="tab-button inline-block p-4 border-b-2 rounded-t-lg" id="prior-art-tab" type="button" role="tab" aria-controls="prior-art" aria-selected="false">기존 참고 특허</button>
+                    </li>
+                    <li class="mr-2" role="presentation">
+                        <button class="tab-button inline-block p-4 border-b-2 rounded-t-lg" id="use-case-tab" type="button" role="tab" aria-controls="use-case" aria-selected="false">적용 사례</button>
+                    </li>
+                    <li role="presentation">
+                        <button class="tab-button inline-block p-4 border-b-2 rounded-t-lg" id="implementation-tab" type="button" role="tab" aria-controls="implementation" aria-selected="false">시스템 구현 사례</button>
+                    </li>
+                </ul>
+            </div>
+            <div id="tabContent">
+                <div class="p-4 rounded-lg bg-gray-50" id="claims" role="tabpanel" aria-labelledby="claims-tab">
+                    <div class="mb-10">
+                        <h3 class="text-2xl font-bold text-[#004AAD] mb-6 text-center">핵심 청구항 (System)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div class="bg-white rounded-lg shadow p-5 border-t-4 border-blue-500">
+                                <h4 class="font-bold text-lg mb-2">1. 사용자 행위 데이터 수집부</h4>
+                                <p class="text-sm">사용자의 마우스 움직임, 클릭, 스크롤, 페이지 체류 시간, 입력 패턴 등 정형/비정형의 모든 상호작용 데이터를 실시간으로 수집하여 원시 데이터 스트림을 생성합니다.</p>
+                            </div>
+                            <div class="bg-white rounded-lg shadow p-5 border-t-4 border-blue-500">
+                                <h4 class="font-bold text-lg mb-2">2. 서비스 온톨로지 매핑부</h4>
+                                <p class="text-sm">수집된 원시 데이터에 '맥락'을 부여합니다. "어떤 버튼을 클릭했는가"를 넘어 "가격 비교 페이지에서 구매 버튼을 클릭했다" 와 같이, 서비스의 기능적/정보적 구조(온톨로지)와 행위를 연결합니다.</p>
+                            </div>
+                            <div class="bg-white rounded-lg shadow p-5 border-t-4 border-blue-500">
+                                <h4 class="font-bold text-lg mb-2">3. 다차원 의도 분석부</h4>
+                                <p class="text-sm">단순 행동이 아닌 '의도'를 추론합니다. 여러 행동을 묶어 '상품 비교' 클러스터로 분석하고, 반복적 행동 패턴에서 '구매 망설임'이라는 복합 의도를 추론하며, 의미 없는 행동은 '의도 없음'으로 판단합니다.</p>
+                            </div>
+                            <div class="bg-white rounded-lg shadow p-5 border-t-4 border-blue-500">
+                                <h4 class="font-bold text-lg mb-2">4. 선제적 서비스 제공부</h4>
+                                <p class="text-sm">추론된 의도를 바탕으로 가장 효과적인 개입을 수행합니다. '구매 망설임' 의도에는 할인 쿠폰을, '정보 부족' 의도에는 상세 스펙 비교표를 제시하는 등 개인화된 서비스를 능동적으로 제공합니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                     <hr class="my-10 border-gray-300">
+                    <div>
+                        <h3 class="text-2xl font-bold text-[#004AAD] mb-6 text-center">차별화 포인트</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                             <div class="bg-white rounded-lg shadow p-5 border-l-4 border-green-500">
+                                <h4 class="font-bold text-lg mb-2">'언어'가 아닌 '행동' 기반 의도 추론</h4>
+                                <p class="text-sm">사용자가 채팅창에 "도와주세요"라고 입력하기 전, 이미 수십 번의 마우스 클릭과 페이지 이동으로 표현된 암묵적인 니즈를 먼저 포착합니다.</p>
+                            </div>
+                             <div class="bg-white rounded-lg shadow p-5 border-l-4 border-green-500">
+                                <h4 class="font-bold text-lg mb-2">'결과'가 아닌 '과정'상의 의도 분석</h4>
+                                <p class="text-sm">"이 사용자는 80% 확률로 이탈할 것이다"라는 결과 예측을 넘어, "가격 정보와 리뷰 페이지를 5번 이상 왕복했으므로, 가격 대비 성능에 대한 확신이 부족한 상태"라는 과정상의 의도를 분석합니다.</p>
+                            </div>
+                             <div class="bg-white rounded-lg shadow p-5 border-l-4 border-green-500">
+                                <h4 class="font-bold text-lg mb-2">'정적 규칙'을 넘어선 '지능적' 개입</h4>
+                                <p class="text-sm">"장바구니에 30분 이상 있으면 쿠폰 제공"이라는 고정된 규칙이 아닌, 사용자의 행동 맥락에 맞춰 "두 상품의 스펙 차이가 고민이신가요? 핵심 비교 자료를 보여드릴게요"와 같이 동적이고 지능적인 상호작용을 수행합니다.</p>
+                            </div>
+                             <div class="bg-white rounded-lg shadow p-5 border-l-4 border-green-500">
+                                <h4 class="font-bold text-lg mb-2">범용적 '통합 플랫폼' 아키텍처</h4>
+                                <p class="text-sm">이커머스 챗봇, 온라인 교육 튜터, SaaS 온보딩 가이드 등 AI 에이전트의 종류와 무관하게, 행위 분석과 의도 추론이라는 핵심 로직을 모듈처럼 적용할 수 있는 높은 확장성을 가집니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden p-4 rounded-lg bg-gray-50" id="prior-art" role="tabpanel" aria-labelledby="prior-art-tab">
+                    <h3 class="text-2xl font-bold text-[#004AAD] mb-6">주요 참고 특허 분석</h3>
+                    <div class="space-y-6">
+                        <div class="bg-white p-6 rounded-lg shadow-md transition hover:shadow-xl"><div class="flex justify-between items-center"><h4 class="font-bold text-xl">Apple (US 2013/0110519 A1)</h4><a href="https://patents.google.com/patent/US20130110519A1" target="_blank" class="text-sm text-blue-600 hover:underline">Link</a></div><p class="text-md text-gray-600 mb-3">온톨로지 기반 의도 파악</p><p class="mb-3">사용자가 "강남역 근처 이탈리안 레스토랑 찾아줘"라고 음성/텍스트로 명확히 요청하면, 시스템은 이 요청을 '음식점 찾기'라는 사전 정의된 도메인 온톨로지에 매핑하고, 정해진 절차에 따라 검색 결과를 보여줍니다.</p><p class="font-bold text-red-600">한계점: 사용자가 레스토랑 정보 페이지와 지도 앱을 여러 번 오가는 '고민하는 행동' 자체는 분석하지 못합니다. 명시적인 '언어' 입력에만 의존하는 한계가 뚜렷합니다.</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md transition hover:shadow-xl"><div class="flex justify-between items-center"><h4 class="font-bold text-xl">Proactive Chatbot (US 8,738,739 B2)</h4><a href="https://patents.google.com/patent/US8738739B2" target="_blank" class="text-sm text-blue-600 hover:underline">Link</a></div><p class="text-md text-gray-600 mb-3">선제적 챗봇 개입</p><p class="mb-3">사용자가 결제 페이지에서 60초 이상 아무런 행동이 없으면, 시스템은 이를 '거래 중단'이라는 사전에 정의된 규칙(Rule)으로 판단하고 "도움이 필요하신가요?"라는 챗봇 창을 자동으로 띄웁니다.</p><p class="font-bold text-red-600">한계점: 사용자가 왜 망설이는지(예: 결제 오류, 쿠폰 미적용, 주소 입력의 어려움)에 대한 '의도'는 전혀 고려하지 못하는 정적인 조건 기반의 개입에 그칩니다.</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md transition hover:shadow-xl"><div class="flex justify-between items-center"><h4 class="font-bold text-xl">Clickstream Analysis (RNN/LSTM based)</h4><a href="https://patents.google.com/scholar/scholar?q=predicting+user+intent+from+clickstream+rnn" target="_blank" class="text-sm text-blue-600 hover:underline">Related Arts</a></div><p class="text-md text-gray-600 mb-3">클릭스트림 기반 예측</p><p class="mb-3">사용자의 페이지 이동 순서(메인 → 카테고리 → 상품상세 → 장바구니)를 시계열 데이터로 학습하여, 해당 세션이 '구매'로 끝날지 '이탈'로 끝날지 그 '결과'를 확률적으로 예측합니다.</p><p class="font-bold text-red-600">한계점: '상품상세'와 '장바구니'를 여러 번 왕복하는 행동의 의미, 즉 '과정'상의 의도를 분석하지 못하고, 각 페이지의 기능적 맥락(온톨로지)을 깊이 있게 활용하지 못합니다.</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md transition hover:shadow-xl"><div class="flex justify-between items-center"><h4 class="font-bold text-xl">Google (US 2018/0293708 A1)</h4><a href="https://patents.google.com/patent/US20180293708A1" target="_blank" class="text-sm text-blue-600 hover:underline">Link</a></div><p class="text-md text-gray-600 mb-3">사용자 행동 기반 추천</p><p class="mb-3">유튜브에서 사용자가 특정 채널의 영상을 여러 개 시청하고 '구독' 버튼 근처에서 마우스를 머무는 행동을 감지하여, 해당 채널의 다른 인기 영상을 홈 피드 상단에 노출시키는 추천 시스템입니다.</p><p class="font-bold text-red-600">한계점: '추천'이라는 특정 목적에 국한되며, 사용자의 더 복잡한 의도(예: 정보 탐색의 어려움, 기능 사용법 문의)에 대한 다각적인 분석 및 선제적 '대화' 개입 기능은 없습니다.</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md transition hover:shadow-xl"><div class="flex justify-between items-center"><h4 class="font-bold text-xl">Microsoft (US 9,875,185 B2)</h4><a href="https://patents.google.com/patent/US9875185B2" target="_blank" class="text-sm text-blue-600 hover:underline">Link</a></div><p class="text-md text-gray-600 mb-3">어플리케이션 내 사용자 지원</p><p class="mb-3">사용자가 워드프로세서의 '메일 머지' 기능 창을 열었다 닫았다 반복하거나, 관련 도움말을 여러 번 검색하면, "메일 머지 작업에 대한 단계별 가이드를 보여드릴까요?" 와 같은 도움말 클립을 제공합니다.</p><p class="font-bold text-red-600">한계점: 서비스의 기능적 온톨로지(메뉴 구조)에 강하게 의존하며, 정해진 도움말을 제공하는 수준입니다. 사용자의 근본적인 목표나 불만족 같은 추상적인 의도를 추론하는 데 한계가 있습니다.</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md transition hover:shadow-xl"><div class="flex justify-between items-center"><h4 class="font-bold text-xl">Amazon (US 10,255,593 B1)</h4><a href="https://patents.google.com/patent/US10255593B1" target="_blank" class="text-sm text-blue-600 hover:underline">Link</a></div><p class="text-md text-gray-600 mb-3">이탈 가능성 예측</p><p class="mb-3">쇼핑몰에서 사용자가 상품을 장바구니에 담았다가 삭제하는 행동, 배송비 확인 페이지에서 오래 머무는 행동 등을 종합하여 해당 세션의 이탈 점수(Churn Score)를 실시간으로 계산합니다.</p><p class="font-bold text-red-600">한계점: '이탈할 것이다'라는 결과 예측에 집중합니다. 왜 이탈하려 하는지(배송비 불만, 더 나은 상품 탐색 등) 그 '이유'에 해당하는 의도를 분석하여 맞춤형 개입을 하지는 못합니다.</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md transition hover:shadow-xl"><div class="flex justify-between items-center"><h4 class="font-bold text-xl">IBM (US 2019/0347717 A1)</h4><a href="https://patents.google.com/patent/US20190347717A1" target="_blank" class="text-sm text-blue-600 hover:underline">Link</a></div><p class="text-md text-gray-600 mb-3">사용자 여정 시각화 및 분석</p><p class="mb-3">고객이 웹사이트에 들어와서 어떤 페이지들을 거쳐 구매 또는 이탈에 이르는지를 시각적으로 보여주는 대시보드를 제공합니다. 관리자는 특정 단계에서 이탈율이 높은 것을 보고 마케팅 전략을 수정할 수 있습니다.</p><p class="font-bold text-red-600">한계점: 사후 분석 도구의 성격이 강합니다. 개별 사용자의 여정에서 실시간으로 의도를 추론하여 '자동으로' 개입하는 기능이 아닌, 관리자를 위한 분석 정보를 제공하는 데 그칩니다.</p></div>
+                         <div class="bg-white p-6 rounded-lg shadow-md transition hover:shadow-xl"><div class="flex justify-between items-center"><h4 class="font-bold text-xl">Salesforce (US 10,789,670 B2)</h4><a href="https://patents.google.com/patent/US10789670B2" target="_blank" class="text-sm text-blue-600 hover:underline">Link</a></div><p class="text-md text-gray-600 mb-3">CRM 데이터 연동 행동 분석</p><p class="mb-3">기존 고객(CRM 데이터 보유)이 웹사이트에 로그인한 후, 특정 고가 상품 페이지와 가격 정책 페이지를 여러 번 방문하면, "관심 상품에 대한 특별 프로모션 상담을 원하시면 담당 매니저에게 바로 연결해 드릴까요?" 와 같이 개인화된 제안을 합니다.</p><p class="font-bold text-red-600">한계점: 기존 고객 데이터가 있어야 효과적이며, 행동 분석의 깊이보다는 CRM 데이터를 활용한 개인화에 더 중점을 둡니다. 신규 방문자의 암묵적 의도를 처음부터 파악하는 데는 약합니다.</p></div>
+                    </div>
+                </div>
+                <div class="hidden p-4 rounded-lg bg-gray-50" id="use-case" role="tabpanel" aria-labelledby="use-case-tab">
+                    <h3 class="text-2xl font-bold text-[#004AAD] mb-6">산업별 적용 사례 (Use Cases)</h3>
+                    <div class="space-y-6">
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h4 class="font-bold text-lg mb-2">1. 이커머스: 구매 전환율 극대화</h4>
+                            <p class="text-sm">사용자가 A노트북(고성능, 고가)과 B노트북(가성비) 페이지를 3회 이상 왕복하고, 두 제품의 비교 리뷰 블로그로 나갔다가 다시 돌아오는 행동 패턴을 보입니다. 시스템은 이 행동 클러스터를 '최종 구매 직전, 성능과 가격 사이에서의 심층적 고민' 의도로 추론합니다. 단순 쿠폰 제안이 아닌, "두 제품의 실제 게임 프레임 비교 영상과 렌더링 속도 벤치마크 데이터를 보여드릴까요?"라는 메시지를 띄워, 사용자의 핵심적인 고민(가격 차이만큼의 성능 차이가 있는가?)을 정확히 해결해 줌으로써 구매 결정을 촉진합니다.</p>
+                        </div>
+                         <div class="bg-white rounded-lg shadow p-6">
+                            <h4 class="font-bold text-lg mb-2">2. 온라인 교육 플랫폼: 학습 이탈 방지</h4>
+                            <p class="text-sm">한 수강생이 '미적분' 강의의 특정 구간(3분 15초~4분 30초)을 5번 이상 반복 재생하고, 관련 퀴즈에서 오답률 80%를 기록한 뒤 '수강 포기' 버튼 근처에서 마우스를 10초 이상 머무릅니다. 시스템은 이를 단순한 '개념 이해 부족'을 넘어 '학습 좌절로 인한 이탈 임박' 의도로 판단합니다. 즉시 "해당 개념을 초등학생도 이해할 수 있게 설명한 5분 요약 강의를 먼저 보시겠어요? 잠시 쉬어가는 것도 좋은 방법입니다." 와 같은 감성적 접근과 함께 대안적 학습 경로를 제시하여 수강생의 학습 의지를 회복시킵니다.</p>
+                        </div>
+                         <div class="bg-white rounded-lg shadow p-6">
+                            <h4 class="font-bold text-lg mb-2">3. SaaS/B2B 소프트웨어: 고객 온보딩 및 리텐션 강화</h4>
+                            <p class="text-sm">신규 가입자가 서비스의 핵심 기능인 '자동 리포트 생성' 페이지에 진입했으나, 데이터 소스 연결 단계에서 3분 이상 머무르며 여러 입력 필드를 클릭했다 지우기를 반복합니다. 시스템은 이를 '초기 설정의 어려움으로 인한 기능 도입 실패' 의도로 정의합니다. 이때 "혹시 CSV 파일 업로드에 어려움을 겪고 계신가요? 샘플 템플릿을 다운로드하시거나, 1분 동영상 가이드를 확인해 보세요." 라는 툴팁을 띄워 사용자가 첫 번째 성공 경험(A-ha Moment)을 빠르게 달성하도록 유도하고 장기 고객으로 전환될 가능성을 높입니다.</p>
+                        </div>
+                         <div class="bg-white rounded-lg shadow p-6">
+                            <h4 class="font-bold text-lg mb-2">4. 금융 서비스: 비대면 상품 가입 유도</h4>
+                            <p class="text-sm">사용자가 A, B, C 신용대출 상품의 상세 페이지를 모두 조회하고, 특히 '중도상환수수료'와 '필요 서류' 항목을 여러 번 클릭하며 스크롤을 내립니다. 이후 가입 절차를 시작했다가 '공인인증서 로그인' 단계에서 이탈합니다. 시스템은 이를 '상품 조건은 만족했으나, 가입 절차의 복잡성 및 비대면 인증의 불편함' 의도로 분석합니다. 다음 날 사용자에게 "어제 보셨던 대출 상품, 이제 간편인증(PIN, 지문)만으로 3분 내 신청이 가능합니다." 라는 알림을 보내, 가장 큰 허들을 제거해 줌으로써 가입을 완료시킵니다.</p>
+                        </div>
+                         <div class="bg-white rounded-lg shadow p-6">
+                            <h4 class="font-bold text-lg mb-2">5. 디지털 헬스케어: 환자 여정 최적화</h4>
+                            <p class="text-sm">한 사용자가 웹사이트에서 '허리 디스크' 관련 증상 정보를 2회 검색하고, '비수술 치료' 전문 의사 3명의 프로필을 조회한 뒤, '온라인 상담' 게시판의 다른 사용자 질문들만 10분 이상 읽어봅니다. 시스템은 이 일련의 행동을 '진료는 받고 싶지만, 자신의 상태를 직접 질문하는 것에 대한 두려움 또는 막연함' 의도로 해석합니다. 이때 "다른 환자분들이 자주 묻는 질문 TOP 5와 전문의의 답변을 정리해 드릴까요? 익명으로 간단한 자가진단 테스트도 가능합니다." 라고 선제적으로 제안하여, 사용자의 심리적 부담을 덜어주고 실제 상담 예약으로 이어지는 다리를 놓아줍니다.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden p-4 rounded-lg bg-gray-50" id="implementation" role="tabpanel" aria-labelledby="implementation-tab">
+                    <h3 class="text-2xl font-bold text-[#004AAD] mb-6 text-center">시스템 구현 아키텍처 및 동작 흐름</h3>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                         <h4 class="font-bold text-xl mb-4">시스템 아키텍처</h4>
+                         <p class="text-sm mb-6">본 시스템은 대규모 사용자 트래픽을 실시간으로 처리하고, 지속적으로 학습하여 성능을 개선할 수 있는 확장 가능한 마이크로서비스 아키텍처로 구현됩니다.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 text-center text-sm">
+                            <div class="p-3 bg-gray-100 rounded"><strong>Frontend</strong><br>JS Event Collector</div>
+                            <div class="flex items-center justify-center font-bold text-2xl text-blue-500">→</div>
+                            <div class="p-3 bg-gray-100 rounded"><strong>Ingestion Layer</strong><br>Message Queue (Kafka)</div>
+                            <div class="flex items-center justify-center font-bold text-2xl text-blue-500">→</div>
+                            <div class="p-3 bg-gray-100 rounded"><strong>Processing Engine</strong><br>Real-time Stream Processor (Flink)</div>
+                        </div>
+                        <div class="flex items-center justify-center font-bold text-2xl text-blue-500 my-4">↓</div>
+                         <div class="grid grid-cols-1 md:grid-cols-5 gap-4 text-center text-sm">
+                            <div class="p-3 bg-blue-100 rounded"><strong>Action API</strong><br>Proactive Service Delivery</div>
+                             <div class="flex items-center justify-center font-bold text-2xl text-blue-500">←</div>
+                            <div class="p-3 bg-blue-100 rounded"><strong>Analysis & ML</strong><br>Intent Inference Models (TensorFlow)</div>
+                             <div class="flex items-center justify-center font-bold text-2xl text-blue-500">←</div>
+                             <div class="p-3 bg-blue-100 rounded"><strong>Data Storage</strong><br>Ontology & Profile DB (MongoDB)</div>
+                        </div>
+
+                        <hr class="my-8">
+
+                        <h4 class="font-bold text-xl mb-4">기본 동작 흐름 (Input → Processing → Output)</h4>
+                        <ol class="list-decimal list-inside space-y-3 text-sm">
+                            <li><strong>Input (데이터 수집):</strong> 사용자가 웹사이트에서 마우스를 움직이거나 클릭할 때마다, 프론트엔드의 경량 JS 스크립트가 해당 이벤트(좌표, 타겟 엘리먼트, 타임스탬프 등)를 캡처하여 Kafka와 같은 메시지 큐로 즉시 전송합니다.</li>
+                            <li><strong>Processing (실시간 처리 및 분석):</strong>
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-2">
+                                    <li>Flink 스트림 프로세서가 Kafka의 이벤트 스트림을 실시간으로 소비(consume)합니다.</li>
+                                    <li>MongoDB에 저장된 서비스 온톨로지(예: '이 버튼은 구매 확정 버튼이다')와 사용자 프로필을 조회하여, 단순 이벤트를 '구매 확정 페이지에서 20초간 머무름'과 같은 의미 있는 '맥락적 행동'으로 변환합니다.</li>
+                                    <li>최근 N초간의 행동 시퀀스를 TensorFlow 서빙 API로 전달합니다. 학습된 의도 추론 모델(LSTM, Transformer 등)이 이 시퀀스를 분석하여 '구매 망설임 (85%)', '정보 부족 (10%)' 등 확률적인 의도 벡터를 반환합니다.</li>
+                                </ul>
+                            </li>
+                            <li><strong>Output (선제적 서비스 제공):</strong> 추론된 의도 중 가장 확률이 높은 '구매 망설임'에 대해, 시스템은 사전에 정의된 액션 API를 호출합니다. 이 API는 사용자에게 "결제 시 사용 가능한 10% 할인 쿠폰이 있습니다." 와 같은 맞춤형 메시지를 프론트엔드로 전송하여 화면에 표시하도록 합니다.</li>
+                        </ol>
+
+                        <hr class="my-8">
+
+                        <h4 class="font-bold text-xl mb-4">반복 학습 및 최적화 (Feedback Loop)</h4>
+                        <p class="text-sm">시스템의 개입 결과(사용자가 쿠폰을 사용했는지, 제안을 무시했는지 등) 역시 새로운 이벤트 데이터로 수집됩니다. 이 피드백 데이터는 의도 추론 모델을 주기적으로 재학습시키는 데 사용됩니다. 이를 통해 시스템은 '어떤 상황에서 어떤 개입이 가장 효과적인가'를 스스로 학습하여, 시간이 지남에 따라 점점 더 정확하고 정교한 상호작용을 수행하게 됩니다.</p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer class="bg-[#0062D6] text-white text-center p-6 mt-12">
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = [
+                { button: document.getElementById('claims-tab'), panel: document.getElementById('claims') },
+                { button: document.getElementById('prior-art-tab'), panel: document.getElementById('prior-art') },
+                { button: document.getElementById('use-case-tab'), panel: document.getElementById('use-case') },
+                { button: document.getElementById('implementation-tab'), panel: document.getElementById('implementation') }
+            ];
+
+            tabs.forEach(tab => {
+                tab.button.addEventListener('click', () => {
+                    tabs.forEach(t => {
+                        t.button.classList.remove('active');
+                        t.button.setAttribute('aria-selected', 'false');
+                        t.panel.classList.add('hidden');
+                    });
+                    tab.button.classList.add('active');
+                    tab.button.setAttribute('aria-selected', 'true');
+                    tab.panel.classList.remove('hidden');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
