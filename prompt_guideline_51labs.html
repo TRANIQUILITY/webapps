@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Guideline for 51labs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Neutral Harmony -->
+    <!-- Application Structure Plan: This is a unified SPA that merges a tab-based example guide and a visual infographic. The structure is a top-down narrative journey, chosen for its intuitive learning flow. It starts with a hero section, then covers Basic, Advanced, and Latest techniques, and concludes with a practical Workflow. Each technique section now combines detailed explanations, visual charts (where applicable), and clear Before/After examples for maximum clarity and user engagement. This hybrid structure offers both a high-level visual overview and practical, hands-on examples in a single, cohesive page. -->
+    <!-- Visualization & Content Choices: 1. Basics: Goal=Inform/Compare. Viz=Card grid with integrated Before/After examples. Justification=Combines scannability with direct comparison. 2. Advanced: Goal=Compare. Viz=Bar Chart (Chart.js) + Before/After examples. Justification=Visually compares techniques on abstract metrics, while examples provide concrete understanding. 3. Latest: Goal=Organize/Inform. Viz=Doughnut Chart (Chart.js) + Before/After examples. Justification=Shows application areas visually, with examples illustrating the specific implementation. 4. Workflow: Goal=Organize. Viz=HTML/CSS Flowchart. Justification=Clearly illustrates a process without forbidden SVG/Mermaid. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F4; /* stone-100 */
+            color: #292524; /* stone-800 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .flow-arrow {
+            font-size: 2.5rem;
+            line-height: 1;
+            color: #B88A68;
+        }
+        .gradient-text {
+            background: linear-gradient(to right, #4A6C8C, #708A83);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .tab-btn.active {
+            border-color: #4A6C8C;
+            color: #4A6C8C;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto px-4 py-12 md:py-20">
+
+        <header class="text-center mb-16 md:mb-24">
+            <h1 class="text-4xl md:text-6xl font-black mb-4 gradient-text">Prompt Guideline for 51labs</h1>
+        </header>
+
+        <nav class="mb-12">
+            <div class="border-b border-stone-200">
+                <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="main-tabs" role="tablist">
+                    <li class="mr-2" role="presentation">
+                        <button class="tab-btn inline-block p-4 border-b-2 rounded-t-lg active" id="basics-tab-btn" type="button" role="tab" aria-controls="basics" aria-selected="true">기본 다지기</button>
+                    </li>
+                    <li class="mr-2" role="presentation">
+                        <button class="tab-btn inline-block p-4 border-b-2 rounded-t-lg border-transparent hover:text-stone-600 hover:border-stone-300" id="advanced-tab-btn" type="button" role="tab" aria-controls="advanced" aria-selected="false">수준 높이기</button>
+                    </li>
+                    <li class="mr-2" role="presentation">
+                        <button class="tab-btn inline-block p-4 border-b-2 rounded-t-lg border-transparent hover:text-stone-600 hover:border-stone-300" id="latest-tab-btn" type="button" role="tab" aria-controls="latest" aria-selected="false">최신 기술</button>
+                    </li>
+                    <li class="mr-2" role="presentation">
+                        <button class="tab-btn inline-block p-4 border-b-2 rounded-t-lg border-transparent hover:text-stone-600 hover:border-stone-300" id="gemini-tab-btn" type="button" role="tab" aria-controls="gemini-cases" aria-selected="false">Gemini 최적화 사례</button>
+                    </li>
+                     <li class="mr-2" role="presentation">
+                        <button class="tab-btn inline-block p-4 border-b-2 rounded-t-lg border-transparent hover:text-stone-600 hover:border-stone-300" id="context-tab-btn" type="button" role="tab" aria-controls="context-prompting" aria-selected="false">컨텍스트 프롬프팅</button>
+                    </li>
+                    <li class="mr-2" role="presentation">
+                        <button class="tab-btn inline-block p-4 border-b-2 rounded-t-lg border-transparent hover:text-stone-600 hover:border-stone-300" id="google-ai-tools-tab-btn" type="button" role="tab" aria-controls="google-ai-tools" aria-selected="false">Google AI 도구</button>
+                    </li>
+                     <li role="presentation">
+                        <button class="tab-btn inline-block p-4 border-b-2 rounded-t-lg border-transparent hover:text-stone-600 hover:border-stone-300" id="agent-dev-tools-tab-btn" type="button" role="tab" aria-controls="agent-dev-tools" aria-selected="false">AI 에이전트 개발 도구</button>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <main id="tab-content">
+            <section id="basics" role="tabpanel" aria-labelledby="basics-tab-btn">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-stone-900">기본 다지기: 모든 것의 시작</h2>
+                    <p class="mt-3 text-stone-600 max-w-2xl mx-auto">가장 중요하고 기본적인 원칙들입니다. 이 원칙들만 잘 지켜도 결과물의 질이 눈에 띄게 향상됩니다.</p>
+                </div>
+                <div class="space-y-8">
+                    <!-- Example Card -->
+                    <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-[#4A6C8C]">
+                        <h3 class="text-xl font-bold mb-2">1. 명확 & 구체화</h3>
+                        <p class="text-stone-600 mb-4">모호함 대신 원하는 바를 상세하게 지시하여 AI가 정확히 이해하도록 합니다.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-11 gap-4 items-center bg-stone-50 p-4 rounded-lg">
+                            <div class="md:col-span-5">
+                                <p class="font-semibold text-red-800">Before</p>
+                                <p class="text-gray-700 mt-1 text-sm md:text-base">"블로그 글 하나 써줘."</p>
+                            </div>
+                            <div class="text-center text-2xl font-bold text-gray-400 transform rotate-90 md:rotate-0">→</div>
+                            <div class="md:col-span-5">
+                                <p class="font-semibold text-green-800">After</p>
+                                <p class="text-gray-700 mt-1 text-sm md:text-base">"'AI가 마케팅에 미치는 영향'을 주제로, 전문적인 톤으로 1000자 내외의 블로그 글을 작성해줘. 서론, 본론, 결론 구조로."</p>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-[#4A6C8C]">
+                        <h3 class="text-xl font-bold mb-2">2. 역할 부여</h3>
+                        <p class="text-stone-600 mb-4">AI에게 특정 전문가(예: 마케터)의 역할을 부여하여 관점과 스타일을 지정합니다.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-11 gap-4 items-center bg-stone-50 p-4 rounded-lg">
+                            <div class="md:col-span-5">
+                                <p class="font-semibold text-red-800">Before</p>
+                                <p class="text-gray-700 mt-1 text-sm md:text-base">"에너지 드링크 광고 문구 추천해줘."</p>
+                            </div>
+                            <div class="text-center text-2xl font-bold text-gray-400 transform rotate-90 md:rotate-0">→</div>
+                            <div class="md:col-span-5">
+                                <p class="font-semibold text-green-800">After</p>
+                                <p class="text-gray-700 mt-1 text-sm md:text-base">"당신은 10년차 카피라이터입니다. 20대 대학생을 타겟으로 하는 에너지 드링크 광고 문구 3가지를 제안해주세요."</p>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-[#B88A68]">
+                        <h3 class="text-xl font-bold mb-2">3. 형식 지정</h3>
+                        <p class="text-stone-600 mb-4">표, JSON, 이메일 등 원하는 출력 형식을 명시하여 구조화된 결과물을 얻습니다.</p>
+                         <div class="grid grid-cols-1 md:grid-cols-11 gap-4 items-center bg-stone-50 p-4 rounded-lg">
+                            <div class="md:col-span-5">
+                                <p class="font-semibold text-red-800">Before</p>
+                                <p class="text-gray-700 mt-1 text-sm md:text-base">"AI 장단점 알려줘."</p>
+                            </div>
+                            <div class="text-center text-2xl font-bold text-gray-400 transform rotate-90 md:rotate-0">→</div>
+                            <div class="md:col-span-5">
+                                <p class="font-semibold text-green-800">After</p>
+                                <p class="text-gray-700 mt-1 text-sm md:text-base">"AI의 장점과 단점을 표 형식으로 정리해줘."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="advanced" role="tabpanel" aria-labelledby="advanced-tab-btn" class="hidden">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-stone-900">수준 높이기: 고급 프롬프트 기법</h2>
+                    <p class="mt-3 text-stone-600 max-w-2xl mx-auto">더욱 정교하고 복잡한 결과물을 원할 때 사용하는 고급 기법입니다.</p>
+                </div>
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg mb-8">
+                    <p class="text-center text-stone-700 mb-8 max-w-3xl mx-auto">아래 차트는 각 고급 기법의 개념적 복잡도와 그에 따른 효과성을 비교하여 보여줍니다. 복잡도가 높을수록 정교한 설계가 필요하지만, 그만큼 강력한 결과물을 기대할 수 있습니다.</p>
+                    <div class="chart-container">
+                        <canvas id="advancedChart"></canvas>
+                    </div>
+                </div>
+                 <div class="space-y-8">
+                    <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-[#4A6C8C]">
+                        <h3 class="text-xl font-bold mb-2">7. 생각의 사슬 (Chain of Thought)</h3>
+                        <p class="text-stone-600 mb-4">복잡한 문제나 추론이 필요한 경우, AI에게 단계별로 생각하고 그 과정을 설명하도록 지시하면 더 정확하고 논리적인 답변을 얻을 수 있습니다.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-11 gap-4 items-center bg-stone-50 p-4 rounded-lg">
+                            <div class="md:col-span-5"><p class="font-semibold text-red-800">Before</p><p class="text-gray-700 mt-1 text-sm md:text-base">"사과 5개가 있었는데 2개를 더 사고 1개를 먹었어. 총 몇 개야?"</p></div>
+                            <div class="text-center text-2xl font-bold text-gray-400 transform rotate-90 md:rotate-0">→</div>
+                            <div class="md:col-span-5"><p class="font-semibold text-green-800">After</p><p class="text-gray-700 mt-1 text-sm md:text-base">"사과 5개가 있었는데 2개를 더 사고 1개를 먹었어. 총 몇 개야? 단계별로 생각해서 설명해줘."</p></div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-[#708A83]">
+                        <h3 class="text-xl font-bold mb-2">8. 메타 프롬프트</h3>
+                        <p class="text-stone-600 mb-4">AI에게 '최고의 프롬프트'를 만들도록 요청하는 프롬프트입니다. 특정 작업에 효과적인 프롬프트 구조를 모를 때 유용합니다.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-11 gap-4 items-center bg-stone-50 p-4 rounded-lg">
+                            <div class="md:col-span-5"><p class="font-semibold text-red-800">Before</p><p class="text-gray-700 mt-1 text-sm md:text-base">"보도자료 초안 써줘."</p></div>
+                            <div class="text-center text-2xl font-bold text-gray-400 transform rotate-90 md:rotate-0">→</div>
+                            <div class="md:col-span-5"><p class="font-semibold text-green-800">After</p><p class="text-gray-700 mt-1 text-sm md:text-base">"신제품 보도자료 작성을 위한 최고의 프롬프트를 만들어줘. 역할, 목표, 형식, 핵심 내용이 포함되어야 해."</p></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="latest" role="tabpanel" aria-labelledby="latest-tab-btn" class="hidden">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-stone-900">최전선으로: 최신 프롬프트 기술</h2>
+                     <p class="mt-3 text-stone-600 max-w-2xl mx-auto">AI의 능력을 극한으로 활용하는 최신 기법들을 소개합니다.</p>
+                </div>
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg mb-8">
+                     <h3 class="text-2xl font-bold text-center mb-4">최신 기법 활용 분야</h3>
+                     <p class="text-center text-stone-700 mb-6">최신 프롬프트 기법들은 답변의 정확성 향상, 개인화, 신뢰도 확보 등 다양한 분야에서 AI의 성능을 극대화합니다.</p>
+                     <div class="chart-container h-80 md:h-96">
+                         <canvas id="latestChart"></canvas>
+                     </div>
+                </div>
+                <div class="space-y-8">
+                     <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-[#4A6C8C]">
+                        <h3 class="text-xl font-bold mb-2">12. 외부 정보 참조 (RAG)</h3>
+                        <p class="text-stone-600 mb-4">외부 문서를 기반으로 답변을 생성하여, AI가 모르는 최신 정보나 전문 지식을 활용해 정확도를 높입니다.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-11 gap-4 items-center bg-stone-50 p-4 rounded-lg">
+                            <div class="md:col-span-5"><p class="font-semibold text-red-800">Before</p><p class="text-gray-700 mt-1 text-sm md:text-base">"2025년 1분기 우리 회사 실적 어땠어?"</p></div>
+                            <div class="text-center text-2xl font-bold text-gray-400 transform rotate-90 md:rotate-0">→</div>
+                            <div class="md:col-span-5"><p class="font-semibold text-green-800">After</p><p class="text-gray-700 mt-1 text-sm md:text-base">"[첨부: 2025년 1분기 실적 보고서.pdf] 이 보고서를 바탕으로 1분기 실적을 요약해줘."</p></div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-[#B88A68]">
+                        <h3 class="text-xl font-bold mb-2">13. 자가 수정 및 평가</h3>
+                        <p class="text-stone-600 mb-4">AI가 스스로 결과물을 검토하고 기준에 따라 수정하게 만들어 결과물의 품질을 한 단계 더 향상시킵니다.</p>
+                         <div class="grid grid-cols-1 md:grid-cols-11 gap-4 items-center bg-stone-50 p-4 rounded-lg">
+                            <div class="md:col-span-5"><p class="font-semibold text-red-800">Before</p><p class="text-gray-700 mt-1 text-sm md:text-base">"AI의 미래에 대한 글을 써줘."</p></div>
+                            <div class="text-center text-2xl font-bold text-gray-400 transform rotate-90 md:rotate-0">→</div>
+                            <div class="md:col-span-5"><p class="font-semibold text-green-800">After</p><p class="text-gray-700 mt-1 text-sm md:text-base">"AI의 미래에 대한 글을 써줘. ... (결과 수신 후) ... 방금 네가 쓴 글을 비판적으로 검토하고, 잠재적 위험에 대한 내용을 추가해서 수정해줘."</p></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="gemini-cases" role="tabpanel" aria-labelledby="gemini-tab-btn" class="hidden">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-stone-900">Gemini 프롬프트 최적화 사례</h2>
+                    <p class="mt-3 text-stone-600 max-w-2xl mx-auto">멀티모달, 복잡한 추론 등 Gemini의 고유한 능력을 활용하는 방법입니다.</p>
+                </div>
+                <div class="space-y-8">
+                    <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-[#4A6C8C]">
+                        <h3 class="text-xl font-bold mb-2">멀티모달 프롬프트 (이미지 + 텍스트)</h3>
+                        <p class="text-stone-600 mb-4">텍스트와 이미지를 함께 제공하여, 시각적 맥락을 기반으로 한 깊이 있는 분석과 창의적인 아이디어를 요청합니다.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-11 gap-4 items-center bg-stone-50 p-4 rounded-lg">
+                            <div class="md:col-span-5">
+                                <p class="font-semibold text-red-800">Before (텍스트만)</p>
+                                <p class="text-gray-700 mt-1 text-sm md:text-base">"매출 데이터(1월: 100, 2월: 150, 3월: 130)를 보고 마케팅 전략을 제안해줘."</p>
+                            </div>
+                            <div class="text-center text-2xl font-bold text-gray-400 transform rotate-90 md:rotate-0">→</div>
+                            <div class="md:col-span-5">
+                                <p class="font-semibold text-green-800">After (이미지 + 텍스트)</p>
+                                <p class="text-gray-700 mt-1 text-sm md:text-base">"[월별 매출 차트 이미지 첨부] 이 차트를 분석하고, 3월 매출 감소 원인을 추측해봐. 2분기 매출 증대를 위한 혁신적인 마케팅 아이디어 3가지를 제안해줘."</p>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-[#708A83]">
+                        <h3 class="text-xl font-bold mb-2">복잡한 지시사항 및 제약조건</h3>
+                        <p class="text-stone-600 mb-4">여러 단계의 지시와 구체적인 제약조건을 결합하여, 매우 구체적이고 맞춤화된 결과물을 생성하도록 유도합니다.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-11 gap-4 items-center bg-stone-50 p-4 rounded-lg">
+                            <div class="md:col-span-5">
+                                <p class="font-semibold text-red-800">Before</p>
+                                <p class="text-gray-700 mt-1 text-sm md:text-base">"새로운 스마트폰에 대한 블로그 글을 써줘."</p>
+                            </div>
+                            <div class="text-center text-2xl font-bold text-gray-400 transform rotate-90 md:rotate-0">→</div>
+                            <div class="md:col-span-5">
+                                <p class="font-semibold text-green-800">After</p>
+                                <p class="text-gray-700 mt-1 text-sm md:text-base">"새 '오로라 X1' 스마트폰 블로그 글을 써줘. 타겟은 기술에 밝은 20대, 톤은 열정적으로. 카메라와 AI 기능을 강조하되, 배터리 수명 언급은 제외. 글자 수는 정확히 500자로 맞춰줘."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="context-prompting" role="tabpanel" aria-labelledby="context-tab-btn" class="hidden">
+                 <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-stone-900">최신 컨텍스트 프롬프팅</h2>
+                    <p class="mt-3 text-stone-600 max-w-2xl mx-auto">긴 컨텍스트를 효과적으로 활용하여 AI의 답변 정확도를 극대화하는 기법입니다.</p>
+                </div>
+                <div class="space-y-8">
+                    <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-[#B88A68]">
+                        <h3 class="text-xl font-bold mb-2">핵심 지시는 마지막에</h3>
+                        <p class="text-stone-600 mb-4">긴 문서나 데이터를 제공할 때, AI가 수행해야 할 가장 중요한 작업은 컨텍스트의 맨 끝에 배치하는 것이 효과적입니다. 모델이 마지막에 본 내용을 더 잘 기억하기 때문입니다.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-11 gap-4 items-center bg-stone-50 p-4 rounded-lg">
+                            <div class="md:col-span-5">
+                                <p class="font-semibold text-red-800">Before</p>
+                                <p class="text-gray-700 mt-1 text-sm md:text-base">"다음은 시장 분석 보고서야. 이걸 요약해줘. [아주 긴 보고서 텍스트]..."</p>
+                            </div>
+                            <div class="text-center text-2xl font-bold text-gray-400 transform rotate-90 md:rotate-0">→</div>
+                            <div class="md:col-span-5">
+                                <p class="font-semibold text-green-800">After</p>
+                                <p class="text-gray-700 mt-1 text-sm md:text-base">"[아주 긴 보고서 텍스트]... <br><br>...위의 시장 분석 보고서를 3개의 핵심 불렛 포인트로 요약해줘."</p>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-[#4A6C8C]">
+                        <h3 class="text-xl font-bold mb-2">명확한 구분자로 구조화</h3>
+                        <p class="text-stone-600 mb-4">여러 문서나 정보 조각을 제공할 때, `<doc>` 같은 명확한 구분자를 사용하여 각 부분의 경계를 알려주면 AI가 정보를 더 잘 구조적으로 이해합니다.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-11 gap-4 items-center bg-stone-50 p-4 rounded-lg">
+                            <div class="md:col-span-5">
+                                <p class="font-semibold text-red-800">Before</p>
+                                <p class="text-gray-700 mt-1 text-sm md:text-base">"사용자 피드백: '앱이 느려요.' 기술팀 메모: '서버 최적화 필요.' 이걸로 개선 계획 세워줘."</p>
+                            </div>
+                            <div class="text-center text-2xl font-bold text-gray-400 transform rotate-90 md:rotate-0">→</div>
+                            <div class="md:col-span-5">
+                                <p class="font-semibold text-green-800">After</p>
+                                <p class="text-gray-700 mt-1 text-sm md:text-base">"다음 정보를 바탕으로 앱 성능 개선 계획을 세워줘. <br><br> `&lt;피드백&gt;`<br>앱이 너무 느리고 자주 멈춥니다.<br>`&lt;/피드백&gt;` <br><br> `&lt;기술팀 메모&gt;`<br>DB 쿼리 비효율 확인, 서버 증설 검토 필요.<br>`&lt;/기술팀 메모&gt;`"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="google-ai-tools" role="tabpanel" aria-labelledby="google-ai-tools-tab-btn" class="hidden">
+                 <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-stone-900">Google AI 서비스 및 도구</h2>
+                    <p class="mt-3 text-stone-600 max-w-2xl mx-auto">Google의 주요 AI 서비스와 개발자 도구 목록입니다.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2 text-[#4A6C8C]">Gemini</h3>
+                        <p class="text-stone-600 mb-2"><strong>주소:</strong> <a href="https://gemini.google.com/" target="_blank" class="text-blue-600 hover:underline">gemini.google.com</a></p>
+                        <p class="text-stone-700"><strong>사용 방법:</strong> 일상적인 질문, 아이디어 구상, 글쓰기, 코딩 등 다양한 작업을 위한 대화형 AI 어시스턴트입니다. 웹 인터페이스를 통해 누구나 쉽게 사용할 수 있으며, Advanced 모델은 더 뛰어난 성능을 제공합니다.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2 text-[#708A83]">Google AI Studio</h3>
+                        <p class="text-stone-600 mb-2"><strong>주소:</strong> <a href="https://aistudio.google.com/" target="_blank" class="text-blue-600 hover:underline">aistudio.google.com</a></p>
+                        <p class="text-stone-700"><strong>사용 방법:</strong> 개발자들이 Gemini 모델을 활용하여 빠르게 프로토타입을 만들고 테스트할 수 있는 웹 기반 도구입니다. API 키를 발급받아 애플리케이션에 통합하기 전 아이디어를 실험하기에 좋습니다.</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2 text-[#B88A68]">Vertex AI</h3>
+                        <p class="text-stone-600 mb-2"><strong>주소:</strong> <a href="https://cloud.google.com/vertex-ai" target="_blank" class="text-blue-600 hover:underline">cloud.google.com/vertex-ai</a></p>
+                        <p class="text-stone-700"><strong>사용 방법:</strong> 기업용 MLOps 플랫폼으로, 데이터 준비부터 모델 학습, 배포, 모니터링까지 AI 개발의 전체 수명 주기를 관리합니다. Google의 최신 모델을 프로덕션 환경에서 확장성 있게 사용할 수 있습니다.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2 text-[#A39A92]">Project Astra</h3>
+                        <p class="text-stone-600 mb-2"><strong>주소:</strong> 개발 중인 프로젝트</p>
+                        <p class="text-stone-700"><strong>사용 방법:</strong> 보고 듣는 것을 실시간으로 이해하고 반응하는 Google의 차세대 AI 어시스턴트 비전입니다. 스마트폰이나 스마트 안경을 통해 사용자와 상호작용하는 미래형 AI 에이전트를 목표로 합니다.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2 text-[#4A6C8C]">Imagen 3 / ImageFX</h3>
+                        <p class="text-stone-600 mb-2"><strong>주소:</strong> <a href="https://aistudio.google.com/app/imagefx" target="_blank" class="text-blue-600 hover:underline">aistudio.google.com/app/imagefx</a></p>
+                        <p class="text-stone-700"><strong>사용 방법:</strong> Google의 최신 텍스트-이미지 생성 모델인 Imagen 3를 기반으로 한 이미지 생성 도구입니다. ImageFX 웹사이트에서 직접 프롬프트를 입력하여 고품질 이미지를 만들 수 있습니다.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2 text-[#708A83]">MusicFX / Lyria</h3>
+                        <p class="text-stone-600 mb-2"><strong>주소:</strong> <a href="https://aistudio.google.com/app/musicfx" target="_blank" class="text-blue-600 hover:underline">aistudio.google.com/app/musicfx</a></p>
+                        <p class="text-stone-700"><strong>사용 방법:</strong> Google DeepMind의 음악 생성 모델 Lyria를 기반으로 한 AI 음악 생성 도구입니다. 텍스트 프롬프트를 입력하여 특정 분위기나 장르의 음악, 악기 연주, 사운드 이펙트 등을 생성할 수 있습니다.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2 text-[#B88A68]">Veo</h3>
+                        <p class="text-stone-600 mb-2"><strong>주소:</strong> 현재 제한된 프리뷰 형태로 제공</p>
+                        <p class="text-stone-700"><strong>사용 방법:</strong> 텍스트 프롬프트를 기반으로 고화질 동영상을 생성하는 Google의 최신 영상 생성 모델입니다. 현재 일부 크리에이터 및 개발자에게만 공개되어 있으며, 향후 VideoFX 등의 도구를 통해 제공될 예정입니다.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2 text-[#A39A92]">Google Vids</h3>
+                        <p class="text-stone-600 mb-2"><strong>주소:</strong> Google Workspace Labs 통해 일부 제공</p>
+                        <p class="text-stone-700"><strong>사용 방법:</strong> Google Workspace에 통합된 AI 기반 동영상 제작 도구입니다. 스토리보드 작성, 영상 클립 및 배경 음악 생성, 나레이션 추가 등 영상 제작 전반을 AI가 도와주는 업무용 비디오 어시스턴트입니다.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2 text-[#4A6C8C]">Gemma</h3>
+                        <p class="text-stone-600 mb-2"><strong>주소:</strong> <a href="https://ai.google/gemma" target="_blank" class="text-blue-600 hover:underline">ai.google/gemma</a></p>
+                        <p class="text-stone-700"><strong>사용 방법:</strong> Google에서 개발한 경량 오픈소스 언어 모델 제품군입니다. 연구원과 개발자가 자신의 컴퓨터나 클라우드 환경에서 직접 모델을 다운로드하여 AI 애플리케이션을 구축하고 실험할 수 있습니다.</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2 text-[#708A83]">Firebase Genkit</h3>
+                        <p class="text-stone-600 mb-2"><strong>주소:</strong> <a href="https://firebase.google.com/docs/genkit" target="_blank" class="text-blue-600 hover:underline">firebase.google.com/docs/genkit</a></p>
+                        <p class="text-stone-700"><strong>사용 방법:</strong> AI 기반 기능을 프로덕션 앱에 쉽게 구축, 배포 및 모니터링할 수 있도록 설계된 오픈소스 TypeScript/JavaScript 프레임워크입니다. RAG 등 복잡한 AI 워크플로우를 간소화합니다.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2 text-[#B88A68]">Opal</h3>
+                        <p class="text-stone-600 mb-2"><strong>주소:</strong> <a href="https://opal.withgoogle.com/landing/" target="_blank" class="text-blue-600 hover:underline">opal.withgoogle.com/landing/</a></p>
+                        <p class="text-stone-700"><strong>사용 방법:</strong> Google DeepMind에서 개발한 워크플로우 자동화 도구입니다. n8n이나 Make.com과 유사하게, 사용자가 코딩 없이 시각적인 인터페이스를 통해 다양한 AI 모델과 서비스, API를 연결하여 복잡한 작업을 자동화할 수 있도록 돕습니다. AI를 활용한 자동화된 프로세스를 구축하는 데 사용됩니다.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2 text-[#A39A92]">Kaggle</h3>
+                         <p class="text-stone-600 mb-2"><strong>주소:</strong> <a href="https://www.kaggle.com/" target="_blank" class="text-blue-600 hover:underline">www.kaggle.com</a></p>
+                        <p class="text-stone-700"><strong>사용 방법:</strong> 세계 최대의 데이터 과학 및 머신러닝 커뮤니티입니다. 다양한 데이터셋을 탐색하고, 다른 사람의 코드를 배우며, AI 경진대회에 참여하여 실력을 겨룰 수 있는 플랫폼입니다.</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2 text-[#4A6C8C]">Google Colab</h3>
+                         <p class="text-stone-600 mb-2"><strong>주소:</strong> <a href="https://colab.research.google.com/" target="_blank" class="text-blue-600 hover:underline">colab.research.google.com</a></p>
+                        <p class="text-stone-700"><strong>사용 방법:</strong> 브라우저에서 Python 코드를 작성하고 실행할 수 있는 클라우드 기반 노트북 환경입니다. 무료로 GPU/TPU를 사용할 수 있어 AI 모델 학습 및 데이터 분석에 널리 사용됩니다.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2 text-[#708A83]">Nano Banana (gemini-2.5-flash-image-preview)</h3>
+                        <p class="text-stone-600 mb-2"><strong>주소:</strong> API를 통해서만 접근 가능 (예: Google AI Studio)</p>
+                        <p class="text-stone-700"><strong>사용 방법:</strong> 'Nano Banana'는 Google 내부 코드명으로, `gemini-2.5-flash-image-preview` 모델을 지칭합니다. 이는 이미지와 텍스트를 동시에 이해하고 생성할 수 있는 빠른 속도의 멀티모달 모델로, 개발자는 API를 통해 이 모델을 호출하여 이미지 편집, 분석, 생성 등의 기능을 구현할 수 있습니다.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="agent-dev-tools" role="tabpanel" aria-labelledby="agent-dev-tools-tab-btn" class="hidden">
+                 <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-stone-900">AI 에이전트 개발 도구</h2>
+                    <p class="mt-3 text-stone-600 max-w-2xl mx-auto">스스로 생각하고 작업을 수행하는 AI 에이전트를 만들기 위한 주요 서비스와 프레임워크입니다.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2 text-[#4A6C8C]">LangChain</h3>
+                        <p class="text-stone-600 mb-2"><strong>주소:</strong> <a href="https://www.langchain.com/" target="_blank" class="text-blue-600 hover:underline">www.langchain.com</a></p>
+                        <p class="text-stone-700"><strong>사용 방법:</strong> AI 에이전트 및 LLM 애플리케이션 개발을 위한 가장 대표적인 오픈소스 프레임워크입니다. 다양한 LLM, API, 데이터 소스를 모듈식으로 연결하여 복잡한 에이전트의 로직을 구성합니다.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2 text-[#708A83]">LlamaIndex</h3>
+                        <p class="text-stone-600 mb-2"><strong>주소:</strong> <a href="https://www.llamaindex.ai/" target="_blank" class="text-blue-600 hover:underline">www.llamaindex.ai</a></p>
+                        <p class="text-stone-700"><strong>사용 방법:</strong> LLM에 외부 데이터를 효과적으로 연결(RAG)하는 데 특화된 오픈소스 프레임워크입니다. 에이전트가 특정 문서나 데이터베이스 기반의 지식을 바탕으로 정확한 답변을 하도록 만들 때 필수적입니다.</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2 text-[#B88A68]">OpenAI Assistants API</h3>
+                        <p class="text-stone-600 mb-2"><strong>주소:</strong> <a href="https://platform.openai.com/docs/assistants/overview" target="_blank" class="text-blue-600 hover:underline">platform.openai.com/docs/assistants</a></p>
+                        <p class="text-stone-700"><strong>사용 방법:</strong> OpenAI의 GPT 모델을 사용하여 대화의 맥락을 기억하고, 파일 검색(Retrieval)이나 코드 실행(Code Interpreter) 같은 내장 도구를 사용하는 AI 어시스턴트를 쉽게 개발할 수 있는 API입니다.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2 text-[#A39A92]">Claude API (Anthropic)</h3>
+                        <p class="text-stone-600 mb-2"><strong>주소:</strong> <a href="https://www.anthropic.com/claude" target="_blank" class="text-blue-600 hover:underline">www.anthropic.com/claude</a></p>
+                        <p class="text-stone-700"><strong>사용 방법:</strong> 강력한 추론 능력과 업계 최고 수준의 긴 컨텍스트 창(200K)을 가진 Claude 모델을 API로 제공합니다. 긴 문서를 처리하거나 복잡한 대화를 이어가는 정교한 에이전트 개발에 유리합니다.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2 text-[#4A6C8C]">Replit</h3>
+                        <p class="text-stone-600 mb-2"><strong>주소:</strong> <a href="https://replit.com/" target="_blank" class="text-blue-600 hover:underline">replit.com</a></p>
+                        <p class="text-stone-700"><strong>사용 방법:</strong> AI 에이전트와 애플리케이션을 신속하게 개발, 배포, 호스팅할 수 있는 클라우드 기반 IDE입니다. 다양한 AI 템플릿과 AI 코딩 어시스턴트(Replit AI)를 통해 개발 생산성을 크게 향상시킬 수 있습니다.</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2 text-[#708A83]">Kiro</h3>
+                        <p class="text-stone-600 mb-2"><strong>주소:</strong> <a href="https://www.kiro.co/" target="_blank" class="text-blue-600 hover:underline">www.kiro.co</a></p>
+                        <p class="text-stone-700"><strong>사용 방법:</strong> AI 에이전트와 워크플로우를 구축하기 위한 노코드/로코드 플랫폼입니다. 여러 AI 모델과 외부 서비스 API를 시각적으로 연결하여 복잡한 자동화 작업을 설계하고 실행할 수 있습니다.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2 text-[#B88A68]">Lovable</h3>
+                        <p class="text-stone-600 mb-2"><strong>주소:</strong> <a href="https://www.lovable.ai/" target="_blank" class="text-blue-600 hover:underline">www.lovable.ai</a></p>
+                        <p class="text-stone-700"><strong>사용 방법:</strong> 스스로 작업을 계획하고 실행하는 자율 AI 에이전트를 구축하는 데 특화된 플랫폼입니다. 사용자의 높은 수준의 목표를 이해하고, 이를 달성하기 위한 구체적인 단계를 스스로 생성하여 수행합니다.</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold mb-2 text-[#A39A92]">Vector Databases</h3>
+                        <p class="text-stone-600 mb-2"><strong>예시:</strong> Pinecone, ChromaDB, Weaviate 등</p>
+                        <p class="text-stone-700"><strong>사용 방법:</strong> AI 에이전트의 '장기 기억'을 담당하는 핵심 인프라입니다. 대화 기록, 문서 등 대규모 텍스트 데이터를 벡터로 변환하여 저장하고, 의미적으로 유사한 정보를 빠르게 검색하여 에이전트가 맥락을 이해하고 일관된 답변을 하도록 돕습니다.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('#tab-content > section');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('active');
+                        btn.setAttribute('aria-selected', 'false');
+                    });
+                    button.classList.add('active');
+                    button.setAttribute('aria-selected', 'true');
+                    
+                    const targetId = button.getAttribute('aria-controls');
+                    
+                    tabContents.forEach(content => {
+                        if (content.id === targetId) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            function wrapLabel(label, maxWidth = 16) {
+                if (typeof label !== 'string') { return label; }
+                if (label.length <= maxWidth) { return label; }
+                const words = label.split(' ');
+                const lines = [];
+                let currentLine = '';
+                for (const word of words) {
+                    if ((currentLine + ' ' + word).trim().length > maxWidth && currentLine.length > 0) {
+                        lines.push(currentLine.trim());
+                        currentLine = word;
+                    } else {
+                        currentLine = (currentLine + ' ' + word).trim();
+                    }
+                }
+                if (currentLine) { lines.push(currentLine.trim()); }
+                return lines;
+            }
+
+            const tooltipTitleCallback = (tooltipItems) => {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                if (Array.isArray(label)) { return label.join(' '); }
+                return label;
+            };
+            
+            const sharedChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: { font: { size: 14, family: "'Noto Sans KR', sans-serif" }, color: '#292524' }
+                    },
+                    tooltip: {
+                        callbacks: { title: tooltipTitleCallback },
+                        bodyFont: { family: "'Noto Sans KR', sans-serif" },
+                        titleFont: { family: "'Noto Sans KR', sans-serif" }
+                    }
+                },
+                scales: {
+                    x: { ticks: { font: { family: "'Noto Sans KR', sans-serif" }, color: '#57534e' }, grid: { color: '#e7e5e4' } },
+                    y: { ticks: { font: { family: "'Noto Sans KR', sans-serif" }, color: '#57534e' }, grid: { color: '#e7e5e4' } }
+                }
+            };
+
+            if (document.getElementById('advancedChart')) {
+                const advancedLabels = ['생각의 사슬', '메타 프롬프트', '슈퍼 프롬프트'].map(label => wrapLabel(label));
+                const advancedCtx = document.getElementById('advancedChart').getContext('2d');
+                new Chart(advancedCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: advancedLabels,
+                        datasets: [{
+                            label: '개념적 복잡도',
+                            data: [4, 6, 9],
+                            backgroundColor: 'rgba(74, 108, 140, 0.7)',
+                            borderColor: '#4A6C8C',
+                            borderWidth: 1
+                        }, {
+                            label: '기대 효과성',
+                            data: [7, 8, 10],
+                            backgroundColor: 'rgba(184, 138, 104, 0.7)',
+                            borderColor: '#B88A68',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: { ...sharedChartOptions, scales: { ...sharedChartOptions.scales, y: { ...sharedChartOptions.scales.y, beginAtZero: true, max: 10, title: { display: true, text: '수준 (1-10)', color: '#292524' } } } }
+                });
+            }
+
+            if (document.getElementById('latestChart')) {
+                const latestLabels = ['정확성 향상 (RAG)', '개인화 (정보 기억)', '일관성 (시스템 프롬프트)', '품질 개선 (자가 수정)'].map(label => wrapLabel(label));
+                const latestCtx = document.getElementById('latestChart').getContext('2d');
+                new Chart(latestCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: latestLabels,
+                        datasets: [{
+                            label: '활용 분야',
+                            data: [40, 25, 20, 15],
+                            backgroundColor: [ '#4A6C8C', '#708A83', '#B88A68', '#A39A92' ],
+                            hoverOffset: 8,
+                            borderColor: '#F5F5F4',
+                            borderWidth: 4
+                        }]
+                    },
+                    options: { ...sharedChartOptions, scales: { x: { display: false }, y: { display: false } } }
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>
+
