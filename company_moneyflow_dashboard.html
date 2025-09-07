@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>51labs 투자 관리 및 세금 시뮬레이터</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        }
+        .tab-btn {
+            position: relative;
+            padding: 1rem 1rem;
+            font-size: 0.875rem; /* 14px */
+            font-weight: 500;
+            color: #64748b; /* slate-500 */
+            transition: color 0.2s ease-in-out;
+            border: none;
+            background: none;
+            cursor: pointer;
+            outline: none;
+        }
+        .tab-btn:hover {
+            color: #1e293b; /* slate-800 */
+        }
+        .tab-btn.active {
+            color: #2563eb; /* blue-600 */
+            font-weight: 600;
+        }
+        .tab-btn::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; /* Align with the parent border */
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #2563eb;
+            transform: scaleX(0);
+            transform-origin: bottom center;
+            transition: transform 0.3s ease-in-out;
+        }
+        .tab-btn:hover::after, .tab-btn.active::after {
+            transform: scaleX(1);
+        }
+        
+        .sub-tab-btn {
+            padding: 0.5rem 1rem;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .sub-tab-btn.active {
+            border-color: #2563eb;
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .tab-content, .sub-tab-content { display: none; }
+        .tab-content.active, .sub-tab-content.active { display: block; }
+        .modal-overlay {
+            transition: opacity 0.3s ease;
+        }
+        .strategy-block {
+            cursor: grab;
+        }
+        .year-slot {
+            border: 2px dashed #cbd5e1;
+            min-height: 50px;
+        }
+        .year-slot.drag-over {
+            background-color: #eff6ff;
+            border-color: #2563eb;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div id="app-container" class="w-full max-w-4xl mx-auto bg-white rounded-2xl shadow-lg my-8">
+        <div class="sticky top-0 bg-white z-10 p-6 md:p-8 rounded-t-2xl">
+            <div class="text-center mb-6">
+                <h1 class="text-2xl md:text-3xl font-bold text-slate-900">51labs 투자 관리 및 세금 시뮬레이터</h1>
+                <br>
+                <div class="mt-4 flex justify-center space-x-2">
+                    <button id="saveDataBtn" class="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors">데이터 저장하기 (JSON)</button>
+                    <button id="loadDataBtn" class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">데이터 불러오기 (JSON)</button>
+                    <input type="file" id="fileInput" class="hidden" accept=".json">
+                </div>
+            </div>
+            <div class="border-b border-slate-200">
+                <nav class="flex flex-wrap" aria-label="Tabs">
+                    <button class="tab-btn active" data-tab="investments">상세 투자내역</button>
+                    <button class="tab-btn" data-tab="dividend-analysis">월별 배당 분석</button>
+                    <button class="tab-btn" data-tab="expenses">상세 경비내역</button>
+                    <button class="tab-btn" data-tab="simulator">세금 시뮬레이터</button>
+                    <button class="tab-btn" data-tab="reinvestment-growth">재투자 성장 예측</button>
+                    <button class="tab-btn" data-tab="milestone-planning">투자 마일스톤</button>
+                </nav>
+            </div>
+        </div>
+
+        <div class="p-6 md:p-8">
+            <!-- Investments Tab -->
+            <div id="investments" class="tab-content active">
+                <h3 class="font-bold text-xl mb-4">투자 포트폴리오</h3>
+                <div class="overflow-x-auto mb-8">
+                    <table class="min-w-full bg-white border">
+                        <thead class="bg-slate-100">
+                            <tr>
+                                <th class="p-2 text-left">종목명</th>
+                                <th class="p-2 text-center">보유 수량</th>
+                                <th class="p-2 text-right">총 투자금액</th>
+                                <th class="p-2 text-center">연배당률</th>
+                                <th class="p-2 text-right">예상 연배당금</th>
+                                <th class="p-2 text-center">관리</th>
+                            </tr>
+                        </thead>
+                        <tbody id="investment-list"></tbody>
+                        <tfoot class="bg-slate-100 font-bold">
+                            <tr>
+                                <td class="p-2 text-left" colspan="4">합계</td>
+                                <td id="total-dividends" class="p-2 text-right">0 원</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="bg-slate-50 p-6 rounded-lg">
+                    <h3 class="font-bold text-xl mb-4">신규 투자내역 추가</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <input type="text" id="inv-name" placeholder="종목명" class="p-2 border rounded">
+                        <input type="number" id="inv-quantity" placeholder="보유 수량" class="p-2 border rounded">
+                        <input type="text" id="inv-amount" placeholder="총 투자금액 (원)" class="p-2 border rounded">
+                        <input type="number" id="inv-yield" placeholder="연배당률 (%)" class="p-2 border rounded" step="0.01">
+                        <button id="add-inv-btn" class="md:col-span-4 w-full bg-green-600 text-white p-2 rounded hover:bg-green-700">추가하기</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monthly Dividend Analysis Tab -->
+            <div id="dividend-analysis" class="tab-content">
+                <div class="border-b border-gray-200 mb-4">
+                    <nav class="flex -mb-px space-x-4" aria-label="Sub-tabs">
+                        <button class="sub-tab-btn active" data-subtab="all">전체</button>
+                        <button class="sub-tab-btn" data-subtab="us">미국 주식</button>
+                        <button class="sub-tab-btn" data-subtab="kr">한국 주식</button>
+                    </nav>
+                </div>
+
+                <div id="all" class="sub-tab-content active">
+                    <div class="grid grid-cols-1 gap-8">
+                        <div>
+                            <h2 class="text-xl font-bold mb-4">국가별 배당 기여도</h2>
+                            <div class="bg-slate-50 p-4 rounded-lg mx-auto" style="max-width: 400px;"><canvas id="dividendPieChartAll"></canvas></div>
+                        </div>
+                        <div class="mt-8"><h2 class="text-xl font-bold mb-4">상세 내역 (전체)</h2><div class="overflow-x-auto" id="dividendListAll"></div></div>
+                    </div>
+                </div>
+                <div id="us" class="sub-tab-content">
+                     <div class="grid grid-cols-1 gap-8">
+                        <div>
+                            <h2 class="text-xl font-bold mb-4">미국 내 배당 기여도</h2>
+                            <div class="bg-slate-50 p-4 rounded-lg mx-auto" style="max-width: 400px;"><canvas id="dividendPieChartUs"></canvas></div>
+                        </div>
+                        <div class="mt-8"><h2 class="text-xl font-bold mb-4">상세 내역 (미국)</h2><div class="overflow-x-auto" id="dividendListUs"></div></div>
+                    </div>
+                </div>
+                <div id="kr" class="sub-tab-content">
+                    <div class="grid grid-cols-1 gap-8">
+                        <div>
+                            <h2 class="text-xl font-bold mb-4">한국 내 배당 기여도</h2>
+                            <div class="bg-slate-50 p-4 rounded-lg mx-auto" style="max-width: 400px;"><canvas id="dividendPieChartKr"></canvas></div>
+                        </div>
+                        <div class="mt-8"><h2 class="text-xl font-bold mb-4">상세 내역 (한국)</h2><div class="overflow-x-auto" id="dividendListKr"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expenses Tab -->
+            <div id="expenses" class="tab-content">
+                 <div class="grid md:grid-cols-3 gap-6">
+                    <div class="md:col-span-1 bg-slate-50 p-4 rounded-lg">
+                        <h3 class="font-bold mb-4">신규 경비내역 추가</h3>
+                        <div class="space-y-3">
+                            <input type="text" id="exp-name" placeholder="항목명 (예: 임대료)" class="w-full p-2 border rounded">
+                            <input type="text" id="exp-amount" placeholder="월간 비용 (원)" class="w-full p-2 border rounded">
+                            <button id="add-exp-btn" class="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700">추가하기</button>
+                        </div>
+                    </div>
+                    <div class="md:col-span-2">
+                        <h3 class="font-bold mb-4">경비 상세 내역</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full bg-white border">
+                                <thead class="bg-slate-100">
+                                    <tr>
+                                        <th class="p-2 text-left">항목명</th>
+                                        <th class="p-2 text-right">월간 비용</th>
+                                        <th class="p-2 text-right">연간 비용</th>
+                                        <th class="p-2 text-center">관리</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="expense-list"></tbody>
+                                <tfoot class="bg-slate-100 font-bold">
+                                    <tr>
+                                        <td class="p-2 text-left">합계</td>
+                                        <td id="total-monthly-expense" class="p-2 text-right">0 원</td>
+                                        <td id="total-annual-expense" class="p-2 text-right">0 원</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                         <p class="text-xs text-slate-500 mt-4">* 일반적인 경비 항목: 대표 급여, 4대보험(회사부담분), 퇴직연금, 사무실 임차료, 차량유지비, 통신비, 세무기장료, 복리후생비, 소모품비 등</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Simulator Tab -->
+            <div id="simulator" class="tab-content">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="space-y-6 bg-slate-50 p-6 rounded-lg">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">총 연매출 (원)</label>
+                                <input type="text" id="totalRevenue" class="w-full px-4 py-2 bg-slate-200 border border-slate-300 rounded-lg" readonly>
+                                <p class="text-xs text-slate-500 mt-1">'상세 투자내역' 탭에서 자동 계산됩니다.</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">총 경비 (원)</label>
+                                <input type="text" id="totalExpenses" class="w-full px-4 py-2 bg-slate-200 border border-slate-300 rounded-lg" readonly>
+                                 <p class="text-xs text-slate-500 mt-1">'상세 경비내역' 탭에서 자동 계산됩니다.</p>
+                            </div>
+                             <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">수익 비중 설정</label>
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-sm font-medium text-slate-600 w-24 text-center">국내 <span id="domesticRatioDisplay">20</span>%</span>
+                                    <input type="range" id="usRevenueRatioSlider" min="0" max="100" value="80" class="w-full">
+                                    <span class="text-sm font-medium text-slate-600 w-24 text-center">미국 <span id="usRatioDisplay">80</span>%</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="corpTaxRate" class="block text-sm font-medium text-slate-700 mb-1">법인세율 (%)</label>
+                                <input type="number" id="corpTaxRate" value="9" class="w-full px-4 py-2 bg-white border border-slate-300 rounded-lg">
+                                <p class="text-xs text-slate-500 mt-1">지방소득세 10% 별도 가산. (예: 9% 입력 시 9.9%로 계산)</p>
+                            </div>
+                        </div>
+                         <button id="calculateBtn" class="mt-6 w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition">계산하기</button>
+                    </div>
+                    <div id="results" class="bg-slate-100 p-6 rounded-lg hidden">
+                         <h2 class="text-xl font-bold text-center mb-6 text-slate-900">시뮬레이션 결과</h2>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center bg-white p-3 rounded-lg"><span class="font-medium text-slate-600">과세표준</span><span id="taxableIncome" class="font-bold text-lg"></span></div>
+                            <div class="flex justify-between items-center bg-white p-3 rounded-lg"><span class="font-medium text-slate-600">산출세액 (지방세 포함)</span><span id="calculatedTax" class="font-bold text-lg"></span></div>
+                            <div class="flex justify-between items-center bg-white p-3 rounded-lg"><span class="font-medium text-slate-600">미국에 납부한 세금</span><span id="taxPaidInUS" class="font-bold text-lg"></span></div>
+                            <div class="flex justify-between items-center bg-white p-3 rounded-lg"><span class="font-medium text-slate-600">외국납부세액공제</span><span id="foreignTaxCredit" class="font-bold text-lg text-green-600"></span></div>
+                        </div>
+                        <div class="mt-6 p-4 rounded-lg" id="finalResultBox">
+                            <p class="text-center text-lg font-bold" id="finalTaxDueText"></p>
+                            <p class="text-center text-sm mt-1" id="finalTaxInfo"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reinvestment Growth Tab -->
+            <div id="reinvestment-growth" class="tab-content">
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h2 class="text-xl font-bold mb-4">포트폴리오 현황</h2>
+                        <div class="bg-slate-50 p-6 rounded-lg space-y-4">
+                            <div>
+                                <p class="text-sm text-slate-600">총 투자 원금</p>
+                                <p id="db-total-investment" class="text-2xl font-bold text-slate-800">0 원</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-slate-600">연간 총 배당 수익</p>
+                                <p id="db-total-dividends" class="text-2xl font-bold text-blue-600">0 원</p>
+                            </div>
+                            <div class="pt-4 border-t border-slate-200">
+                                <p class="text-sm text-slate-600">포트폴리오 평균 수익률</p>
+                                <p id="db-average-yield" class="text-3xl font-bold text-green-600">0.00 %</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold mb-4">재투자 성장 예측</h2>
+                        <div class="bg-slate-50 p-6 rounded-lg">
+                            <div class="mb-4">
+                                <label for="reinvest-rate" class="block text-sm font-medium text-slate-700">연배당금 재투자 비율 (%)</label>
+                                <input type="number" id="reinvest-rate" value="50" class="mt-1 w-full p-2 border rounded-lg">
+                            </div>
+                            <div class="mb-4">
+                                <label for="projection-yield" class="block text-sm font-medium text-slate-700">예상 포트폴리오 평균 수익률 (%)</label>
+                                <input type="number" id="projection-yield" step="0.01" class="mt-1 w-full p-2 border rounded-lg">
+                            </div>
+                            <button id="project-growth-btn" class="w-full bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700">예측 실행</button>
+                            <div id="projection-results" class="mt-4"></div>
+                            <div class="mt-6">
+                                <canvas id="growthChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Milestone Planning Tab -->
+            <div id="milestone-planning" class="tab-content">
+                 <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">투자 전략 정의</h2>
+                    <button id="edit-strategies-btn" class="p-2 rounded-full text-slate-600 hover:bg-slate-200 hover:text-slate-800 transition-colors"></button>
+                 </div>
+                 <div class="bg-slate-50 p-4 rounded-lg text-sm mb-8">
+                    <ul class="list-disc list-inside space-y-2" id="strategy-definitions"></ul>
+                 </div>
+                 <h2 class="text-xl font-bold mb-4">20년 투자 마일스톤 계획</h2>
+                 <div class="grid grid-cols-5 gap-4 mb-6" id="strategy-palette"></div>
+                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="timeline-container"></div>
+                 <button id="runMilestoneSimBtn" class="mt-6 w-full bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700">마일스톤 시뮬레이션 실행</button>
+                 <div class="mt-8">
+                    <h2 class="text-xl font-bold mb-4">시뮬레이션 결과</h2>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div><canvas id="milestoneChart"></canvas></div>
+                        <div id="milestoneSummary"></div>
+                    </div>
+                 </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Investment Modal -->
+    <div id="edit-modal" class="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <h3 class="text-xl font-bold mb-4">투자내역 수정</h3>
+            <div class="space-y-4">
+                <input type="hidden" id="edit-inv-index">
+                <div><label class="block text-sm">종목명</label><input type="text" id="edit-inv-name" class="w-full p-2 border rounded mt-1"></div>
+                <div><label class="block text-sm">보유 수량</label><input type="number" id="edit-inv-quantity" class="w-full p-2 border rounded mt-1"></div>
+                <div><label class="block text-sm">총 투자금액 (원)</label><input type="text" id="edit-inv-amount" class="w-full p-2 border rounded mt-1"></div>
+                <div><label class="block text-sm">예상 연배당률 (%)</label><input type="number" id="edit-inv-yield" step="0.01" class="w-full p-2 border rounded mt-1"></div>
+            </div>
+            <div class="mt-6 flex justify-end space-x-3">
+                <button id="cancel-edit-btn" class="px-4 py-2 bg-slate-200 rounded hover:bg-slate-300">취소</button>
+                <button id="save-edit-btn" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">저장</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Expense Modal -->
+    <div id="edit-expense-modal" class="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <h3 class="text-xl font-bold mb-4">경비내역 수정</h3>
+            <div class="space-y-4">
+                <input type="hidden" id="edit-exp-index">
+                <div><label class="block text-sm">항목명</label><input type="text" id="edit-exp-name" class="w-full p-2 border rounded mt-1"></div>
+                <div><label class="block text-sm">월간 비용 (원)</label><input type="text" id="edit-exp-amount" class="w-full p-2 border rounded mt-1"></div>
+            </div>
+            <div class="mt-6 flex justify-end space-x-3">
+                <button id="cancel-edit-exp-btn" class="px-4 py-2 bg-slate-200 rounded hover:bg-slate-300">취소</button>
+                <button id="save-edit-exp-btn" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">저장</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Strategies Modal -->
+    <div id="edit-strategies-modal" class="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg">
+            <h3 class="text-xl font-bold mb-4">전략별 기대수익률 수정</h3>
+            <div id="edit-strategies-form" class="space-y-4"></div>
+            <div class="mt-6 flex justify-end space-x-3">
+                <button id="cancel-edit-strategies-btn" class="px-4 py-2 bg-slate-200 rounded hover:bg-slate-300">취소</button>
+                <button id="save-edit-strategies-btn" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" class="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm text-center">
+            <p id="confirm-message" class="mb-6"></p>
+            <div class="flex justify-center space-x-4">
+                <button id="confirm-cancel-btn" class="px-4 py-2 bg-slate-200 rounded hover:bg-slate-300">취소</button>
+                <button id="confirm-ok-btn" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">확인</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+    // --- STATE MANAGEMENT ---
+    let investments = [
+        { name: 'JEPI', quantity: 500, amount: 39267825, yield: 8.50, type: 'monthly', country: 'US', classification: '핵심' },
+        { name: 'JEPQ', quantity: 2000, amount: 154566000, yield: 11.10, type: 'monthly', country: 'US', classification: '핵심' },
+        { name: 'KODEX 미국배당', quantity: 4000, amount: 47260000, yield: 9.27, type: 'monthly', country: 'KR', classification: '핵심' },
+        { name: 'PLUS 고배당', quantity: 4500, amount: 54697500, yield: 15.00, type: 'monthly', country: 'KR', classification: '핵심' },
+        { name: 'KODEX 미국AI테크', quantity: 2250, amount: 26482500, yield: 14.00, type: 'monthly', country: 'KR', classification: '핵심' },
+        { name: 'RISE 200위클리', quantity: 6250, amount: 60562500, yield: 18.00, type: 'monthly', country: 'KR', classification: '핵심' },
+        { name: 'TIGER 미국30년', quantity: 3500, amount: 27597500, yield: 12.00, type: 'monthly', country: 'KR', classification: '핵심' },
+        { name: 'RISE AI반도체', quantity: 3000, amount: 36105000, yield: 14.68, type: 'monthly', country: 'KR', classification: '핵심' },
+        { name: 'RISE 미국배당100', quantity: 4000, amount: 35640000, yield: 14.00, type: 'monthly', country: 'KR', classification: '핵심' },
+        { name: 'QDTE', quantity: 3000, amount: 147397850, yield: 39.04, type: 'monthly', country: 'US', classification: '위성' },
+        { name: 'XDTE', quantity: 2000, amount: 122300500, yield: 30.73, type: 'monthly', country: 'US', classification: '위성' },
+        { name: 'TLTW', quantity: 500, amount: 15730275, yield: 17.17, type: 'monthly', country: 'US', classification: '위성' },
+        { name: 'PLTW', quantity: 550, amount: 40109015, yield: 24.58, type: 'monthly', country: 'US', classification: '위성' },
+        { name: 'CONY', quantity: 4000, amount: 40719000, yield: 150.67, type: 'monthly', country: 'US', classification: '고위험' },
+        { name: 'NVDY', quantity: 1500, amount: 35162075, yield: 80.90, type: 'monthly', country: 'US', classification: '고위험' },
+        { name: 'YBTC', quantity: 150, amount: 9983080, yield: 43.96, type: 'monthly', country: 'US', classification: '고위험' },
+        { name: 'ULTY', quantity: 4000, amount: 32686000, yield: 121.19, type: 'monthly', country: 'US', classification: '고위험' },
+        { name: 'TSLW', quantity: 600, amount: 27406380, yield: 30.36, type: 'monthly', country: 'US', classification: '고위험' },
+        { name: 'AAPW', quantity: 500, amount: 26859000, yield: 16.16, type: 'monthly', country: 'US', classification: '고위험' }
+    ];
+    let expenses = [
+        { name: '대표 급여 (연)', amount: 42000000 },
+        { name: '4대보험(회사부담분)', amount: 3163500 },
+        { name: '세무 기장료 (월)', amount: 1980000 },
+        { name: '세무 조정료 (연)', amount: 1500000 },
+        { name: '임대료', amount: 600000 },
+        { name: 'AI 서비스 구독료', amount: 2400000 },
+        { name: '부식비', amount: 3600000 },
+        { name: '접대비', amount: 6000000 },
+        { name: '기자재 구입', amount: 6000000 },
+        { name: '도서 구입', amount: 1200000 },
+        { name: '기타', amount: 3600000 }
+    ];
+    const strategies = {
+        maintain: { name: '현재 방향성 유지 (배당주 재투자)', defaultReturn: 25.0, color: 'bg-blue-100', textColor: 'text-blue-800' },
+        stabilize: { name: '안정화 전환 (토탈리턴)', defaultReturn: 12.0, color: 'bg-green-100', textColor: 'text-green-800' },
+        concentrate: { name: '특정 종목 비중 확대', defaultReturn: 35.0, color: 'bg-yellow-100', textColor: 'text-yellow-800' },
+        ai_tech: { name: 'AI 사업 연계 투자 (기술주)', defaultReturn: 40.0, color: 'bg-purple-100', textColor: 'text-purple-800' },
+        exit: { name: '출구 전략 준비 (자산 현금화)', defaultReturn: 5.0, color: 'bg-gray-100', textColor: 'text-gray-800' }
+    };
+    let chartInstances = {};
+
+    // --- ICONS ---
+    const editIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L14.732 3.732z" /></svg>`;
+    const deleteIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>`;
+
+    // --- UTILITY FUNCTIONS ---
+    const formatNumber = (num) => new Intl.NumberFormat('ko-KR').format(num);
+    const parseNumber = (str) => parseFloat(String(str).replace(/,/g, '')) || 0;
+
+    const applyThousandSeparator = (element) => {
+        if (!element) return; 
+        element.addEventListener('input', (e) => {
+            const value = e.target.value.replace(/,/g, '');
+            if (!isNaN(value) && value.length > 0) e.target.value = formatNumber(value);
+            else if (value.length === 0) e.target.value = '';
+        });
+    };
+
+    // --- RENDER FUNCTIONS ---
+    const renderInvestments = () => {
+        const listBody = document.getElementById('investment-list');
+        listBody.innerHTML = '';
+        let totalDividends = 0;
+        let totalInvestment = 0;
+
+        investments.forEach((inv, index) => {
+            const annualDividend = inv.amount * (inv.yield / 100);
+            totalDividends += annualDividend;
+            totalInvestment += inv.amount;
+
+            const quantityStep = inv.quantity > 500 ? 100 : (inv.quantity > 50 ? 10 : 1);
+            const yieldStep = 0.1;
+
+            const row = `
+                <tr class="border-b">
+                    <td class="p-2">${inv.name}</td>
+                    <td class="p-2 text-right">
+                        <div class="flex items-center justify-end space-x-1">
+                            <button class="px-2 py-0.5 text-sm font-bold rounded-md bg-slate-100 hover:bg-slate-200" onclick="updateInvestmentValue(${index}, 'quantity', -${quantityStep})">-</button>
+                            <span class="w-20 text-center font-medium">${formatNumber(inv.quantity)}</span>
+                            <button class="px-2 py-0.5 text-sm font-bold rounded-md bg-slate-100 hover:bg-slate-200" onclick="updateInvestmentValue(${index}, 'quantity', ${quantityStep})">+</button>
+                        </div>
+                    </td>
+                    <td class="p-2 text-right">${formatNumber(Math.round(inv.amount))} 원</td>
+                    <td class="p-2 text-right">
+                        <div class="flex items-center justify-end space-x-1">
+                            <button class="px-2 py-0.5 text-sm font-bold rounded-md bg-slate-100 hover:bg-slate-200" onclick="updateInvestmentValue(${index}, 'yield', -${yieldStep})">-</button>
+                            <span class="w-20 text-center font-medium">${inv.yield.toFixed(2)}%</span>
+                            <button class="px-2 py-0.5 text-sm font-bold rounded-md bg-slate-100 hover:bg-slate-200" onclick="updateInvestmentValue(${index}, 'yield', ${yieldStep})">+</button>
+                        </div>
+                    </td>
+                    <td class="p-2 text-right">${formatNumber(Math.round(annualDividend))} 원</td>
+                    <td class="p-2 text-center space-x-2">
+                        <button class="p-1 rounded-full hover:bg-slate-200 text-blue-600" onclick="openEditModal(${index})">${editIcon}</button>
+                        <button class="p-1 rounded-full hover:bg-slate-200 text-red-600" onclick="deleteInvestment(${index})">${deleteIcon}</button>
+                    </td>
+                </tr>
+            `;
+            listBody.innerHTML += row;
+        });
+        document.getElementById('total-dividends').textContent = `${formatNumber(Math.round(totalDividends))} 원`;
+        document.getElementById('totalRevenue').value = formatNumber(Math.round(totalDividends));
+        renderDashboard(totalInvestment, totalDividends);
+        renderAllAnalyses();
+    };
+    
+    window.updateInvestmentValue = (index, field, delta) => {
+        const inv = investments[index];
+        if (!inv) return;
+
+        if (field === 'quantity') {
+            const originalQuantity = inv.quantity;
+            if (originalQuantity <= 0 && delta < 0) return;
+
+            const pricePerShare = originalQuantity > 0 ? (inv.amount / originalQuantity) : 0;
+            
+            inv.quantity += delta;
+            if (inv.quantity < 0) inv.quantity = 0;
+            
+            if (pricePerShare > 0) {
+                inv.amount = inv.quantity * pricePerShare;
+            }
+
+        } else if (field === 'yield') {
+            inv.yield += delta;
+            if (inv.yield < 0) inv.yield = 0;
+        }
+        renderInvestments();
+    };
+
+    const renderExpenses = () => {
+        const listBody = document.getElementById('expense-list');
+        listBody.innerHTML = '';
+        let totalAnnualAmount = 0;
+
+        expenses.forEach((exp, index) => {
+            totalAnnualAmount += exp.amount;
+            const monthlyAmount = exp.amount / 12;
+            const row = `
+                <tr class="border-b">
+                    <td class="p-2">${exp.name}</td>
+                    <td class="p-2 text-right">${formatNumber(Math.round(monthlyAmount))} 원</td>
+                    <td class="p-2 text-right">${formatNumber(exp.amount)} 원</td>
+                    <td class="p-2 text-center space-x-2">
+                         <button class="p-1 rounded-full hover:bg-slate-200 text-blue-600" onclick="openEditExpenseModal(${index})">${editIcon}</button>
+                         <button class="p-1 rounded-full hover:bg-slate-200 text-red-600" onclick="deleteExpense(${index})">${deleteIcon}</button>
+                    </td>
+                </tr>
+            `;
+            listBody.innerHTML += row;
+        });
+        document.getElementById('total-monthly-expense').textContent = `${formatNumber(Math.round(totalAnnualAmount / 12))} 원`;
+        document.getElementById('total-annual-expense').textContent = `${formatNumber(totalAnnualAmount)} 원`;
+        document.getElementById('totalExpenses').value = formatNumber(totalAnnualAmount);
+    };
+
+    const renderDashboard = (totalInvestment, totalDividends) => {
+        const averageYield = (totalInvestment > 0) ? (totalDividends / totalInvestment) * 100 : 0;
+        document.getElementById('db-total-investment').textContent = `${formatNumber(Math.round(totalInvestment))} 원`;
+        document.getElementById('db-total-dividends').textContent = `${formatNumber(Math.round(totalDividends))} 원`;
+        document.getElementById('db-average-yield').textContent = `${averageYield.toFixed(2)} %`;
+        document.getElementById('projection-yield').value = averageYield.toFixed(2);
+    };
+
+    const renderAllAnalyses = () => {
+        renderDividendAnalysis('all');
+        renderDividendAnalysis('us');
+        renderDividendAnalysis('kr');
+    };
+
+    const renderDividendAnalysis = (filter) => {
+        const pieData = { labels: [], data: [] };
+        let filteredInvestments = investments;
+        
+        const sortOrder = { '핵심': 1, '위성': 2, '고위험': 3 };
+        const sortedInvestments = [...investments].sort((a, b) => (sortOrder[a.classification] || 99) - (sortOrder[b.classification] || 99));
+
+        if (filter === 'all') {
+            const usTotal = sortedInvestments.filter(i => i.country === 'US').reduce((sum, i) => sum + (i.amount * i.yield / 100), 0);
+            const krTotal = sortedInvestments.filter(i => i.country === 'KR').reduce((sum, i) => sum + (i.amount * i.yield / 100), 0);
+            pieData.labels = ['미국 주식', '한국 주식'];
+            pieData.data = [usTotal, krTotal];
+            filteredInvestments = sortedInvestments;
+        } else {
+            filteredInvestments = sortedInvestments.filter(inv => inv.country.toLowerCase() === filter);
+            filteredInvestments.forEach(inv => {
+                const annualDividend = inv.amount * (inv.yield / 100);
+                pieData.labels.push(inv.name);
+                pieData.data.push(annualDividend);
+            });
+        }
+        
+        const suffix = filter.charAt(0).toUpperCase() + filter.slice(1);
+        renderDividendPieChart(`dividendPieChart${suffix}`, pieData);
+        renderAnalysisList(`dividendList${suffix}`, filteredInvestments);
+    };
+
+    const renderAnalysisList = (elementId, data) => {
+        const container = document.getElementById(elementId);
+        if (!container) return;
+        let tableHTML = `<table class="min-w-full bg-white border text-sm">
+            <thead class="bg-slate-100">
+                <tr>
+                    <th class="p-2 text-left">분류</th>
+                    <th class="p-2 text-left">종목명</th>
+                    <th class="p-2 text-right">연간 배당금</th>
+                    <th class="p-2 text-right">월평균 배당금</th>
+                </tr>
+            </thead><tbody>`;
+        
+        data.forEach(inv => {
+            const annualDividend = inv.amount * (inv.yield / 100);
+            const monthlyDividend = annualDividend / 12;
+            tableHTML += `<tr class="border-b">
+                <td class="p-2 font-medium">${inv.classification}</td>
+                <td class="p-2 font-medium">${inv.name}</td>
+                <td class="p-2 text-right">${formatNumber(Math.round(annualDividend))} 원</td>
+                <td class="p-2 text-right">${formatNumber(Math.round(monthlyDividend))} 원</td>
+            </tr>`;
+        });
+        tableHTML += `</tbody></table>`;
+        container.innerHTML = tableHTML;
+    };
+
+    const renderDividendPieChart = (canvasId, pieData) => {
+        const ctx = document.getElementById(canvasId)?.getContext('2d');
+        if (!ctx) return;
+        if (chartInstances[canvasId]) chartInstances[canvasId].destroy();
+        chartInstances[canvasId] = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: pieData.labels,
+                datasets: [{
+                    data: pieData.data,
+                    backgroundColor: ['#3b82f6', '#ef4444', '#22c55e', '#f97316', '#8b5cf6', '#eab308', '#14b8a6', '#ec4899', '#64748b', '#d946ef', '#06b6d4', '#f59e0b', '#10b981', '#84cc16', '#a855f7', '#f43f5e']
+                }]
+            },
+            options: { 
+                responsive: true, 
+                plugins: { 
+                    legend: { display: canvasId === 'dividendPieChartAll' || pieData.labels.length < 10 },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed;
+                                const sum = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = sum > 0 ? ((value / sum) * 100).toFixed(2) + '%' : '0.00%';
+                                return `${label}: ${formatNumber(Math.round(value))} 원 (${percentage})`;
+                            }
+                        }
+                    }
+                } 
+            }
+        });
+    };
+    
+    const renderGrowthChart = (labels, data) => {
+        const ctx = document.getElementById('growthChart')?.getContext('2d');
+        if (!ctx) return;
+        if (chartInstances['growthChart']) chartInstances['growthChart'].destroy();
+        chartInstances['growthChart'] = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '예상 총자산',
+                    data: data,
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    fill: true,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { ticks: { callback: value => `${(value / 100000000).toFixed(1)}억` } } },
+                plugins: { tooltip: { callbacks: { label: context => ` ${formatNumber(Math.round(context.parsed.y))} 원` } } }
+            }
+        });
+    };
+
+    const createTimeline = () => {
+        const paletteContainer = document.getElementById('strategy-palette');
+        const timelineContainer = document.getElementById('timeline-container');
+        const definitionsContainer = document.getElementById('strategy-definitions');
+        paletteContainer.innerHTML = '';
+        timelineContainer.innerHTML = '';
+        definitionsContainer.innerHTML = '';
+
+        for(const [key, strategy] of Object.entries(strategies)) {
+            definitionsContainer.innerHTML += `<li><span class="font-bold">${strategy.name}:</span> (기본 수익률 ${strategy.defaultReturn}%)</li>`;
+            const block = document.createElement('div');
+            block.className = `strategy-block p-2 rounded-lg text-xs text-center ${strategy.color} ${strategy.textColor} font-bold`;
+            block.draggable = true;
+            block.dataset.strategyKey = key;
+            block.textContent = strategy.name;
+            block.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', key);
+            });
+            paletteContainer.appendChild(block);
+        }
+
+        for (let i = 1; i <= 20; i++) {
+            const yearSlot = document.createElement('div');
+            yearSlot.className = 'year-slot p-2 rounded-lg flex flex-col justify-center items-center';
+            yearSlot.dataset.year = i;
+            yearSlot.innerHTML = `<span class="text-sm text-slate-400">${i}년차</span>`;
+
+            yearSlot.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                yearSlot.classList.add('drag-over');
+            });
+            yearSlot.addEventListener('dragleave', () => {
+                yearSlot.classList.remove('drag-over');
+            });
+            yearSlot.addEventListener('drop', (e) => {
+                e.preventDefault();
+                yearSlot.classList.remove('drag-over');
+                const strategyKey = e.dataTransfer.getData('text/plain');
+                const strategy = strategies[strategyKey];
+                if (strategy) {
+                    yearSlot.innerHTML = `
+                        <div class="w-full text-center p-1 rounded ${strategy.color} ${strategy.textColor} text-xs font-bold mb-1">${strategy.name}</div>
+                        <input type="number" step="0.1" class="timeline-return w-full text-xs p-1 border rounded text-center" value="${strategy.defaultReturn}">
+                    `;
+                }
+            });
+            timelineContainer.appendChild(yearSlot);
+        }
+    };
+
+    const renderMilestoneChart = (labels, data) => {
+        const ctx = document.getElementById('milestoneChart')?.getContext('2d');
+        if (!ctx) return;
+        if (chartInstances['milestoneChart']) chartInstances['milestoneChart'].destroy();
+        chartInstances['milestoneChart'] = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '예상 총자산',
+                    data: data,
+                    borderColor: '#16a34a',
+                    backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                    fill: true,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { ticks: { callback: value => `${(value / 100000000).toFixed(1)}억` } } },
+                plugins: { tooltip: { callbacks: { label: context => ` ${formatNumber(Math.round(context.parsed.y))} 원` } } }
+            }
+        });
+    };
+
+    // --- MODAL & CRUD HANDLERS ---
+    const investmentModal = document.getElementById('edit-modal');
+    window.openEditModal = (index) => {
+        const inv = investments[index];
+        document.getElementById('edit-inv-index').value = index;
+        document.getElementById('edit-inv-name').value = inv.name;
+        document.getElementById('edit-inv-quantity').value = inv.quantity;
+        document.getElementById('edit-inv-amount').value = formatNumber(inv.amount);
+        document.getElementById('edit-inv-yield').value = inv.yield;
+        investmentModal.classList.remove('hidden');
+    };
+    document.getElementById('cancel-edit-btn').addEventListener('click', () => investmentModal.classList.add('hidden'));
+    document.getElementById('save-edit-btn').addEventListener('click', () => {
+        const index = document.getElementById('edit-inv-index').value;
+        const originalInv = investments[index];
+        const newQuantity = parseInt(document.getElementById('edit-inv-quantity').value) || 0;
+        const newAmountFromInput = parseNumber(document.getElementById('edit-inv-amount').value);
+        let finalAmount = newAmountFromInput;
+
+        if (newQuantity !== originalInv.quantity && originalInv.quantity > 0) {
+            const pricePerShare = originalInv.amount / originalInv.quantity;
+            finalAmount = newQuantity * pricePerShare;
+        }
+
+        investments[index] = {
+            ...investments[index],
+            name: document.getElementById('edit-inv-name').value,
+            quantity: newQuantity,
+            amount: Math.round(finalAmount),
+            yield: parseFloat(document.getElementById('edit-inv-yield').value) || 0,
+        };
+        renderInvestments();
+        investmentModal.classList.add('hidden');
+    });
+
+    const expenseModal = document.getElementById('edit-expense-modal');
+    window.openEditExpenseModal = (index) => {
+        const exp = expenses[index];
+        document.getElementById('edit-exp-index').value = index;
+        document.getElementById('edit-exp-name').value = exp.name;
+        document.getElementById('edit-exp-amount').value = formatNumber(Math.round(exp.amount / 12));
+        expenseModal.classList.remove('hidden');
+    };
+    document.getElementById('cancel-edit-exp-btn').addEventListener('click', () => expenseModal.classList.add('hidden'));
+    document.getElementById('save-edit-exp-btn').addEventListener('click', () => {
+        const index = document.getElementById('edit-exp-index').value;
+        const monthlyAmount = parseNumber(document.getElementById('edit-exp-amount').value);
+        expenses[index] = {
+            name: document.getElementById('edit-exp-name').value,
+            amount: monthlyAmount * 12,
+        };
+        renderExpenses();
+        expenseModal.classList.add('hidden');
+    });
+
+    const strategyModal = document.getElementById('edit-strategies-modal');
+    document.getElementById('edit-strategies-btn').addEventListener('click', () => {
+        const form = document.getElementById('edit-strategies-form');
+        form.innerHTML = '';
+        for (const [key, strategy] of Object.entries(strategies)) {
+            form.innerHTML += `
+                <div class="grid grid-cols-3 items-center gap-2">
+                    <label class="col-span-2">${strategy.name}</label>
+                    <input type="number" step="0.1" data-key="${key}" value="${strategy.defaultReturn}" class="w-full p-1 border rounded">
+                </div>
+            `;
+        }
+        strategyModal.classList.remove('hidden');
+    });
+    document.getElementById('cancel-edit-strategies-btn').addEventListener('click', () => strategyModal.classList.add('hidden'));
+    document.getElementById('save-edit-strategies-btn').addEventListener('click', () => {
+        document.querySelectorAll('#edit-strategies-form input').forEach(input => {
+            const key = input.dataset.key;
+            strategies[key].defaultReturn = parseFloat(input.value) || 0;
+        });
+        createTimeline(); // Re-create timeline with new defaults
+        strategyModal.classList.add('hidden');
+    });
+
+    const confirmModal = document.getElementById('confirm-modal');
+    const confirmMessage = document.getElementById('confirm-message');
+    const confirmOkBtn = document.getElementById('confirm-ok-btn');
+    const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
+    let confirmCallback = null;
+
+    const showConfirmModal = (message, onConfirm) => {
+        confirmMessage.textContent = message;
+        confirmCallback = onConfirm;
+        confirmModal.classList.remove('hidden');
+    };
+
+    confirmCancelBtn.addEventListener('click', () => {
+        confirmModal.classList.add('hidden');
+        confirmCallback = null;
+    });
+
+    confirmOkBtn.addEventListener('click', () => {
+        if (confirmCallback) {
+            confirmCallback();
+        }
+        confirmModal.classList.add('hidden');
+        confirmCallback = null;
+    });
+
+    window.deleteInvestment = (index) => {
+        showConfirmModal(`'${investments[index].name}' 항목을 삭제하시겠습니까?`, () => {
+            investments.splice(index, 1);
+            renderInvestments();
+        });
+    };
+    
+    window.deleteExpense = (index) => {
+        showConfirmModal(`'${expenses[index].name}' 항목을 삭제하시겠습니까?`, () => {
+            expenses.splice(index, 1);
+            renderExpenses();
+        });
+    };
+
+    document.getElementById('add-inv-btn').addEventListener('click', () => {
+        const name = document.getElementById('inv-name').value;
+        const quantity = parseInt(document.getElementById('inv-quantity').value) || 0;
+        const amount = parseNumber(document.getElementById('inv-amount').value);
+        const yieldRate = parseFloat(document.getElementById('inv-yield').value) || 0;
+
+        if (name && quantity > 0 && amount > 0 && yieldRate > 0) {
+            investments.push({ 
+                name, quantity, amount, yield: yieldRate, 
+                type: 'monthly', country: 'US', classification: '위성' // Default new item
+            });
+            renderInvestments();
+            document.getElementById('inv-name').value = '';
+            document.getElementById('inv-quantity').value = '';
+            document.getElementById('inv-amount').value = '';
+            document.getElementById('inv-yield').value = '';
+        } else {
+            alert('모든 투자 정보를 올바르게 입력해주세요.');
+        }
+    });
+
+    document.getElementById('add-exp-btn').addEventListener('click', () => {
+        const name = document.getElementById('exp-name').value;
+        const monthlyAmount = parseNumber(document.getElementById('exp-amount').value);
+        if (name && monthlyAmount > 0) {
+            expenses.push({ name, amount: monthlyAmount * 12 });
+            renderExpenses();
+            document.getElementById('exp-name').value = '';
+            document.getElementById('exp-amount').value = '';
+        } else {
+            alert('항목명과 월간 비용을 올바르게 입력해주세요.');
+        }
+    });
+
+    // --- SIMULATOR LOGIC ---
+    document.getElementById('calculateBtn').addEventListener('click', function() {
+        const totalRevenue = parseNumber(document.getElementById('totalRevenue').value);
+        const totalExpenses = parseNumber(document.getElementById('totalExpenses').value);
+        const usRevenueRatio = parseFloat(document.getElementById('usRevenueRatioSlider').value) / 100;
+        const corpTaxRateInput = parseFloat(document.getElementById('corpTaxRate').value) / 100 || 0.09;
+        const usWithholdingRate = 0.15;
+        const totalCorpTaxRate = corpTaxRateInput * 1.1;
+        const usRevenue = totalRevenue * usRevenueRatio;
+        const taxPaidInUS = usRevenue * usWithholdingRate;
+        const taxableIncome = totalRevenue - totalExpenses;
+
+        if (taxableIncome <= 0) {
+            displayResults({ taxableIncome: Math.max(0, taxableIncome), calculatedTax: 0, taxPaidInUS, foreignTaxCredit: 0, finalTaxDue: 0 });
+            return;
+        }
+
+        const calculatedTax = taxableIncome * totalCorpTaxRate;
+        const foreignTaxCreditLimit = calculatedTax * (usRevenue / taxableIncome);
+        const applicableForeignTaxCredit = Math.min(taxPaidInUS, foreignTaxCreditLimit);
+        let finalTaxDue = Math.max(0, calculatedTax - applicableForeignTaxCredit);
+        displayResults({ taxableIncome, calculatedTax, taxPaidInUS, foreignTaxCredit: applicableForeignTaxCredit, finalTaxDue });
+    });
+
+    function displayResults(data) {
+        const formatter = (val) => `${formatNumber(Math.round(val))} 원`;
+        document.getElementById('taxableIncome').textContent = formatter(data.taxableIncome);
+        document.getElementById('calculatedTax').textContent = formatter(data.calculatedTax);
+        document.getElementById('taxPaidInUS').textContent = formatter(data.taxPaidInUS);
+        document.getElementById('foreignTaxCredit').textContent = `- ${formatter(data.foreignTaxCredit)}`;
+        const finalResultBox = document.getElementById('finalResultBox');
+        const finalTaxDueText = document.getElementById('finalTaxDueText');
+        const finalTaxInfo = document.getElementById('finalTaxInfo');
+
+        if (data.finalTaxDue <= 0) {
+            finalResultBox.className = 'mt-6 p-4 rounded-lg bg-green-100 text-green-800';
+            finalTaxDueText.textContent = "최종 납부세액: 0 원";
+            finalTaxInfo.textContent = "외국납부세액공제로 법인세 전액이 공제되었습니다.";
+        } else {
+            finalResultBox.className = 'mt-6 p-4 rounded-lg bg-red-100 text-red-800';
+            finalTaxDueText.textContent = `최종 납부세액: ${formatter(data.finalTaxDue)}`;
+            finalTaxInfo.textContent = "산출된 법인세에서 외국납부세액공제를 제외한 금액입니다.";
+        }
+        document.getElementById('results').style.display = 'block';
+    }
+
+    // --- GROWTH PROJECTION LOGIC ---
+    document.getElementById('project-growth-btn').addEventListener('click', () => {
+        const reinvestRate = (parseFloat(document.getElementById('reinvest-rate').value) || 0) / 100;
+        const averageYield = (parseFloat(document.getElementById('projection-yield').value) || 0) / 100;
+        const totalInvestment = investments.reduce((sum, inv) => sum + inv.amount, 0);
+
+        const projectionPeriods = [1, 3, 5, 10, 20];
+        let currentAsset = totalInvestment;
+        let resultsHTML = '<table class="w-full text-sm text-left text-slate-500 mt-2">';
+        resultsHTML += '<thead class="text-xs text-slate-700 uppercase bg-slate-100"><tr><th class="px-4 py-2">기간</th><th class="px-4 py-2 text-right">예상 총자산</th></tr></thead><tbody>';
+        
+        const chartLabels = ['현재'];
+        const chartData = [totalInvestment];
+
+        let lastYear = 0;
+        for (const year of projectionPeriods) {
+            for (let i = 0; i < (year - lastYear); i++) {
+                const annualDividend = currentAsset * averageYield;
+                const reinvestmentAmount = annualDividend * reinvestRate;
+                currentAsset += reinvestmentAmount;
+            }
+            resultsHTML += `<tr class="bg-white border-b"><td class="px-4 py-2 font-medium text-slate-900">${year}년 후</td><td class="px-4 py-2 text-right">${formatNumber(Math.round(currentAsset))} 원</td></tr>`;
+            chartLabels.push(`${year}년 후`);
+            chartData.push(currentAsset);
+            lastYear = year;
+        }
+        resultsHTML += '</tbody></table>';
+
+        document.getElementById('projection-results').innerHTML = resultsHTML;
+        renderGrowthChart(chartLabels, chartData);
+    });
+
+    // --- MILESTONE SIMULATION ---
+     document.getElementById('runMilestoneSimBtn').addEventListener('click', () => {
+        const initialInvestment = investments.reduce((sum, inv) => sum + inv.amount, 0);
+        let currentAsset = initialInvestment;
+        const assetGrowth = [initialInvestment];
+        const labels = ['시작'];
+
+        const yearSlots = document.querySelectorAll('#timeline-container .year-slot');
+        for (let i = 0; i < 20; i++) {
+            const input = yearSlots[i].querySelector('.timeline-return');
+            const annualReturn = (input ? parseFloat(input.value) : 0) / 100;
+            currentAsset *= (1 + annualReturn);
+            assetGrowth.push(currentAsset);
+            labels.push(`${i + 1}년`);
+        }
+        
+        renderMilestoneChart(labels, assetGrowth);
+        
+        const summaryContainer = document.getElementById('milestoneSummary');
+        summaryContainer.innerHTML = `
+            <table class="w-full text-sm text-left text-slate-500">
+                <thead class="text-xs text-slate-700 uppercase bg-slate-100"><tr><th class="px-4 py-2">기간</th><th class="px-4 py-2 text-right">예상 총자산</th></tr></thead>
+                <tbody>
+                    <tr class="bg-white border-b"><td class="px-4 py-2 font-medium">1년 후</td><td class="px-4 py-2 text-right">${formatNumber(Math.round(assetGrowth[1]))} 원</td></tr>
+                    <tr class="bg-white border-b"><td class="px-4 py-2 font-medium">5년 후</td><td class="px-4 py-2 text-right">${formatNumber(Math.round(assetGrowth[5]))} 원</td></tr>
+                    <tr class="bg-white border-b"><td class="px-4 py-2 font-medium">10년 후</td><td class="px-4 py-2 text-right">${formatNumber(Math.round(assetGrowth[10]))} 원</td></tr>
+                    <tr class="bg-white border-b"><td class="px-4 py-2 font-medium">20년 후</td><td class="px-4 py-2 text-right">${formatNumber(Math.round(assetGrowth[20]))} 원</td></tr>
+                </tbody>
+            </table>`;
+    });
+    
+    // --- DATA I/O ---
+    document.getElementById('saveDataBtn').addEventListener('click', () => {
+        const dataToSave = { investments, expenses };
+        const jsonString = JSON.stringify(dataToSave, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = '51labs_data.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('loadDataBtn').addEventListener('click', () => {
+        document.getElementById('fileInput').click();
+    });
+
+    document.getElementById('fileInput').addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                if (data && Array.isArray(data.investments) && Array.isArray(data.expenses)) {
+                    investments = data.investments;
+                    expenses = data.expenses;
+                    renderInvestments();
+                    renderExpenses();
+                    alert('데이터를 성공적으로 불러왔습니다.');
+                } else {
+                    alert('파일 형식이 올바르지 않습니다.');
+                }
+            } catch (error) {
+                alert('유효하지 않은 JSON 파일입니다.');
+                console.error("Failed to parse JSON:", error);
+            }
+        };
+        reader.readAsText(file);
+        event.target.value = null; // Reset file input
+    });
+
+
+    // --- TAB INITIALIZATION ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const tabs = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                tabContents.forEach(content => content.classList.remove('active'));
+                const activeContent = document.getElementById(tab.dataset.tab);
+                activeContent.classList.add('active');
+                if (tab.dataset.tab === 'dividend-analysis') {
+                    renderAllAnalyses();
+                }
+            });
+        });
+
+        const subTabs = document.querySelectorAll('.sub-tab-btn');
+        const subTabContents = document.querySelectorAll('.sub-tab-content');
+        subTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                subTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                subTabContents.forEach(content => content.classList.remove('active'));
+                document.getElementById(tab.dataset.subtab).classList.add('active');
+            });
+        });
+        
+        ['inv-amount', 'exp-amount', 'edit-inv-amount', 'edit-exp-amount'].forEach(id => {
+            applyThousandSeparator(document.getElementById(id));
+        });
+        
+        document.getElementById('usRevenueRatioSlider').addEventListener('input', function() {
+            document.getElementById('usRatioDisplay').textContent = this.value;
+            document.getElementById('domesticRatioDisplay').textContent = 100 - this.value;
+        });
+        
+        document.getElementById('edit-strategies-btn').innerHTML = editIcon;
+
+        createTimeline();
+        renderExpenses();
+        renderInvestments();
+        
+        document.querySelector('.tab-btn[data-tab="investments"]').click();
+        document.querySelector('.sub-tab-btn[data-subtab="all"]').click();
+    });
+    </script>
+</body>
+</html>
+
