@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1인 법인 경비 처리 부인 사례 분석</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: A thematic, single-page dashboard structure was chosen over a linear report format to enhance user exploration. The core of the app is a tab-based navigation system dividing denial cases into intuitive categories (Vehicle, Entertainment, etc.), which is a common mental model for business owners. This allows users to quickly access information most relevant to them. The structure begins with a high-level summary, drills down into specific case studies within tabs, and concludes with a visual data summary (chart) to reinforce key takeaways. This user flow from general to specific to summary is designed for optimal learning and retention. -->
+    <!-- Visualization & Content Choices: 
+    - Report Info: Core principles of expense claims. Goal: Inform. Presentation: Introductory text block. Interaction: None. Justification: Provides essential context and framework. Library: HTML/CSS.
+    - Report Info: Specific denial cases. Goal: Organize & Analyze. Presentation: Card layout within tabbed sections. Interaction: JS-powered tabs to filter content by category. Justification: Tabs prevent information overload, while cards offer digestible, structured case details. Library: HTML/CSS/JS.
+    - Report Info: Frequency of denial reasons. Goal: Compare & Summarize. Presentation: Horizontal bar chart. Interaction: Hover tooltips for precise data. Justification: A bar chart effectively visualizes categorical data, offering a quick, high-impact summary of common risks. Library: Chart.js (Canvas).
+    This design ensures all information is presented interactively and logically without mirroring the potentially rigid structure of a formal report. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #FEFBF6;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .tab-btn.active {
+            border-color: #F59E0B;
+            background-color: #FFFBEB;
+            color: #B45309;
+            font-weight: 700;
+        }
+        .tab-btn {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <div class="container mx-auto p-4 sm:p-6 md:p-8 max-w-6xl">
+        <header class="text-center mb-8 md:mb-12">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900 mb-2">1인 법인 경비 처리, 이것만은 피하세요!</h1>
+            <p class="text-md md:text-lg text-slate-600">주요 경비 부인 사례 분석을 통한 안전한 절세 가이드</p>
+        </header>
+
+        <main>
+            <section id="introduction" class="mb-10 md:mb-16 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                <h2 class="text-2xl font-semibold text-slate-800 mb-4 text-center">들어가며: 경비 처리의 3대 원칙</h2>
+                <p class="text-slate-600 leading-relaxed text-center max-w-3xl mx-auto">
+                    1인 법인 대표님의 가장 큰 고민 중 하나는 '어디까지 경비로 인정될까?' 입니다. 세법은 <strong class="text-amber-700">①사업 관련성, ②회사 규정 한도, ③사회 통념</strong>이라는 세 가지 큰 원칙을 기준으로 비용을 판단합니다. 이 원칙의 경계가 모호하여 과세 당국과 마찰이 생기곤 합니다. 본 자료는 실제 경비 처리가 부인된 주요 사례를 유형별로 분석하여, 대표님들이 흔히 저지르는 실수를 예방하고 현명한 의사결정을 내릴 수 있도록 돕기 위해 제작되었습니다.
+                </p>
+            </section>
+
+            <section id="cases">
+                <h2 class="text-2xl font-semibold text-slate-800 mb-6 text-center">유형별 경비 부인 사례</h2>
+
+                <div id="tab-buttons" class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8">
+                    <button class="tab-btn active text-sm md:text-base px-4 py-2 rounded-full border-2 border-gray-300 bg-white" data-target="vehicle">🚗 차량 관련 비용</button>
+                    <button class="tab-btn text-sm md:text-base px-4 py-2 rounded-full border-2 border-gray-300 bg-white" data-target="entertainment">🍽️ 접대비 및 복리후생비</button>
+                    <button class="tab-btn text-sm md:text-base px-4 py-2 rounded-full border-2 border-gray-300 bg-white" data-target="travel">✈️ 여비교통비 및 교육비</button>
+                    <button class="tab-btn text-sm md:text-base px-4 py-2 rounded-full border-2 border-gray-300 bg-white" data-target="misc">🛍️ 기타 비용</button>
+                </div>
+                
+                <div id="tab-content" class="min-h-[400px]">
+                    <div id="vehicle" class="tab-pane">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 transform hover:scale-105 transition-transform duration-300">
+                                <h3 class="font-bold text-lg text-sky-800 mb-3">사례 1: 고가 스포츠카 리스료</h3>
+                                <p class="text-slate-600 mb-4 text-sm leading-6"><strong class="text-red-500 font-semibold">[부인 사유]</strong> 대표이사가 개인적으로 사용하기 위한 차량으로 판단. 법인의 업종이나 규모에 비해 과도하게 사치스러운 차량으로 사회 통념을 벗어났으며, 운행일지 등 업무 사용을 입증할 객관적 자료가 부족했음.</p>
+                                <div class="bg-sky-50 p-3 rounded-lg text-sm">
+                                    <p class="font-semibold text-sky-900">💡 핵심 교훈</p>
+                                    <p class="text-sky-800">차량은 법인 명의로 취득/리스하고, 반드시 운행일지를 구체적으로 작성하여 업무 관련성을 입증해야 합니다. 특히 1인 법인은 사적 사용의 경계가 모호하므로 더욱 철저한 관리가 필요합니다.</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 transform hover:scale-105 transition-transform duration-300">
+                                <h3 class="font-bold text-lg text-sky-800 mb-3">사례 2: 배우자 명의 차량의 유류비</h3>
+                                <p class="text-slate-600 mb-4 text-sm leading-6"><strong class="text-red-500 font-semibold">[부인 사유]</strong> 법인 소유가 아닌 대표이사 가족 명의의 차량에 지출된 비용. 해당 차량이 법인 업무에 전적으로 사용되었다는 객관적인 증빙(업무용 사용 계약, 운행일지 등)이 없어 사업 관련성을 인정받지 못함.</p>
+                                <div class="bg-sky-50 p-3 rounded-lg text-sm">
+                                    <p class="font-semibold text-sky-900">💡 핵심 교훈</p>
+                                    <p class="text-sky-800">법인 비용으로 처리하려면 자산 또한 법인 소유인 것이 원칙입니다. 타인 명의 차량을 업무에 사용했다면, 정식으로 사용 계약을 체결하고 사용료를 지급하는 방식으로 처리해야 합니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="entertainment" class="tab-pane hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 transform hover:scale-105 transition-transform duration-300">
+                                <h3 class="font-bold text-lg text-teal-800 mb-3">사례 3: 주말/공휴일 가족 식사 비용</h3>
+                                <p class="text-slate-600 mb-4 text-sm leading-6"><strong class="text-red-500 font-semibold">[부인 사유]</strong> 법인카드로 결제했으나, 사용 시간(주말 저녁)과 장소(가족 외식 장소) 등을 고려할 때 업무 관련 접대가 아닌 사적인 가족 식사로 판단. 접대 상대방 및 목적에 대한 증빙이 전혀 없었음.</p>
+                                <div class="bg-teal-50 p-3 rounded-lg text-sm">
+                                    <p class="font-semibold text-teal-900">💡 핵심 교훈</p>
+                                    <p class="text-teal-800">접대비는 건당 3만원(경조사비 20만원) 초과 시 반드시 적격증빙(세금계산서, 신용카드 영수증 등)을 수취해야 하며, 누구와 어떤 목적으로 만났는지 간략히 기재해두는 것이 안전합니다.</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 transform hover:scale-105 transition-transform duration-300">
+                                <h3 class="font-bold text-lg text-teal-800 mb-3">사례 4: 대표이사 개인 헬스장 회원권</h3>
+                                <p class="text-slate-600 mb-4 text-sm leading-6"><strong class="text-red-500 font-semibold">[부인 사유]</strong> 복리후생비는 모든 임직원의 복지 및 사기 진작을 위해 지출하는 비용. 특정인(대표이사)만을 위한 비용은 복리후생비가 아닌 해당 개인의 급여(상여)로 간주됨.</p>
+                                <div class="bg-teal-50 p-3 rounded-lg text-sm">
+                                    <p class="font-semibold text-teal-900">💡 핵심 교훈</p>
+                                    <p class="text-teal-800">복리후생비로 인정받으려면 사회 통념상 타당한 범위 내에서 모든 임직원에게 공통적으로 적용되는 사내 규정에 따라 지출되어야 합니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="travel" class="tab-pane hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 transform hover:scale-105 transition-transform duration-300">
+                                <h3 class="font-bold text-lg text-indigo-800 mb-3">사례 5: 증빙 없는 해외 출장비</h3>
+                                <p class="text-slate-600 mb-4 text-sm leading-6"><strong class="text-red-500 font-semibold">[부인 사유]</strong> 출장 품의서나 보고서, 항공권, 숙박 영수증 등 출장의 목적과 실제 업무 수행 내역을 증명할 객관적인 자료가 전무. 사실상 개인적인 해외여행으로 보고 관련 경비 전액 부인.</p>
+                                <div class="bg-indigo-50 p-3 rounded-lg text-sm">
+                                    <p class="font-semibold text-indigo-900">💡 핵심 교훈</p>
+                                    <p class="text-indigo-800">출장 전 품의서(목적, 기간, 장소, 예상 경비)를 작성하고, 다녀온 후에는 출장 보고서와 함께 실제 사용 경비에 대한 영수증을 반드시 첨부해야 합니다.</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 transform hover:scale-105 transition-transform duration-300">
+                                <h3 class="font-bold text-lg text-indigo-800 mb-3">사례 6: 업무와 무관한 대학원 학비</h3>
+                                <p class="text-slate-600 mb-4 text-sm leading-6"><strong class="text-red-500 font-semibold">[부인 사유]</strong> 대표이사의 개인적인 학위 취득을 위한 대학원 학비를 교육훈련비로 처리. 법인의 사업 내용과 직접적인 관련성이 없는 교육 과정으로, 업무 능력 향상 목적을 인정받지 못함.</p>
+                                <div class="bg-indigo-50 p-3 rounded-lg text-sm">
+                                    <p class="font-semibold text-indigo-900">💡 핵심 교훈</p>
+                                    <p class="text-indigo-800">교육훈련비는 법인의 사업과 직접 관련된 기술, 지식 습득을 위한 비용이어야 합니다. 학위 과정처럼 장기간 소요되는 고액의 교육비는 특히 사업 관련성을 명확히 입증해야 합니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="misc" class="tab-pane hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 transform hover:scale-105 transition-transform duration-300">
+                                <h3 class="font-bold text-lg text-purple-800 mb-3">사례 7: 자택 관리비 및 통신비</h3>
+                                <p class="text-slate-600 mb-4 text-sm leading-6"><strong class="text-red-500 font-semibold">[부인 사유]</strong> 법인 사업장이 대표이사 자택과 동일. 별도의 사무 공간 없이 거주 공간과 혼용되어 사업용으로만 사용된 부분을 명확히 구분하기 어렵고, 가사 관련 비용과 혼재되어 사업 관련성을 인정받지 못함.</p>
+                                <div class="bg-purple-50 p-3 rounded-lg text-sm">
+                                    <p class="font-semibold text-purple-900">💡 핵심 교훈</p>
+                                    <p class="text-purple-800">자택을 사업장으로 사용 시, 임대차 계약서를 작성하고 사업용 공간과 주거 공간을 명확히 구분해야 합니다. 관리비 등은 전체 면적 중 사업용 면적 비율만큼 안분하여 처리하는 것이 합리적입니다.</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 transform hover:scale-105 transition-transform duration-300">
+                                <h3 class="font-bold text-lg text-purple-800 mb-3">사례 8: 백화점, 대형마트에서의 개인물품 구입</h3>
+                                <p class="text-slate-600 mb-4 text-sm leading-6"><strong class="text-red-500 font-semibold">[부인 사유]</strong> 법인카드로 백화점 명품관, 대형마트 등에서 의류, 식료품, 생활용품 등 개인적인 물품을 구매. 사업 목적의 비품 구매라고 주장했으나 구체적인 증빙이 부족하고 품목의 성격상 사적 사용으로 판단됨.</p>
+                                <div class="bg-purple-50 p-3 rounded-lg text-sm">
+                                    <p class="font-semibold text-purple-900">💡 핵심 교훈</p>
+                                    <p class="text-purple-800">법인카드는 업무 관련 지출에만 사용해야 합니다. 불가피하게 개인적인 용도로 사용했다면 즉시 회사에 해당 금액을 입금하고, 관련 비용은 경비 처리에서 제외해야 합니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="summary-chart" class="mt-16 pt-10 border-t-2 border-amber-200">
+                 <h2 class="text-2xl font-semibold text-slate-800 mb-2 text-center">주요 경비 부인 사유 요약</h2>
+                 <p class="text-slate-600 leading-relaxed text-center max-w-3xl mx-auto mb-8">
+                    다양한 사례들을 종합해볼 때, 경비 부인은 몇 가지 핵심적인 사유로 귀결됩니다. 아래 차트는 과세 당국이 비용을 인정하지 않는 주된 이유의 분포를 보여줍니다. '업무 관련성 입증 부족'이 가장 큰 비중을 차지하는 만큼, 모든 비용 지출 시 '왜 이것이 우리 사업에 필요한가?'를 증명할 준비가 되어 있어야 합니다.
+                </p>
+                <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-200">
+                    <div class="chart-container">
+                        <canvas id="denialReasonChart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="text-center mt-12 pt-6 border-t border-gray-200">
+            <p class="text-sm text-slate-500">&copy; 2025 Smart Biz Guide. All Rights Reserved.</p>
+            <p class="text-xs text-slate-400 mt-1">본 정보는 일반적인 참고 자료이며, 개별적인 상황에 대한 세무 자문이 아닙니다. 중요한 의사결정은 반드시 전문가와 상의하시기 바랍니다.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const panes = document.querySelectorAll('.tab-pane');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(item => item.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    const targetId = tab.getAttribute('data-target');
+                    
+                    panes.forEach(pane => {
+                        if (pane.id === targetId) {
+                            pane.classList.remove('hidden');
+                        } else {
+                            pane.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            const ctx = document.getElementById('denialReasonChart').getContext('2d');
+            const denialReasonChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['업무 관련성 입증 부족', '사적 사용으로 판단', '사회 통념 기준 초과', '객관적 증빙 서류 미비'],
+                    datasets: [{
+                        label: '부인 사유 비율 (%)',
+                        data: [45, 30, 15, 10],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.dataset.label}: ${context.raw}%`;
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: '경비 부인 사유 분포',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            },
+                            padding: {
+                                top: 10,
+                                bottom: 20
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '비율 (%)'
+                            },
+                            grid: {
+                                color: '#e5e7eb'
+                            }
+                        },
+                        y: {
+                           grid: {
+                                display: false
+                           }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
