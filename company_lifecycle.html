@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>법인 라이프사이클: 설립부터 쇠퇴까지</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Corporate Blue -->
+    <!-- Application Structure Plan: The SPA is designed as a vertical, single-page journey through the corporate lifecycle's four main stages: Establishment, Growth, Maturity, and Decline. A sticky top navigation allows users to jump to any stage. A central line chart visualizes the entire lifecycle curve (revenue over time), acting as a visual anchor. Each stage is a dedicated section with key characteristics, goals, and strategies presented in cards for clarity. This linear but navigable structure is highly intuitive for understanding a process-based topic like a lifecycle. -->
+    <!-- Visualization & Content Choices: 
+        1. Report Info: Overall Lifecycle Curve -> Goal: Show Change -> Viz: Line Chart -> Interaction: Hover for stage context -> Justification: The best way to visualize a trend over time, providing a conceptual map of the entire page -> Library: Chart.js.
+        2. Report Info: Stage Characteristics -> Goal: Organize Information -> Viz: Themed Cards with Icons -> Interaction: Hover effects for engagement -> Justification: Breaks down complex information into digestible chunks, icons provide quick visual cues for each stage -> Library: Tailwind/HTML/CSS.
+        3. Report Info: Key Strategies per Stage -> Goal: Inform -> Viz: Bulleted Lists within Cards -> Interaction: None, focus on readability -> Justification: Clear and direct presentation of actionable advice -> Library: HTML.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f4f7f9; 
+            color: #334155;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #2563eb; 
+            border-bottom-color: #2563eb;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .stage-icon {
+            font-size: 3rem;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white py-6 text-center shadow-md">
+        <h1 class="text-4xl font-bold text-slate-800">법인 라이프사이클</h1>
+        <p class="text-lg text-slate-600 mt-2">기업의 탄생부터 성장, 그리고 변화의 여정</p>
+    </header>
+
+    <nav id="navbar" class="sticky top-0 bg-white/90 backdrop-blur-lg z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-center space-x-4 md:space-x-8 py-3">
+                <a href="#stage-1" class="nav-link font-medium py-2 px-3 text-slate-700">설립기</a>
+                <a href="#stage-2" class="nav-link font-medium py-2 px-3 text-slate-700">성장기</a>
+                <a href="#stage-3" class="nav-link font-medium py-2 px-3 text-slate-700">성숙기</a>
+                <a href="#stage-4" class="nav-link font-medium py-2 px-3 text-slate-700">쇠퇴기</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-4 md:p-8 space-y-16">
+
+        <section id="lifecycle-overview">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-blue-700">한눈에 보는 기업의 성장 곡선</h2>
+                <p class="mt-4 text-slate-600 max-w-3xl mx-auto">
+                    모든 기업은 생명체와 같이 설립, 성장, 성숙, 쇠퇴의 라이프사이클을 거칩니다. 아래 차트는 시간에 따른 기업의 일반적인 매출 성장 곡선을 보여줍니다. 각 단계의 특징을 이해하는 것은 성공적인 경영 전략 수립의 첫걸음입니다.
+                </p>
+            </div>
+            <div class="card p-6">
+                <div class="chart-container">
+                    <canvas id="lifecycleChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="stage-1" class="scroll-mt-24">
+            <div class="text-center mb-12">
+                <div class="stage-icon">🌱</div>
+                <h2 class="text-3xl font-bold text-slate-800 mt-2">1단계: 설립기 (Establishment)</h2>
+                <p class="mt-4 text-slate-600 max-w-3xl mx-auto">
+                    아이디어를 현실로 만드는 첫 단계입니다. 불확실성이 높지만 혁신과 기회가 공존하는 시기이며, 시장에서 생존하는 것이 최우선 목표입니다.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="card p-6">
+                    <h3 class="font-bold text-lg text-blue-700">🎯 주요 목표</h3>
+                    <ul class="mt-4 space-y-2 list-disc list-inside text-slate-600">
+                        <li>시장 진입 및 생존</li>
+                        <li>제품/서비스 컨셉 검증</li>
+                        <li>초기 고객 확보</li>
+                    </ul>
+                </div>
+                <div class="card p-6">
+                    <h3 class="font-bold text-lg text-blue-700">📊 특징</h3>
+                    <ul class="mt-4 space-y-2 list-disc list-inside text-slate-600">
+                        <li>높은 실패 위험</li>
+                        <li>자금 조달의 어려움</li>
+                        <li>유연한 조직 구조</li>
+                        <li>낮은 매출, 높은 비용</li>
+                    </ul>
+                </div>
+                <div class="card p-6">
+                    <h3 class="font-bold text-lg text-blue-700">🔑 핵심 전략</h3>
+                    <ul class="mt-4 space-y-2 list-disc list-inside text-slate-600">
+                        <li>최소기능제품(MVP) 개발</li>
+                        <li>핵심 인재 확보</li>
+                        <li>엔젤/벤처캐피탈 투자 유치</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="stage-2" class="scroll-mt-24">
+            <div class="text-center mb-12">
+                <div class="stage-icon">🚀</div>
+                <h2 class="text-3xl font-bold text-slate-800 mt-2">2단계: 성장기 (Growth)</h2>
+                <p class="mt-4 text-slate-600 max-w-3xl mx-auto">
+                    시장에서 제품/서비스의 가치를 인정받아 매출이 급격히 증가하는 시기입니다. 조직이 빠르게 확장되며, 시장 점유율을 높이는 데 집중합니다.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="card p-6">
+                    <h3 class="font-bold text-lg text-blue-700">🎯 주요 목표</h3>
+                    <ul class="mt-4 space-y-2 list-disc list-inside text-slate-600">
+                        <li>시장 점유율 확대</li>
+                        <li>브랜드 인지도 구축</li>
+                        <li>수익 모델 안정화</li>
+                    </ul>
+                </div>
+                <div class="card p-6">
+                    <h3 class="font-bold text-lg text-blue-700">📊 특징</h3>
+                    <ul class="mt-4 space-y-2 list-disc list-inside text-slate-600">
+                        <li>매출 및 이익 급증</li>
+                        <li>빠른 인력 충원</li>
+                        <li>경쟁사 등장 및 견제</li>
+                        <li>'성장의 고통' 발생</li>
+                    </ul>
+                </div>
+                <div class="card p-6">
+                    <h3 class="font-bold text-lg text-blue-700">🔑 핵심 전략</h3>
+                    <ul class="mt-4 space-y-2 list-disc list-inside text-slate-600">
+                        <li>프로세스 표준화 및 시스템화</li>
+                        <li>적극적인 마케팅 및 영업</li>
+                        <li>고객 기반 확대</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="stage-3" class="scroll-mt-24">
+            <div class="text-center mb-12">
+                <div class="stage-icon">🏢</div>
+                <h2 class="text-3xl font-bold text-slate-800 mt-2">3단계: 성숙기 (Maturity)</h2>
+                <p class="mt-4 text-slate-600 max-w-3xl mx-auto">
+                    성장세가 둔화되고 시장이 안정화되는 시기입니다. 경쟁이 심화되며, 기업은 수익성 극대화와 운영 효율성에 집중하게 됩니다.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="card p-6">
+                    <h3 class="font-bold text-lg text-blue-700">🎯 주요 목표</h3>
+                    <ul class="mt-4 space-y-2 list-disc list-inside text-slate-600">
+                        <li>수익성 극대화</li>
+                        <li>운영 효율성 증대</li>
+                        <li>기존 시장 지위 유지</li>
+                    </ul>
+                </div>
+                <div class="card p-6">
+                    <h3 class="font-bold text-lg text-blue-700">📊 특징</h3>
+                    <ul class="mt-4 space-y-2 list-disc list-inside text-slate-600">
+                        <li>안정적인 매출과 현금 흐름</li>
+                        <li>경쟁 심화 및 가격 압박</li>
+                        <li>관료주의화 경향</li>
+                        <li>혁신 동력 감소</li>
+                    </ul>
+                </div>
+                <div class="card p-6">
+                    <h3 class="font-bold text-lg text-blue-700">🔑 핵심 전략</h3>
+                    <ul class="mt-4 space-y-2 list-disc list-inside text-slate-600">
+                        <li>원가 절감 및 비용 관리</li>
+                        <li>신시장 개척 또는 제품 다각화</li>
+                        <li>M&A를 통한 성장 동력 확보</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="stage-4" class="scroll-mt-24">
+            <div class="text-center mb-12">
+                <div class="stage-icon">📉</div>
+                <h2 class="text-3xl font-bold text-slate-800 mt-2">4단계: 쇠퇴기 (Decline)</h2>
+                <p class="mt-4 text-slate-600 max-w-3xl mx-auto">
+                    시장 환경 변화, 기술 발전, 소비자 선호 변화 등으로 매출과 이익이 지속적으로 감소하는 시기입니다. 기업은 혁신을 통한 재도약 또는 사업 철수를 결정해야 합니다.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="card p-6">
+                    <h3 class="font-bold text-lg text-blue-700">🎯 주요 목표</h3>
+                    <ul class="mt-4 space-y-2 list-disc list-inside text-slate-600">
+                        <li>사업 구조조정</li>
+                        <li>핵심 역량 기반의 사업 전환</li>
+                        <li>손실 최소화 및 출구 전략</li>
+                    </ul>
+                </div>
+                <div class="card p-6">
+                    <h3 class="font-bold text-lg text-blue-700">📊 특징</h3>
+                    <ul class="mt-4 space-y-2 list-disc list-inside text-slate-600">
+                        <li>매출 및 시장 점유율 하락</li>
+                        <li>수익성 악화</li>
+                        <li>핵심 인력 이탈</li>
+                        <li>부정적 시장 전망</li>
+                    </ul>
+                </div>
+                <div class="card p-6">
+                    <h3 class="font-bold text-lg text-blue-700">🔑 핵심 전략</h3>
+                    <ul class="mt-4 space-y-2 list-disc list-inside text-slate-600">
+                        <li>비용 절감 및 자산 매각</li>
+                        <li>새로운 성장 동력 발굴(신사업)</li>
+                        <li>인수합병(M&A) 또는 사업 청산</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-800 text-white mt-16 py-8">
+        <div class="max-w-6xl mx-auto text-center px-4">
+            <p>&copy; 2025 Corporate Lifecycle Interactive Guide. All rights reserved.</p>
+            <p class="text-sm text-slate-400 mt-2">본 콘텐츠는 일반적인 기업 성장 모델에 대한 이해를 돕기 위해 제작되었습니다.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const globalChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        bodyFont: {
+                            family: "'Noto Sans KR', sans-serif",
+                        },
+                        titleFont: {
+                             family: "'Noto Sans KR', sans-serif",
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: '시간 (Time)',
+                            color: '#475569',
+                            font: { size: 14, family: "'Noto Sans KR', sans-serif" }
+                        },
+                        ticks: { color: '#64748b' },
+                        grid: { display: false }
+                    },
+                    y: {
+                         title: {
+                            display: true,
+                            text: '매출 (Revenue)',
+                            color: '#475569',
+                             font: { size: 14, family: "'Noto Sans KR', sans-serif" }
+                        },
+                        ticks: { color: '#64748b' },
+                        grid: { color: '#e2e8f0' }
+                    }
+                }
+            };
+            
+            const lifecycleData = {
+                labels: ['초기', ' ', '본격 성장', ' ', '성숙 정점', ' ', '쇠퇴 시작', ' '],
+                data: [5, 20, 60, 85, 95, 90, 65, 40]
+            };
+            const lifecycleCtx = document.getElementById('lifecycleChart').getContext('2d');
+            new Chart(lifecycleCtx, {
+                type: 'line',
+                data: {
+                    labels: lifecycleData.labels,
+                    datasets: [{
+                        label: '매출',
+                        data: lifecycleData.data,
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#2563eb',
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    ...globalChartOptions,
+                    plugins: {
+                        ...globalChartOptions.plugins,
+                        annotation: {
+                            annotations: {
+                                box1: { type: 'box', xMin: 0, xMax: 2, yMin: 0, yMax: 100, backgroundColor: 'rgba(71, 85, 105, 0.05)', label: { content: '설립기' } },
+                                box2: { type: 'box', xMin: 2, xMax: 4, yMin: 0, yMax: 100, backgroundColor: 'rgba(37, 99, 235, 0.05)', label: { content: '성장기' } },
+                                box3: { type: 'box', xMin: 4, xMax: 6, yMin: 0, yMax: 100, backgroundColor: 'rgba(71, 85, 105, 0.05)', label: { content: '성숙기' } },
+                                box4: { type: 'box', xMin: 6, xMax: 8, yMin: 0, yMax: 100, backgroundColor: 'rgba(239, 68, 68, 0.05)', label: { content: '쇠퇴기' } }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section[id^="stage-"]');
+            
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.4
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            navLinks.forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
