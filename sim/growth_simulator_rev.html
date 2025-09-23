@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>51labs 성장 전략 시뮬레이터</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', 'Inter', sans-serif;
+            background-color: #f3f4f6; /* bg-gray-100 */
+        }
+        .card {
+            background-color: #ffffff; /* bg-white */
+            border: 1px solid #e5e7eb; /* border-gray-200 */
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+        .input-group {
+            background-color: #ffffff; /* bg-white */
+        }
+        .form-input {
+            background-color: #f9fafb; /* bg-gray-50 */
+            border: 1px solid #d1d5db; /* border-gray-300 */
+            color: #111827; /* text-gray-900 */
+        }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #3b82f6; /* bg-blue-500 */
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #3b82f6; /* bg-blue-500 */
+            cursor: pointer;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-900">51labs 성장 전략 시뮬레이터</h1>
+            <br>
+        </header>
+
+        <div class="space-y-8">
+            <!-- Top Section: Controls -->
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                <div class="card rounded-lg p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">기본 설정</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="simulationYears" class="block text-sm font-medium text-gray-700 mb-1">시뮬레이션 기간</label>
+                            <div class="flex items-center input-group rounded-md border border-gray-300">
+                                <input type="number" id="simulationYears" class="form-input w-full rounded-md py-2 px-3 border-0" value="20">
+                                <span class="px-3 text-gray-500 flex-shrink-0 whitespace-nowrap">년</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="monthlyCashflow" class="block text-sm font-medium text-gray-700 mb-1">초기 월 평균 현금흐름</label>
+                            <div class="flex items-center input-group rounded-md border border-gray-300">
+                                <input type="text" id="monthlyCashflow" class="form-input w-full rounded-md py-2 px-3 border-0" value="2,000">
+                                <span class="px-3 text-gray-500 flex-shrink-0 whitespace-nowrap">만원</span>
+                            </div>
+                             <p id="monthlyCashflowKorean" class="text-xs text-gray-500 mt-1"></p>
+                        </div>
+                        <div>
+                            <label for="initialLoan" class="block text-sm font-medium text-gray-700 mb-1">총 투자 비용</label>
+                            <div class="flex items-center input-group rounded-md border border-gray-300">
+                                <input type="text" id="initialLoan" class="form-input w-full rounded-md py-2 px-3 border-0" value="104,000">
+                                <span class="px-3 text-gray-500 flex-shrink-0 whitespace-nowrap">만원</span>
+                            </div>
+                            <p id="initialLoanKorean" class="text-xs text-gray-500 mt-1"></p>
+                        </div>
+                        <div>
+                            <label for="investmentReturnRate" class="block text-sm font-medium text-gray-700 mb-1">연간 투자 수익률 (%)</label>
+                            <div class="flex items-center input-group rounded-md border border-gray-300">
+                                <input type="number" id="investmentReturnRate" class="form-input w-full rounded-md py-2 px-3 border-0" value="8">
+                                <span class="px-3 text-gray-500 flex-shrink-0 whitespace-nowrap">%</span>
+                            </div>
+                        </div>
+                         <div>
+                            <div class="flex justify-between">
+                                <label for="usStockRatio" class="text-sm font-medium text-gray-700">미국 주식 투자 비중</label>
+                                <span id="usStockRatioValue" class="text-sm font-bold text-indigo-600">70%</span>
+                            </div>
+                            <input type="range" id="usStockRatio" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider mt-1" min="0" max="100" value="70" step="5">
+                        </div>
+                    </div>
+                </div>
+                <div class="card rounded-lg p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">현금흐름 배분 (%)</h2>
+                    <div class="space-y-6">
+                        <!-- Tier 1 -->
+                        <div>
+                            <div class="flex items-center mb-2">
+                                <h3 class="text-sm font-semibold text-gray-800">도약기</h3>
+                                <div class="flex items-center ml-2">
+                                    <input type="number" id="takeoffYears" class="form-input w-16 text-center py-1 px-1 text-sm" value="3">
+                                    <span class="ml-1 text-sm text-gray-600">년</span>
+                                </div>
+                                <div class="ml-auto flex gap-1">
+                                    <button data-tier="1" data-preset="even" class="preset-btn">일률분배</button>
+                                    <button data-tier="1" data-preset="reinvest" class="preset-btn">재투자중심</button>
+                                    <button data-tier="1" data-preset="operations" class="preset-btn">운영중심</button>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between">
+                                    <label for="loanRepaymentRate_tier1" class="text-sm font-medium text-gray-700">가수금 상환</label>
+                                    <span id="loanRepaymentRateValue_tier1" class="text-sm font-bold text-blue-600">35%</span>
+                                </div>
+                                <input type="range" id="loanRepaymentRate_tier1" data-tier="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider mt-1" min="0" max="100" value="35">
+                            </div>
+                            <div>
+                                <div class="flex justify-between">
+                                    <label for="reinvestmentRate_tier1" class="text-sm font-medium text-gray-700">재투자</label>
+                                    <span id="reinvestmentRateValue_tier1" class="text-sm font-bold text-green-600">30%</span>
+                                </div>
+                                <input type="range" id="reinvestmentRate_tier1" data-tier="1" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider mt-1" min="0" max="100" value="30">
+                            </div>
+                             <div>
+                                <div class="flex justify-between mt-2">
+                                    <label class="text-sm font-medium text-gray-700">법인 잉여금</label>
+                                    <span id="corporateFundRateValue_tier1" class="text-sm font-bold text-yellow-500">35%</span>
+                                </div>
+                                <div class="w-full h-2 bg-gray-200 rounded-lg mt-1">
+                                    <div id="corporateFundRateBar_tier1" class="h-2 bg-yellow-400 rounded-lg" style="width: 35%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Tier 2 -->
+                        <div>
+                           <div class="flex items-center mb-2">
+                                <h3 class="text-sm font-semibold text-gray-800">성장기</h3>
+                                <div class="flex items-center ml-2">
+                                    <input type="number" id="growthYears" class="form-input w-16 text-center py-1 px-1 text-sm" value="7">
+                                    <span class="ml-1 text-sm text-gray-600">년</span>
+                                </div>
+                                <div class="ml-auto flex gap-1">
+                                    <button data-tier="2" data-preset="even" class="preset-btn">일률분배</button>
+                                    <button data-tier="2" data-preset="reinvest" class="preset-btn">재투자중심</button>
+                                    <button data-tier="2" data-preset="operations" class="preset-btn">운영중심</button>
+                                </div>
+                            </div>
+                             <div>
+                                <div class="flex justify-between">
+                                    <label for="loanRepaymentRate_tier2" class="text-sm font-medium text-gray-700">가수금 상환</label>
+                                    <span id="loanRepaymentRateValue_tier2" class="text-sm font-bold text-blue-600">10%</span>
+                                </div>
+                                <input type="range" id="loanRepaymentRate_tier2" data-tier="2" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider mt-1" min="0" max="100" value="10">
+                            </div>
+                            <div>
+                                <div class="flex justify-between">
+                                    <label for="reinvestmentRate_tier2" class="text-sm font-medium text-gray-700">재투자</label>
+                                    <span id="reinvestmentRateValue_tier2" class="text-sm font-bold text-green-600">50%</span>
+                                </div>
+                                <input type="range" id="reinvestmentRate_tier2" data-tier="2" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider mt-1" min="0" max="100" value="50">
+                            </div>
+                             <div>
+                                <div class="flex justify-between mt-2">
+                                    <label class="text-sm font-medium text-gray-700">법인 잉여금</label>
+                                    <span id="corporateFundRateValue_tier2" class="text-sm font-bold text-yellow-500">40%</span>
+                                </div>
+                                <div class="w-full h-2 bg-gray-200 rounded-lg mt-1">
+                                    <div id="corporateFundRateBar_tier2" class="h-2 bg-yellow-400 rounded-lg" style="width: 40%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Tier 3 -->
+                        <div>
+                             <div class="flex items-center mb-2">
+                                <h3 class="text-sm font-semibold text-gray-800">성숙기 <span id="maturityPeriodDisplay" class="font-normal text-gray-500 text-xs"></span></h3>
+                                <div class="ml-auto flex gap-1">
+                                    <button data-tier="3" data-preset="even" class="preset-btn">일률분배</button>
+                                    <button data-tier="3" data-preset="reinvest" class="preset-btn">재투자중심</button>
+                                    <button data-tier="3" data-preset="operations" class="preset-btn">운영중심</button>
+                                </div>
+                            </div>
+                             <div>
+                                <div class="flex justify-between">
+                                    <label for="loanRepaymentRate_tier3" class="text-sm font-medium text-gray-700">가수금 상환</label>
+                                    <span id="loanRepaymentRateValue_tier3" class="text-sm font-bold text-blue-600">0%</span>
+                                </div>
+                                <input type="range" id="loanRepaymentRate_tier3" data-tier="3" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider mt-1" min="0" max="100" value="0">
+                            </div>
+                            <div>
+                                <div class="flex justify-between">
+                                    <label for="reinvestmentRate_tier3" class="text-sm font-medium text-gray-700">재투자</label>
+                                    <span id="reinvestmentRateValue_tier3" class="text-sm font-bold text-green-600">60%</span>
+                                </div>
+                                <input type="range" id="reinvestmentRate_tier3" data-tier="3" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider mt-1" min="0" max="100" value="60">
+                            </div>
+                            <div>
+                                <div class="flex justify-between mt-2">
+                                    <label class="text-sm font-medium text-gray-700">법인 잉여금</label>
+                                    <span id="corporateFundRateValue_tier3" class="text-sm font-bold text-yellow-500">40%</span>
+                                </div>
+                                <div class="w-full h-2 bg-gray-200 rounded-lg mt-1">
+                                    <div id="corporateFundRateBar_tier3" class="h-2 bg-yellow-400 rounded-lg" style="width: 40%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card rounded-lg p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">연간 법인 운영 비용</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">도약기</label>
+                            <div class="flex items-center input-group rounded-md border border-gray-300">
+                                <input type="text" id="operatingCostTier1" class="form-input w-full rounded-md py-2 px-3 border-0" value="5,000">
+                                <span class="px-3 text-gray-500 flex-shrink-0 whitespace-nowrap">만원</span>
+                            </div>
+                            <p id="operatingCostTier1Korean" class="text-xs text-gray-500 mt-1"></p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">성장기</label>
+                            <div class="flex items-center input-group rounded-md border border-gray-300">
+                                <input type="text" id="operatingCostTier2" class="form-input w-full rounded-md py-2 px-3 border-0" value="12,000">
+                                <span class="px-3 text-gray-500 flex-shrink-0 whitespace-nowrap">만원</span>
+                            </div>
+                             <p id="operatingCostTier2Korean" class="text-xs text-gray-500 mt-1"></p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">성숙기</label>
+                            <div class="flex items-center input-group rounded-md border border-gray-300">
+                                <input type="text" id="operatingCostTier3" class="form-input w-full rounded-md py-2 px-3 border-0" value="15,000">
+                                <span class="px-3 text-gray-500 flex-shrink-0 whitespace-nowrap">만원</span>
+                            </div>
+                             <p id="operatingCostTier3Korean" class="text-xs text-gray-500 mt-1"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card rounded-lg p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">퇴직금 및 개인 절세</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">퇴직금 지급배수</label>
+                            <div class="flex items-center input-group rounded-md border border-gray-300">
+                                <input type="number" step="0.1" id="severanceMultiplier" class="form-input w-full rounded-md py-2 px-3 border-0" value="2">
+                                <span class="px-3 text-gray-500 flex-shrink-0 whitespace-nowrap">배수</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">노란우산공제 (월 납입액)</label>
+                            <div class="flex items-center input-group rounded-md border border-gray-300">
+                                <input type="text" id="yellowUmbrellaMonthly" class="form-input w-full rounded-md py-2 px-3 border-0" value="42">
+                                <span class="px-3 text-gray-500 flex-shrink-0 whitespace-nowrap">만원</span>
+                            </div>
+                             <p id="yellowUmbrellaMonthlyKorean" class="text-xs text-gray-500 mt-1"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+                <button id="runSimulationBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">
+                    시뮬레이션 실행
+                </button>
+                <div class="flex gap-4">
+                    <button id="exportBtn" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">
+                        설정 내보내기
+                    </button>
+                    <button id="importBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">
+                        설정 가져오기
+                    </button>
+                </div>
+                <input type="file" id="importFile" class="hidden" accept=".json">
+            </div>
+
+            <hr class="border-gray-300 my-8">
+
+            <!-- Results Section -->
+            <div id="resultsSection" class="space-y-8 hidden">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="card rounded-lg p-6 text-center">
+                        <h3 class="text-base font-medium text-gray-500">총 예상 법인 자산</h3>
+                        <p id="totalCorporateAssets" class="text-3xl font-bold text-green-600 mt-2">0 원</p>
+                    </div>
+                    <div class="card rounded-lg p-6 text-center">
+                        <h3 class="text-base font-medium text-gray-500">예상 퇴직금 (세후)</h3>
+                        <p id="finalSeverancePay" class="text-3xl font-bold text-yellow-600 mt-2">0 원</p>
+                    </div>
+                    <div class="card rounded-lg p-6 text-center">
+                        <h3 class="text-base font-medium text-gray-500">총 예상 대표 개인 자산</h3>
+                        <p id="totalPersonalAssets" class="text-3xl font-bold text-blue-600 mt-2">0 원</p>
+                        <p class="text-xs text-gray-400 mt-2">(누적 실급여 + 상환 가수금 + 퇴직금 등 합산)</p>
+                    </div>
+                </div>
+                
+                <div class="space-y-8">
+                    <div class="card rounded-lg p-6">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">자산 성장 추이</h2>
+                        <canvas id="assetGrowthChart"></canvas>
+                    </div>
+                    
+                    <div class="space-y-4">
+                         <button id="toggleLoanDetailsBtn" class="w-full bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg transition duration-300 flex justify-between items-center">
+                            <span>가수금 상환 현황</span><span class="toggle-icon">+</span>
+                        </button>
+                        <div id="loanDetails" class="hidden card rounded-lg p-6">
+                            <canvas id="loanRepaymentChart"></canvas>
+                        </div>
+
+                        <button id="toggleYearlyDetailsBtn" class="w-full bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg transition duration-300 flex justify-between items-center">
+                            <span>연도별 상세 결과</span><span class="toggle-icon">+</span>
+                        </button>
+                        <div id="yearlyDetails" class="hidden card rounded-lg p-6">
+                             <h2 class="text-xl font-semibold text-gray-900 mb-4">연도별 상세 결과 <span class="text-sm font-normal text-gray-500">(1년차는 5개월분으로 계산)</span></h2>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm text-left text-gray-600">
+                                    <thead class="text-xs text-gray-500 uppercase bg-gray-50">
+                                        <tr>
+                                            <th scope="col" class="py-3 px-4">연차</th>
+                                            <th scope="col" class="py-3 px-4">연간 현금흐름</th>
+                                            <th scope="col" class="py-3 px-4">연간 운영비용</th>
+                                            <th scope="col" class="py-3 px-4">가수금 상환액</th>
+                                            <th scope="col" class="py-3 px-4">재투자액</th>
+                                            <th scope="col" class="py-3 px-4">법인 잉여금</th>
+                                            <th scope="col" class="py-3 px-4">가수금 잔액</th>
+                                            <th scope="col" class="py-3 px-4">법인 총자산</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="resultsTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <button id="toggleTaxDetailsBtn" class="w-full bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg transition duration-300 flex justify-between items-center">
+                            <span>예상 법인세 예측</span><span class="toggle-icon">+</span>
+                        </button>
+                        <div id="taxDetails" class="hidden card rounded-lg p-6">
+                            <h2 class="text-xl font-semibold text-gray-900 mb-4">예상 법인세 예측 (외국납부세액공제 적용)</h2>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm text-left text-gray-600">
+                                     <thead class="text-xs text-gray-500 uppercase bg-gray-50">
+                                        <tr>
+                                            <th scope="col" class="py-3 px-4">연차</th>
+                                            <th scope="col" class="py-3 px-4">과세표준</th>
+                                            <th scope="col" class="py-3 px-4">산출세액</th>
+                                            <th scope="col" class="py-3 px-4">공제/감면액</th>
+                                            <th scope="col" class="py-3 px-4">최종 납부세액</th>
+                                            <th scope="col" class="py-3 px-4">공제 이월액</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="taxTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const runBtn = document.getElementById('runSimulationBtn');
+            const exportBtn = document.getElementById('exportBtn');
+            const importBtn = document.getElementById('importBtn');
+            const importFile = document.getElementById('importFile');
+            const resultsSection = document.getElementById('resultsSection');
+            
+            let assetChart, loanChart;
+            
+            const toKoreanNumberString = (num) => {
+                if (isNaN(num) || num === 0) return '영원';
+                const man = num % 10000;
+                const eok = Math.floor(num / 10000);
+                let result = '';
+                if (eok > 0) {
+                    result += `${eok.toLocaleString('ko-KR')}억 `;
+                }
+                if (man > 0) {
+                    result += `${man.toLocaleString('ko-KR')}만원`;
+                }
+                return result.trim();
+            };
+
+            const setupMonetaryInput = (inputId, displayId) => {
+                const inputElement = document.getElementById(inputId);
+                const displayElement = document.getElementById(displayId);
+
+                const format = () => {
+                    let value = inputElement.value.replace(/,/g, '');
+                    const numValue = parseInt(value, 10);
+                    if (!isNaN(numValue)) {
+                        inputElement.value = numValue.toLocaleString('ko-KR');
+                        if (displayElement) {
+                            displayElement.textContent = toKoreanNumberString(numValue);
+                        }
+                    } else {
+                         if (displayElement) {
+                            displayElement.textContent = '';
+                        }
+                    }
+                };
+                inputElement.addEventListener('input', format);
+                format(); 
+            };
+
+            const formatCurrency = (value) => {
+                if (value === 0) return '0 원';
+                const billion = Math.floor(value / 10000);
+                const million = Math.round((value % 10000));
+                let result = '';
+                if (billion > 0) result += `${billion.toLocaleString('ko-KR')}억 `;
+                if (million > 0 || billion === 0) result += `${million.toLocaleString('ko-KR')}만원`;
+                return result.trim();
+            };
+
+            const updateAllocation = (event) => {
+                const tier = event.target.dataset.tier;
+                if (!tier) return; 
+
+                const loanRepaymentRateSlider = document.getElementById(`loanRepaymentRate_tier${tier}`);
+                const reinvestmentRateSlider = document.getElementById(`reinvestmentRate_tier${tier}`);
+                let loanRate = parseInt(loanRepaymentRateSlider.value);
+                let reinvestRate = parseInt(reinvestmentRateSlider.value);
+
+                if (loanRate + reinvestRate > 100) {
+                    if (event.target.id.includes('loanRepaymentRate')) {
+                        reinvestRate = 100 - loanRate;
+                        reinvestmentRateSlider.value = reinvestRate;
+                    } else {
+                        loanRate = 100 - reinvestRate;
+                        loanRepaymentRateSlider.value = loanRate;
+                    }
+                }
+                const corporateRate = 100 - loanRate - reinvestRate;
+                document.getElementById(`loanRepaymentRateValue_tier${tier}`).textContent = `${loanRate}%`;
+                document.getElementById(`reinvestmentRateValue_tier${tier}`).textContent = `${reinvestRate}%`;
+                document.getElementById(`corporateFundRateValue_tier${tier}`).textContent = `${corporateRate}%`;
+                document.getElementById(`corporateFundRateBar_tier${tier}`).style.width = `${corporateRate}%`;
+            };
+
+            const allSliders = document.querySelectorAll('.slider');
+            allSliders.forEach(slider => slider.addEventListener('input', updateAllocation));
+            
+            document.getElementById('usStockRatio').addEventListener('input', (e) => {
+                document.getElementById('usStockRatioValue').textContent = `${e.target.value}%`;
+            });
+
+            const applyPreset = (tier, preset) => {
+                const loanSlider = document.getElementById(`loanRepaymentRate_tier${tier}`);
+                const reinvestSlider = document.getElementById(`reinvestmentRate_tier${tier}`);
+
+                switch (preset) {
+                    case 'even':
+                        loanSlider.value = 33;
+                        reinvestSlider.value = 33;
+                        break;
+                    case 'reinvest':
+                        loanSlider.value = 10;
+                        reinvestSlider.value = 60;
+                        break;
+                    case 'operations':
+                        loanSlider.value = 30;
+                        reinvestSlider.value = 30;
+                        break;
+                }
+                
+                const event = new Event('input', { bubbles: true });
+                loanSlider.dispatchEvent(event);
+                reinvestSlider.dispatchEvent(event);
+            };
+
+            const presetButtons = document.querySelectorAll('.preset-btn');
+            presetButtons.forEach(button => {
+                button.classList.add('px-2', 'py-1', 'text-xs', 'font-semibold', 'text-gray-600', 'bg-gray-100', 'hover:bg-gray-200', 'rounded-md', 'transition');
+                button.addEventListener('click', (e) => {
+                    const tier = e.target.dataset.tier;
+                    const preset = e.target.dataset.preset;
+                    applyPreset(tier, preset);
+                });
+            });
+
+
+            const runSimulation = () => {
+                resultsSection.classList.remove('hidden');
+
+                const totalYears = parseInt(document.getElementById('simulationYears').value);
+                let takeoffYears = parseInt(document.getElementById('takeoffYears').value);
+                let growthYears = parseInt(document.getElementById('growthYears').value);
+
+                if (takeoffYears + growthYears > totalYears) {
+                    alert(`도약기와 성장기 기간의 합(${takeoffYears + growthYears}년)이 총 시뮬레이션 기간(${totalYears}년)을 초과할 수 없습니다.`);
+                    growthYears = Math.max(0, totalYears - takeoffYears);
+                    document.getElementById('growthYears').value = growthYears;
+                    alert(`성장기 기간을 ${growthYears}년으로 자동 조정합니다.`);
+                }
+                updatePeriodDisplay();
+
+                const initialMonthlyCashflow = parseInt(document.getElementById('monthlyCashflow').value.replace(/,/g, '')) * 10000;
+                let initialLoan = parseInt(document.getElementById('initialLoan').value.replace(/,/g, '')) * 10000;
+                const investmentReturnRate = parseFloat(document.getElementById('investmentReturnRate').value) / 100;
+                const usStockRatio = parseFloat(document.getElementById('usStockRatio').value) / 100;
+                
+                const allocationTiers = {
+                    tier1: { loan: parseInt(document.getElementById('loanRepaymentRate_tier1').value)/100, reinvest: parseInt(document.getElementById('reinvestmentRate_tier1').value)/100 },
+                    tier2: { loan: parseInt(document.getElementById('loanRepaymentRate_tier2').value)/100, reinvest: parseInt(document.getElementById('reinvestmentRate_tier2').value)/100 },
+                    tier3: { loan: parseInt(document.getElementById('loanRepaymentRate_tier3').value)/100, reinvest: parseInt(document.getElementById('reinvestmentRate_tier3').value)/100 },
+                };
+                
+                const operatingCostTiers = {
+                    tier1: parseInt(document.getElementById('operatingCostTier1').value.replace(/,/g, '')) * 10000,
+                    tier2: parseInt(document.getElementById('operatingCostTier2').value.replace(/,/g, '')) * 10000,
+                    tier3: parseInt(document.getElementById('operatingCostTier3').value.replace(/,/g, '')) * 10000,
+                };
+                const severanceMultiplier = parseFloat(document.getElementById('severanceMultiplier').value);
+                const yellowUmbrellaMonthly = parseInt(document.getElementById('yellowUmbrellaMonthly').value.replace(/,/g, '')) * 10000;
+
+                let yearlyData = [];
+                let cumulativeReinvestment = 0, cumulativeCorporateFund = 0, cumulativeNetSalary = 0, cumulativeYellowUmbrella = 0;
+                let currentLoan = initialLoan;
+                let taxCreditCarryover = 0;
+                
+                const takeoffEndYear = takeoffYears;
+                const growthEndYear = takeoffYears + growthYears;
+
+                for (let i = 1; i <= totalYears; i++) {
+                    const isFirstYear = (i === 1);
+                    const monthsInYear = isFirstYear ? 5 : 12;
+
+                    const returnOnCumulativeInvestment = cumulativeReinvestment * investmentReturnRate;
+                    const annualCashflow = (initialMonthlyCashflow * monthsInYear) + returnOnCumulativeInvestment;
+                    
+                    let annualOperatingCostTier, allocation;
+                    if (i <= takeoffEndYear) {
+                        annualOperatingCostTier = operatingCostTiers.tier1;
+                        allocation = allocationTiers.tier1;
+                    } else if (i <= growthEndYear) {
+                        annualOperatingCostTier = operatingCostTiers.tier2;
+                        allocation = allocationTiers.tier2;
+                    } else {
+                        annualOperatingCostTier = operatingCostTiers.tier3;
+                        allocation = allocationTiers.tier3;
+                    }
+
+                    const annualSalary = isFirstYear ? (annualOperatingCostTier / 12) * monthsInYear : annualOperatingCostTier;
+                    const netSalary = annualSalary * 0.85;
+                    const loanRepaymentAmount = Math.min(annualCashflow * allocation.loan, currentLoan);
+                    const reinvestmentAmount = annualCashflow * allocation.reinvest;
+                    const corporateFundAmount = annualCashflow * (1 - allocation.loan - allocation.reinvest);
+
+                    const taxableIncome = Math.max(0, annualCashflow - annualSalary);
+                    let grossKoreanTax = 0;
+                    const taxBracket = 200000000;
+                    if (taxableIncome <= taxBracket) {
+                        grossKoreanTax = taxableIncome * 0.099;
+                    } else {
+                        grossKoreanTax = (taxBracket * 0.099) + ((taxableIncome - taxBracket) * 0.22);
+                    }
+
+                    const foreignSourceIncome = annualCashflow * usStockRatio;
+                    const foreignTaxPaid = foreignSourceIncome * 0.15;
+                    const totalAvailableCredit = foreignTaxPaid + taxCreditCarryover;
+                    const creditLimit = taxableIncome > 0 ? grossKoreanTax * (foreignSourceIncome / taxableIncome) : 0;
+                    const actualCredit = Math.min(totalAvailableCredit, creditLimit);
+                    const payableTax = Math.max(0, grossKoreanTax - actualCredit);
+                    taxCreditCarryover = totalAvailableCredit - actualCredit;
+
+                    const afterTaxCorporateFund = corporateFundAmount - payableTax;
+
+                    currentLoan -= loanRepaymentAmount;
+                    cumulativeReinvestment += reinvestmentAmount;
+                    cumulativeCorporateFund += afterTaxCorporateFund;
+                    cumulativeNetSalary += netSalary;
+                    cumulativeYellowUmbrella += yellowUmbrellaMonthly * monthsInYear;
+                    
+                    yearlyData.push({
+                        year: i, annualCashflow, annualSalary, loanRepaymentAmount, reinvestmentAmount, corporateFundAmount: afterTaxCorporateFund,
+                        remainingLoan: currentLoan, 
+                        cumulativeCorporateTotalAssets: (cumulativeReinvestment + cumulativeCorporateFund) + currentLoan,
+                        cumulativeNetSalary, cumulativeLoanRepaid: initialLoan - currentLoan,
+                        taxableIncome, grossKoreanTax, actualCredit, payableTax, taxCreditCarryover
+                    });
+                }
+
+                const finalYearData = yearlyData[yearlyData.length - 1];
+                const finalSalary = operatingCostTiers.tier3; 
+                const totalYearsWorked = totalYears > 1 ? (totalYears - 1) + (5 / 12) : 5 / 12;
+                
+                const grossSeverance = (finalSalary / 10) * totalYearsWorked * severanceMultiplier;
+                const netSeverance = grossSeverance * 0.95;
+                const totalCorporateAssets = finalYearData.cumulativeCorporateTotalAssets;
+                const totalPersonalAssets = finalYearData.cumulativeNetSalary + finalYearData.cumulativeLoanRepaid + cumulativeYellowUmbrella + netSeverance;
+
+                updateUI(yearlyData, totalCorporateAssets, totalPersonalAssets, netSeverance);
+            };
+            
+            runBtn.addEventListener('click', runSimulation);
+
+            function setupAccordion(buttonId, contentId) {
+                const button = document.getElementById(buttonId);
+                const content = document.getElementById(contentId);
+                button.addEventListener('click', () => {
+                    content.classList.toggle('hidden');
+                    const icon = button.querySelector('.toggle-icon');
+                    icon.textContent = content.classList.contains('hidden') ? '+' : '-';
+                });
+            }
+
+            setupAccordion('toggleLoanDetailsBtn', 'loanDetails');
+            setupAccordion('toggleYearlyDetailsBtn', 'yearlyDetails');
+            setupAccordion('toggleTaxDetailsBtn', 'taxDetails');
+
+
+            const updateUI = (yearlyData, totalCorporateAssets, totalPersonalAssets, netSeverance) => {
+                document.getElementById('totalCorporateAssets').textContent = formatCurrency(totalCorporateAssets / 10000);
+                document.getElementById('totalPersonalAssets').textContent = formatCurrency(totalPersonalAssets / 10000);
+                document.getElementById('finalSeverancePay').textContent = formatCurrency(netSeverance / 10000);
+                
+                const tableBody = document.getElementById('resultsTableBody');
+                const taxTableBody = document.getElementById('taxTableBody');
+                tableBody.innerHTML = '';
+                taxTableBody.innerHTML = '';
+
+                yearlyData.forEach(data => {
+                    tableBody.innerHTML += `
+                        <tr class="bg-white border-b border-gray-200 hover:bg-gray-50">
+                            <td class="py-3 px-4 font-medium text-gray-900">${data.year}년차</td>
+                            <td class="py-3 px-4">${formatCurrency(data.annualCashflow / 10000)}</td>
+                            <td class="py-3 px-4">${formatCurrency(data.annualSalary / 10000)}</td>
+                            <td class="py-3 px-4">${formatCurrency(data.loanRepaymentAmount / 10000)}</td>
+                            <td class="py-3 px-4">${formatCurrency(data.reinvestmentAmount / 10000)}</td>
+                            <td class="py-3 px-4">${formatCurrency(data.corporateFundAmount / 10000)}</td>
+                            <td class="py-3 px-4">${formatCurrency(data.remainingLoan / 10000)}</td>
+                            <td class="py-3 px-4">${formatCurrency(data.cumulativeCorporateTotalAssets / 10000)}</td>
+                        </tr>`;
+
+                    taxTableBody.innerHTML += `
+                        <tr class="bg-white border-b border-gray-200 hover:bg-gray-50">
+                            <td class="py-3 px-4 font-medium text-gray-900">${data.year}년차</td>
+                            <td class="py-3 px-4">${formatCurrency(data.taxableIncome / 10000)}</td>
+                            <td class="py-3 px-4">${formatCurrency(data.grossKoreanTax / 10000)}</td>
+                            <td class="py-3 px-4">${formatCurrency(data.actualCredit / 10000)}</td>
+                            <td class="py-3 px-4 text-red-600 font-semibold">${formatCurrency(data.payableTax / 10000)}</td>
+                            <td class="py-3 px-4">${formatCurrency(data.taxCreditCarryover / 10000)}</td>
+                        </tr>`;
+                });
+
+                const labels = yearlyData.map(d => `${d.year}년차`);
+                
+                if (assetChart) assetChart.destroy();
+                assetChart = new Chart(document.getElementById('assetGrowthChart').getContext('2d'), {
+                    type: 'line',
+                    data: { labels: labels, datasets: [
+                        { label: '현재 법인 총자산', data: yearlyData.map(d => d.cumulativeCorporateTotalAssets / 10000), borderColor: '#16a34a', backgroundColor: 'rgba(22, 163, 74, 0.1)', fill: true, tension: 0.3 },
+                        { label: '누적 개인 자산 (퇴직금 제외)', data: yearlyData.map(d => (d.cumulativeNetSalary + d.cumulativeLoanRepaid) / 10000), borderColor: '#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.1)', fill: true, tension: 0.3 }
+                    ]},
+                    options: { responsive: true, plugins: { legend: { labels: { color: '#4b5563' } } }, scales: { y: { ticks: { color: '#6b7280', callback: (v) => formatCurrency(v) }, grid: { color: '#e5e7eb' } }, x: { ticks: { color: '#6b7280' }, grid: { color: '#e5e7eb' } } } }
+                });
+
+                if (loanChart) loanChart.destroy();
+                loanChart = new Chart(document.getElementById('loanRepaymentChart').getContext('2d'), {
+                    type: 'bar',
+                    data: { labels: labels, datasets: [
+                        { label: '가수금 상환액', data: yearlyData.map(d => d.loanRepaymentAmount / 10000), backgroundColor: '#60a5fa' },
+                        { label: '가수금 잔액', data: yearlyData.map(d => d.remainingLoan / 10000), backgroundColor: '#d1d5db' }
+                    ]},
+                    options: { responsive: true, plugins: { legend: { labels: { color: '#4b5563' } } }, scales: { y: { stacked: true, ticks: { color: '#6b7280', callback: (v) => formatCurrency(v) }, grid: { color: '#e5e7eb' } }, x: { stacked: true, ticks: { color: '#6b7280' }, grid: { color: '#e5e7eb' } } } }
+                });
+            };
+
+            const updatePeriodDisplay = () => {
+                const totalYears = parseInt(document.getElementById('simulationYears').value) || 0;
+                const takeoffYears = parseInt(document.getElementById('takeoffYears').value) || 0;
+                const growthYears = parseInt(document.getElementById('growthYears').value) || 0;
+                
+                const maturityStartYear = takeoffYears + growthYears + 1;
+                const displayEl = document.getElementById('maturityPeriodDisplay');
+
+                if (maturityStartYear > totalYears) {
+                    displayEl.textContent = `(기간 초과)`;
+                    displayEl.classList.add('text-red-500');
+                } else {
+                    displayEl.textContent = `(${maturityStartYear}년차 ~)`;
+                    displayEl.classList.remove('text-red-500');
+                }
+            };
+
+            // --- Import / Export Logic ---
+            const getInputValues = () => {
+                const settings = {};
+                const inputs = document.querySelectorAll('input[type="number"], input[type="range"], input[type="text"]');
+                inputs.forEach(input => { settings[input.id] = input.value; });
+                return settings;
+            };
+
+            const setInputValues = (settings) => {
+                for (const id in settings) {
+                    const input = document.getElementById(id);
+                    if (input) { 
+                        input.value = settings[id];
+                    }
+                }
+                document.getElementById('usStockRatioValue').textContent = `${settings['usStockRatio'] || 70}%`;
+                [1,2,3].forEach(tier => {
+                    const event = new Event('input', { bubbles: true, cancelable: true });
+                    const loanSlider = document.getElementById(`loanRepaymentRate_tier${tier}`);
+                    if(loanSlider) loanSlider.dispatchEvent(event);
+                });
+                 // Re-format all monetary text inputs after loading
+                setupAllMonetaryInputs();
+                updatePeriodDisplay();
+            };
+            
+            exportBtn.addEventListener('click', () => {
+                const settings = getInputValues();
+                const jsonString = JSON.stringify(settings, null, 2);
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'simulation_settings.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+
+            importBtn.addEventListener('click', () => { importFile.click(); });
+
+            importFile.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const settings = JSON.parse(e.target.result);
+                        setInputValues(settings);
+                        runSimulation();
+                    } catch (error) { alert('잘못된 파일 형식입니다. JSON 파일을 선택해주세요.'); }
+                };
+                reader.readAsText(file);
+                event.target.value = '';
+            });
+
+            // Initial setup
+            const setupAllMonetaryInputs = () => {
+                setupMonetaryInput('monthlyCashflow', 'monthlyCashflowKorean');
+                setupMonetaryInput('initialLoan', 'initialLoanKorean');
+                setupMonetaryInput('operatingCostTier1', 'operatingCostTier1Korean');
+                setupMonetaryInput('operatingCostTier2', 'operatingCostTier2Korean');
+                setupMonetaryInput('operatingCostTier3', 'operatingCostTier3Korean');
+                setupMonetaryInput('yellowUmbrellaMonthly', 'yellowUmbrellaMonthlyKorean');
+            };
+            
+            setupAllMonetaryInputs();
+            document.getElementById('simulationYears').addEventListener('input', updatePeriodDisplay);
+            document.getElementById('takeoffYears').addEventListener('input', updatePeriodDisplay);
+            document.getElementById('growthYears').addEventListener('input', updatePeriodDisplay);
+            document.getElementById('usStockRatioValue').textContent = `${document.getElementById('usStockRatio').value}%`;
+            [1,2,3].forEach(tier => {
+                 const event = new Event('input', { bubbles: true, cancelable: true });
+                 const loanSlider = document.getElementById(`loanRepaymentRate_tier${tier}`);
+                 if(loanSlider) loanSlider.dispatchEvent(event);
+            });
+            updatePeriodDisplay();
+            
+        });
+    </script>
+</body>
+</html>
+
