@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025 대한민국 원격근무 현황 보고서</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: The SPA uses a thematic dashboard layout with a sticky top navigation for easy access to four sections: Overview, Employee Insights, Company Challenges, and The Future. This structure transforms the linear report into an exploratory experience, allowing users to get a quick summary and then dive into specific areas of interest (employee vs. company perspective) non-linearly. This enhances usability and information retention. Key interactions include filtering charts and clicking on diagram elements to reveal detailed text, making data discovery intuitive. -->
+    <!-- Visualization & Content Choices: 
+        1. Report Info: Industry Adoption Rates -> Goal: Compare -> Viz: Bar Chart -> Interaction: Hover for details -> Justification: Ideal for comparing categories -> Library: Chart.js.
+        2. Report Info: Work-Life Balance -> Goal: Show Proportions -> Viz: Donut Chart -> Interaction: Hover for percentages -> Justification: Effective for part-to-whole data -> Library: Chart.js.
+        3. Report Info: Company Challenges -> Goal: Rank -> Viz: Horizontal Bar Chart -> Interaction: Hover for details -> Justification: Clear for ranked lists with long labels -> Library: Chart.js.
+        4. Report Info: Success Strategy -> Goal: Organize Concepts -> Viz: HTML/CSS Diagram -> Interaction: Click to reveal text -> Justification: Engaging and avoids static images -> Library: Vanilla JS + Tailwind.
+        5. Report Info: Future Projections -> Goal: Show Change Over Time -> Viz: Line Chart -> Interaction: Hover for data points -> Justification: Standard for time-series trends -> Library: Chart.js.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f7f6; 
+            color: #44403c;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 640px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #0d9488; 
+            border-bottom-color: #0d9488;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white py-6 text-center shadow-md">
+        <h1 class="text-4xl font-bold text-teal-700">2025 대한민국 원격근무 현황</h1>
+        <p class="text-lg text-stone-600 mt-2">데이터로 살펴보는 일하는 방식의 새로운 표준</p>
+    </header>
+
+    <nav id="navbar" class="sticky top-0 bg-white/80 backdrop-blur-lg z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-center space-x-4 md:space-x-8 py-3">
+                <a href="#overview" class="nav-link font-medium py-2 px-3 text-stone-700">개요</a>
+                <a href="#employee-insights" class="nav-link font-medium py-2 px-3 text-stone-700">직원 인사이트</a>
+                <a href="#company-challenges" class="nav-link font-medium py-2 px-3 text-stone-700">기업의 과제</a>
+                <a href="#future-of-work" class="nav-link font-medium py-2 px-3 text-stone-700">업무의 미래</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-4 md:p-8 space-y-16">
+
+        <section id="overview" class="scroll-mt-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-teal-800">핵심 요약: 원격근무, 새로운 표준으로</h2>
+                <p class="mt-4 text-stone-600 max-w-3xl mx-auto">
+                    팬데믹 이후, 대한민국 기업 환경에서 원격근무는 일시적 대안을 넘어 지속 가능한 업무 모델로 자리 잡았습니다. 이 섹션에서는 전반적인 원격근무 도입률과 직원 만족도 등 핵심 지표를 통해 현재 상황을 조망하고, 산업별 도입 현황을 시각적으로 비교 분석합니다.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="grid grid-cols-2 gap-6 text-center">
+                     <div class="card p-6">
+                        <div class="text-5xl font-bold text-teal-600">68%</div>
+                        <div class="mt-2 text-stone-600 font-medium">전체 기업 도입률</div>
+                    </div>
+                     <div class="card p-6">
+                        <div class="text-5xl font-bold text-amber-600">85%</div>
+                        <div class="mt-2 text-stone-600 font-medium">직원 만족도</div>
+                    </div>
+                     <div class="card p-6 col-span-2">
+                        <div class="text-5xl font-bold text-teal-600">+15%</div>
+                        <div class="mt-2 text-stone-600 font-medium">자체 평가 생산성 증가</div>
+                    </div>
+                </div>
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold text-center mb-4 text-stone-700">산업별 원격근무 도입률 (%)</h3>
+                    <p class="text-sm text-center text-stone-500 mb-4">기술 및 정보통신 분야가 도입을 주도하고 있으며, 전통적인 제조업은 상대적으로 낮은 도입률을 보입니다. 각 막대 위에 마우스를 올리면 정확한 수치를 확인할 수 있습니다.</p>
+                    <div class="chart-container">
+                        <canvas id="industryAdoptionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="employee-insights" class="scroll-mt-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-teal-800">직원들은 어떻게 느끼고 있을까?</h2>
+                <p class="mt-4 text-stone-600 max-w-3xl mx-auto">
+                    원격근무는 직원의 일과 삶에 직접적인 영향을 미칩니다. 여기서는 직원들의 워라밸 만족도, 생산성 변화에 대한 인식, 그리고 원격근무의 장단점에 대한 생생한 목소리를 데이터와 함께 살펴봅니다. 이를 통해 직원 경험의 질을 높일 수 있는 방안을 모색합니다.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold text-center mb-4 text-stone-700">워라밸(Work-Life Balance) 만족도</h3>
+                     <p class="text-sm text-center text-stone-500 mb-4">대다수의 직원이 원격근무로 인해 일과 삶의 균형이 개선되었다고 응답했습니다. 각 항목에 마우스를 올려 상세 비율을 확인해보세요.</p>
+                    <div class="chart-container">
+                        <canvas id="workLifeBalanceChart"></canvas>
+                    </div>
+                </div>
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold text-center mb-4 text-stone-700">원격근무 후 생산성 변화 인식</h3>
+                     <p class="text-sm text-center text-stone-500 mb-4">직원들은 스스로의 생산성이 증가했거나 유지되었다고 평가하는 경향이 강하게 나타났습니다.</p>
+                    <div class="chart-container">
+                        <canvas id="productivityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="company-challenges" class="scroll-mt-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-teal-800">기업의 도전 과제</h2>
+                <p class="mt-4 text-stone-600 max-w-3xl mx-auto">
+                    원격근무의 성공적인 안착을 위해 기업은 여러 과제에 직면합니다. 이 섹션에서는 기업들이 가장 어렵게 느끼는 문제들을 순위별로 살펴보고, 성공적인 원격근무 환경 구축을 위한 핵심 구성 요소를 상호작용 가능한 다이어그램으로 제시합니다.
+                </p>
+            </div>
+             <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                <div class="lg:col-span-3 card p-6">
+                    <h3 class="text-xl font-semibold text-center mb-4 text-stone-700">기업이 직면한 주요 과제 TOP 5</h3>
+                     <p class="text-sm text-center text-stone-500 mb-4">조직 문화 유지와 비대면 협업의 어려움이 가장 큰 과제로 꼽혔습니다.</p>
+                    <div class="chart-container h-96 md:h-[450px]">
+                        <canvas id="companyChallengesChart"></canvas>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 card p-6 flex flex-col justify-center">
+                    <h3 class="text-xl font-semibold text-center mb-4 text-stone-700">성공적인 원격근무 전략</h3>
+                    <p class="text-sm text-center text-stone-500 mb-6">성공적인 원격근무는 기술, 정책, 문화 세 가지 요소의 조화에 달려있습니다. 각 요소를 클릭하여 상세 내용을 확인하세요.</p>
+                    <div class="space-y-4">
+                        <div id="strategy-tech" class="strategy-item p-4 border-2 border-teal-200 rounded-lg cursor-pointer hover:bg-teal-50 transition-colors">
+                            <h4 class="font-bold text-teal-700 text-lg">⚙️ 기술 (Technology)</h4>
+                            <p id="desc-tech" class="text-stone-600 mt-2 text-sm hidden">안정적인 클라우드 인프라, 원활한 협업 툴(메신저, 화상회의), 강력한 보안 솔루션이 필수적입니다. 모든 직원이 동등한 기술 환경에서 근무할 수 있도록 지원해야 합니다.</p>
+                        </div>
+                        <div id="strategy-policy" class="strategy-item p-4 border-2 border-amber-200 rounded-lg cursor-pointer hover:bg-amber-50 transition-colors">
+                            <h4 class="font-bold text-amber-700 text-lg">📜 정책 (Policy)</h4>
+                            <p id="desc-policy" class="text-stone-600 mt-2 text-sm hidden">명확한 원격근무 가이드라인, 성과 기반의 평가 시스템, 유연한 근무시간 정책을 수립해야 합니다. 커뮤니케이션 규칙을 정립하여 정보 격차를 해소하는 것이 중요합니다.</p>
+                        </div>
+                        <div id="strategy-culture" class="strategy-item p-4 border-2 border-stone-300 rounded-lg cursor-pointer hover:bg-stone-100 transition-colors">
+                            <h4 class="font-bold text-stone-700 text-lg">🤝 문화 (Culture)</h4>
+                            <p id="desc-culture" class="text-stone-600 mt-2 text-sm hidden">상호 신뢰를 기반으로 한 자율적인 업무 문화를 조성해야 합니다. 정기적인 비대면 소통과 팀 빌딩 활동을 통해 소속감과 유대감을 유지하는 노력이 필요합니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="future-of-work" class="scroll-mt-24">
+             <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-teal-800">일의 미래, 하이브리드 워크의 부상</h2>
+                <p class="mt-4 text-stone-600 max-w-3xl mx-auto">
+                    완전 원격 또는 완전 사무실 근무의 이분법을 넘어, 두 가지를 결합한 하이브리드 모델이 미래의 표준으로 부상하고 있습니다. 앞으로의 업무 모델 변화 추세를 예측하고, 기업이 미래에 대비하기 위한 핵심 권장 사항을 제안합니다.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold text-center mb-4 text-stone-700">향후 3년 업무 모델 전망 (기업 선호도)</h3>
+                    <p class="text-sm text-center text-stone-500 mb-4">하이브리드 모델에 대한 선호도가 급격히 증가하며, 완전 사무실 근무 모델은 감소할 것으로 예상됩니다.</p>
+                    <div class="chart-container">
+                        <canvas id="futureTrendChart"></canvas>
+                    </div>
+                </div>
+                <div class="space-y-6">
+                    <h3 class="text-2xl font-semibold text-center text-stone-800">미래 대비를 위한 권장 사항</h3>
+                    <div class="card p-5">
+                        <h4 class="font-bold text-teal-700">1. 유연성 중심의 제도 설계</h4>
+                        <p class="text-stone-600 mt-1">개인과 팀의 특성을 고려하여 근무 장소와 시간을 선택할 수 있는 유연한 하이브리드 정책을 도입해야 합니다.</p>
+                    </div>
+                    <div class="card p-5">
+                        <h4 class="font-bold text-teal-700">2. 리더십 역량 재정의</h4>
+                        <p class="text-stone-600 mt-1">관리자는 분산된 팀을 효과적으로 이끌 수 있는 코칭 및 커뮤니케이션 역량을 함양해야 합니다.</p>
+                    </div>
+                    <div class="card p-5">
+                        <h4 class="font-bold text-teal-700">3. 사무 공간의 재구성</h4>
+                        <p class="text-stone-600 mt-1">사무실은 개인 업무 공간이 아닌, 협업과 소통, 혁신을 위한 거점 공간으로 재설계되어야 합니다.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-stone-800 text-white mt-16 py-8">
+        <div class="max-w-6xl mx-auto text-center px-4">
+            <p>&copy; 2025 Interactive Report. All rights reserved.</p>
+            <p class="text-sm text-stone-400 mt-2">이 보고서는 가상의 데이터를 기반으로 제작되었습니다.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const globalChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#44403c',
+                            font: {
+                                family: "'Noto Sans KR', sans-serif",
+                                size: 12,
+                            }
+                        }
+                    },
+                    tooltip: {
+                        bodyFont: {
+                            family: "'Noto Sans KR', sans-serif",
+                        },
+                        titleFont: {
+                             family: "'Noto Sans KR', sans-serif",
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            color: '#57534e',
+                            font: {
+                                family: "'Noto Sans KR', sans-serif",
+                                size: 12,
+                            },
+                        },
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            color: '#57534e',
+                            font: {
+                                family: "'Noto Sans KR', sans-serif",
+                                size: 12,
+                            }
+                        },
+                        grid: {
+                            color: '#e7e5e4'
+                        }
+                    }
+                }
+            };
+            
+            const wrapText = (str) => {
+                const maxLength = 16;
+                if (str.length <= maxLength) return str;
+                const words = str.split(' ');
+                let currentLine = '';
+                const lines = [];
+                for (const word of words) {
+                    if ((currentLine + word).length > maxLength) {
+                        lines.push(currentLine.trim());
+                        currentLine = '';
+                    }
+                    currentLine += word + ' ';
+                }
+                lines.push(currentLine.trim());
+                return lines;
+            };
+
+            const industryData = {
+                labels: ['정보기술(IT) 및 통신', '금융 및 보험', '전문 서비스', '교육', '도소매', '제조업'],
+                data: [92, 78, 75, 62, 45, 31]
+            };
+            const industryCtx = document.getElementById('industryAdoptionChart').getContext('2d');
+            new Chart(industryCtx, {
+                type: 'bar',
+                data: {
+                    labels: industryData.labels,
+                    datasets: [{
+                        label: '도입률 (%)',
+                        data: industryData.data,
+                        backgroundColor: 'rgba(13, 148, 136, 0.6)',
+                        borderColor: 'rgba(13, 148, 136, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: { ...globalChartOptions }
+            });
+
+            const workLifeData = {
+                labels: ['매우 개선됨', '개선됨', '변화 없음', '악화됨'],
+                data: [45, 40, 12, 3]
+            };
+            const workLifeCtx = document.getElementById('workLifeBalanceChart').getContext('2d');
+            new Chart(workLifeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: workLifeData.labels,
+                    datasets: [{
+                        label: '응답 비율',
+                        data: workLifeData.data,
+                        backgroundColor: ['#0d9488', '#5eead4', '#a1a1aa', '#f59e0b'],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                             labels: {
+                                color: '#44403c',
+                                font: {
+                                    family: "'Noto Sans KR', sans-serif",
+                                    size: 12,
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            const productivityData = {
+                labels: ['증가함', '유지됨', '감소함'],
+                data: [55, 38, 7]
+            };
+            const productivityCtx = document.getElementById('productivityChart').getContext('2d');
+            new Chart(productivityCtx, {
+                type: 'bar',
+                data: {
+                    labels: productivityData.labels,
+                    datasets: [{
+                        label: '응답 비율 (%)',
+                        data: productivityData.data,
+                        backgroundColor: ['#0d9488', '#a1a1aa', '#f59e0b'],
+                    }]
+                },
+                 options: {
+                    ...globalChartOptions,
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            const challengesData = {
+                labels: ['조직 문화 유지/형성', '비대면 협업/소통', '직원 성과 관리/평가', '사이버 보안 강화', 'IT 인프라 지원'],
+                data: [88, 82, 71, 65, 58]
+            };
+            const challengesCtx = document.getElementById('companyChallengesChart').getContext('2d');
+            new Chart(challengesCtx, {
+                type: 'bar',
+                data: {
+                    labels: challengesData.labels,
+                    datasets: [{
+                        label: '응답 비율 (%)',
+                        data: challengesData.data,
+                        backgroundColor: 'rgba(217, 119, 6, 0.6)',
+                        borderColor: 'rgba(217, 119, 6, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    ...globalChartOptions,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            const futureData = {
+                labels: ['2025', '2026', '2027', '2028'],
+                hybrid: [45, 58, 65, 72],
+                fullRemote: [15, 18, 17, 16],
+                fullOffice: [40, 24, 18, 12]
+            };
+            const futureCtx = document.getElementById('futureTrendChart').getContext('2d');
+            new Chart(futureCtx, {
+                type: 'line',
+                data: {
+                    labels: futureData.labels,
+                    datasets: [{
+                        label: '하이브리드',
+                        data: futureData.hybrid,
+                        borderColor: '#0d9488',
+                        backgroundColor: 'rgba(13, 148, 136, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }, {
+                        label: '완전 사무실',
+                        data: futureData.fullOffice,
+                        borderColor: '#a1a1aa',
+                        backgroundColor: 'rgba(161, 161, 170, 0.1)',
+                        fill: true,
+                         tension: 0.3
+                    },{
+                        label: '완전 원격',
+                        data: futureData.fullRemote,
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: { ...globalChartOptions }
+            });
+
+            const strategyItems = document.querySelectorAll('.strategy-item');
+            strategyItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const desc = item.querySelector('p');
+                    const isVisible = !desc.classList.contains('hidden');
+                    
+                    document.querySelectorAll('.strategy-item p').forEach(p => p.classList.add('hidden'));
+                    
+                    if (!isVisible) {
+                        desc.classList.remove('hidden');
+                    }
+                });
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+            
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.4
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            navLinks.forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
