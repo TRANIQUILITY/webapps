@@ -41,13 +41,33 @@
             cursor: pointer;
             border-radius: 50%;
         }
+        /* Typewriter effect */
+        .typewriter-cursor {
+            display: inline-block;
+            background-color: #6b7280;
+            margin-left: 0.1rem;
+            width: 3px;
+            animation: blink 1s infinite;
+        }
+        .typewriter-text-container {
+            height: 28px; /* Set a fixed height to prevent layout shifts */
+        }
+        @keyframes blink {
+            0% { background-color: #6b7280; }
+            49% { background-color: #6b7280; }
+            50% { background-color: transparent; }
+            99% { background-color: transparent; }
+            100% { background-color: #6b7280; }
+        }
     </style>
 </head>
 <body class="text-gray-800">
     <div class="container mx-auto p-4 md:p-8">
         <header class="text-center mb-10">
-            <h1 class="text-4xl font-bold text-gray-900">51labs 성장 전략 시뮬레이터</h1>
-            <br>
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">51labs 성장 전략 시뮬레이터</h1>
+            <div class="typewriter-text-container">
+                <p id="typewriter-text" class="text-lg text-gray-600"></p>
+            </div>
         </header>
 
         <div class="space-y-8">
@@ -100,16 +120,18 @@
                     <div class="space-y-6">
                         <!-- Tier 1 -->
                         <div>
-                            <div class="flex items-center mb-2">
-                                <h3 class="text-sm font-semibold text-gray-800">도약기</h3>
-                                <div class="flex items-center ml-2">
-                                    <input type="number" id="takeoffYears" class="form-input w-16 text-center py-1 px-1 text-sm" value="3">
-                                    <span class="ml-1 text-sm text-gray-600">년</span>
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center">
+                                    <h3 class="text-sm font-semibold text-gray-800 mr-2">도약기</h3>
+                                    <div class="flex items-center">
+                                        <input type="number" id="takeoffYears" class="form-input w-14 text-center py-1 px-1 text-sm" value="3">
+                                        <span class="ml-1 text-sm text-gray-600">년</span>
+                                    </div>
                                 </div>
-                                <div class="ml-auto flex gap-1">
-                                    <button data-tier="1" data-preset="even" class="preset-btn">일률분배</button>
-                                    <button data-tier="1" data-preset="reinvest" class="preset-btn">재투자중심</button>
-                                    <button data-tier="1" data-preset="operations" class="preset-btn">운영중심</button>
+                                <div class="flex gap-1">
+                                    <button data-tier="1" data-preset="even" class="preset-btn">일률</button>
+                                    <button data-tier="1" data-preset="reinvest" class="preset-btn">투자</button>
+                                    <button data-tier="1" data-preset="operations" class="preset-btn">운영</button>
                                 </div>
                             </div>
                             <div>
@@ -138,16 +160,18 @@
                         </div>
                         <!-- Tier 2 -->
                         <div>
-                           <div class="flex items-center mb-2">
-                                <h3 class="text-sm font-semibold text-gray-800">성장기</h3>
-                                <div class="flex items-center ml-2">
-                                    <input type="number" id="growthYears" class="form-input w-16 text-center py-1 px-1 text-sm" value="7">
-                                    <span class="ml-1 text-sm text-gray-600">년</span>
+                           <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center">
+                                    <h3 class="text-sm font-semibold text-gray-800 mr-2">성장기</h3>
+                                    <div class="flex items-center">
+                                        <input type="number" id="growthYears" class="form-input w-14 text-center py-1 px-1 text-sm" value="7">
+                                        <span class="ml-1 text-sm text-gray-600">년</span>
+                                    </div>
                                 </div>
-                                <div class="ml-auto flex gap-1">
-                                    <button data-tier="2" data-preset="even" class="preset-btn">일률분배</button>
-                                    <button data-tier="2" data-preset="reinvest" class="preset-btn">재투자중심</button>
-                                    <button data-tier="2" data-preset="operations" class="preset-btn">운영중심</button>
+                                <div class="flex gap-1">
+                                    <button data-tier="2" data-preset="even" class="preset-btn">일률</button>
+                                    <button data-tier="2" data-preset="reinvest" class="preset-btn">투자</button>
+                                    <button data-tier="2" data-preset="operations" class="preset-btn">운영</button>
                                 </div>
                             </div>
                              <div>
@@ -176,12 +200,12 @@
                         </div>
                         <!-- Tier 3 -->
                         <div>
-                             <div class="flex items-center mb-2">
+                             <div class="flex items-center justify-between mb-2">
                                 <h3 class="text-sm font-semibold text-gray-800">성숙기 <span id="maturityPeriodDisplay" class="font-normal text-gray-500 text-xs"></span></h3>
-                                <div class="ml-auto flex gap-1">
-                                    <button data-tier="3" data-preset="even" class="preset-btn">일률분배</button>
-                                    <button data-tier="3" data-preset="reinvest" class="preset-btn">재투자중심</button>
-                                    <button data-tier="3" data-preset="operations" class="preset-btn">운영중심</button>
+                                <div class="flex gap-1">
+                                    <button data-tier="3" data-preset="even" class="preset-btn">일률</button>
+                                    <button data-tier="3" data-preset="reinvest" class="preset-btn">투자</button>
+                                    <button data-tier="3" data-preset="operations" class="preset-btn">운영</button>
                                 </div>
                             </div>
                              <div>
@@ -744,6 +768,50 @@
                 reader.readAsText(file);
                 event.target.value = '';
             });
+            
+             const typewriterElement = document.getElementById('typewriter-text');
+            const sentences = [
+                "1년차는 7월 사업개시일이기 때문에 5개월로 계산이 됩니다.",
+                "미국 주식 투자 비중을 설정하면 나머지 비율은 한국 투자로 간주합니다.",
+                "법인의 성장기에 따라 현금흐름을 배분하여 시뮬레이션할 수 있습니다.",
+                "법인 운영비는 대표 급여, 세무 기장, 구독료, 임대료, 기타 비용이 포함됩니다.",
+                "설정 내보내기와 가져오기는 JSON 형식이 지원됩니다."
+            ];
+            let sentenceIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+
+            function typeWriter() {
+                const currentSentence = sentences[sentenceIndex];
+                let displayText = '';
+
+                if (isDeleting) {
+                    displayText = currentSentence.substring(0, charIndex - 1);
+                    charIndex--;
+                } else {
+                    displayText = currentSentence.substring(0, charIndex + 1);
+                    charIndex++;
+                }
+
+                typewriterElement.innerHTML = `${displayText}<span class="typewriter-cursor"></span>`;
+
+                let typeSpeed = 100;
+                if (isDeleting) {
+                    typeSpeed /= 2;
+                }
+
+                if (!isDeleting && charIndex === currentSentence.length) {
+                    isDeleting = true;
+                    typeSpeed = 2000; // Pause at end of sentence
+                } else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    sentenceIndex = (sentenceIndex + 1) % sentences.length;
+                    typeSpeed = 500; // Pause before new sentence
+                }
+
+                setTimeout(typeWriter, typeSpeed);
+            }
+
 
             // Initial setup
             const setupAllMonetaryInputs = () => {
@@ -766,6 +834,7 @@
                  if(loanSlider) loanSlider.dispatchEvent(event);
             });
             updatePeriodDisplay();
+            typeWriter();
             
         });
     </script>
