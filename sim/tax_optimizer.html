@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>51labs 법인세 시뮬레이터</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        input[type=range] {
+            -webkit-appearance: none; appearance: none; width: 100%; height: 8px; background: #e2e8f0; border-radius: 9999px; outline: none; opacity: 0.9; transition: opacity .2s;
+        }
+        input[type=range]:hover { opacity: 1; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: #3b82f6; cursor: pointer; border-radius: 50%; transition: background .2s; }
+        input[type=range]::-moz-range-thumb { width: 20px; height: 20px; background: #3b82f6; cursor: pointer; border-radius: 50%; border: none; transition: background .2s; }
+        .card-transition { transition: all 0.3s ease-in-out; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Tooltip Styles */
+        .tooltip-container { position: relative; cursor: help; }
+        .tooltip {
+            visibility: hidden; opacity: 0;
+            position: absolute; bottom: 125%; left: 50%;
+            transform: translateX(-50%);
+            background-color: #1e293b; color: #fff;
+            text-align: center; white-space: nowrap;
+            padding: 8px 12px; border-radius: 6px;
+            z-index: 10;
+            transition: opacity 0.3s;
+            font-size: 12px; font-weight: 500;
+        }
+        .tooltip::after { /* Tooltip arrow */
+            content: ""; position: absolute; top: 100%; left: 50%;
+            margin-left: -5px; border-width: 5px; border-style: solid;
+            border-color: #1e293b transparent transparent transparent;
+        }
+        .tooltip-container:hover .tooltip { visibility: visible; opacity: 1; }
+
+        /* Tab Styles */
+        .tab-button.active {
+            border-color: #3b82f6;
+            color: #3b82f6;
+            background-color: #eff6ff;
+        }
+        /* Preset Button Active Style */
+        .preset-button.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">51labs 법인세 시뮬레이터</h1>
+            <p class="mt-2 text-lg text-slate-600">전략별 절세 효과 비교 및 최적화</p>
+        </header>
+
+        <!-- Input Section (Full Width) -->
+        <div class="bg-white p-6 rounded-2xl shadow-lg mb-8">
+            <h2 class="text-xl font-bold mb-4 border-b pb-3">시뮬레이션 변수 설정</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <h3 class="text-sm font-medium text-slate-700 mb-2">전략 프리셋</h3>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button id="presetAggressive" class="preset-button text-xs font-semibold py-2 px-1 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">공격적 성장</button>
+                        <button id="presetStable" class="preset-button text-xs font-semibold py-2 px-1 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">안정 절세</button>
+                        <button id="presetDomestic" class="preset-button text-xs font-semibold py-2 px-1 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">국내 집중</button>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-slate-700 mb-2">설정 관리</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="saveSettings" class="text-xs font-semibold py-2 px-1 bg-green-100 hover:bg-green-200 text-green-800 rounded-lg transition-colors">설정 저장하기</button>
+                        <button id="loadSettings" class="text-xs font-semibold py-2 px-1 bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg transition-colors">설정 불러오기</button>
+                        <input type="file" id="fileLoader" class="hidden" accept=".json">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sliders Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-6">
+                <div>
+                    <label for="initialPrincipal" class="block text-sm font-medium text-slate-700">최초 투자 원금</label>
+                    <input type="range" id="initialPrincipal" min="100000000" max="10000000000" step="5000000" value="1035000000" class="mt-2">
+                    <div class="text-right font-semibold text-blue-600 mt-1"><span id="initialPrincipalValue"></span>원</div>
+                </div>
+                 <div>
+                    <label for="usDividendYield" class="block text-sm font-medium text-slate-700">미국 주식 연평균 배당수익률</label>
+                    <input type="range" id="usDividendYield" min="0" max="60" step="0.1" value="25" class="mt-2">
+                    <div class="text-right font-semibold text-blue-600 mt-1"><span id="usDividendYieldValue"></span>%</div>
+                </div>
+                 <div>
+                    <label for="krDividendYield" class="block text-sm font-medium text-slate-700">한국 주식 연평균 배당수익률</label>
+                    <input type="range" id="krDividendYield" min="0" max="60" step="0.1" value="12" class="mt-2">
+                    <div class="text-right font-semibold text-blue-600 mt-1"><span id="krDividendYieldValue"></span>%</div>
+                </div>
+                <div>
+                    <label for="reinvestmentRate" class="block text-sm font-medium text-slate-700">배당금 재투자 비율</label>
+                    <input type="range" id="reinvestmentRate" min="0" max="100" step="1" value="40" class="mt-2">
+                    <div class="text-right font-semibold text-blue-600 mt-1"><span id="reinvestmentRateValue"></span>%</div>
+                </div>
+                <div>
+                    <label for="usPortfolioRatio" class="block text-sm font-medium text-slate-700">미국 주식 비중</label>
+                    <input type="range" id="usPortfolioRatio" min="0" max="100" step="1" value="75" class="mt-2">
+                    <div class="text-right font-semibold text-blue-600 mt-1"><span id="usPortfolioRatioValue"></span>%</div>
+                </div>
+                <div>
+                    <label for="operatingExpenses" class="block text-sm font-medium text-slate-700">연간 총 운영비 (VAT 포함)</label>
+                    <input type="range" id="operatingExpenses" min="10000000" max="500000000" step="1000000" value="78000000" class="mt-2">
+                    <div class="text-right font-semibold text-blue-600 mt-1"><span id="operatingExpensesValue"></span>원</div>
+                </div>
+                <div>
+                    <label for="expensesGrowthRate" class="block text-sm font-medium text-slate-700">연간 운영비 증가율</label>
+                    <input type="range" id="expensesGrowthRate" min="0" max="20" step="0.5" value="2" class="mt-2">
+                    <div class="text-right font-semibold text-blue-600 mt-1"><span id="expensesGrowthRateValue"></span>%</div>
+                </div>
+                <div>
+                    <label for="simulationYears" class="block text-sm font-medium text-slate-700">시뮬레이션 기간</label>
+                    <input type="range" id="simulationYears" min="1" max="30" step="1" value="20" class="mt-2">
+                    <div class="text-right font-semibold text-blue-600 mt-1"><span id="simulationYearsValue"></span>년</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Strategy Tabs (Full Width) -->
+        <div class="bg-white p-6 rounded-2xl shadow-lg card-transition mb-8">
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-6" aria-label="Tabs">
+                    <button class="tab-button active" data-tab="tab1">사례 1: 공격적 성장</button>
+                    <button class="tab-button" data-tab="tab2">사례 2: 안정 절세</button>
+                    <button class="tab-button" data-tab="tab3">사례 3: 국내 집중</button>
+                </nav>
+            </div>
+            <div class="mt-4">
+                <div id="tab1" class="tab-content text-sm text-slate-600 leading-relaxed">
+                    <p><strong class="text-slate-800">목표:</strong> 장기 자산의 극대화. 단기적인 세금 발생을 감수하더라도 최대한의 복리 효과를 누립니다.</p>
+                    <p><strong class="text-slate-800">변수 설정:</strong> 높은 수익률과 100% 재투자로 복리 효과를 극대화하고, 운영비는 낮게 통제합니다.</p>
+                    <p><strong class="text-slate-800">예상 결과:</strong> 최종 자산 가치가 가장 높지만, 성장 속도가 빨라 후반부에는 일부 법인세를 납부할 수 있습니다.</p>
+                </div>
+                <div id="tab2" class="tab-content hidden text-sm text-slate-600 leading-relaxed">
+                     <p><strong class="text-slate-800">목표:</strong> 최종 납부세액을 최대한 '0원'으로 유지. 자산 성장은 다소 느리더라도 세금 발생을 철저히 통제합니다.</p>
+                    <p><strong class="text-slate-800">변수 설정:</strong> 중수익과 낮은 재투자율로 과세표준을 관리하고, 높은 미국 비중으로 공제 재원을 최대로 확보합니다.</p>
+                    <p><strong class="text-slate-800">예상 결과:</strong> 납부세액이 기간 내내 '0'에 가깝게 유지되나, 최종 자산 가치는 상대적으로 낮아집니다.</p>
+                </div>
+                <div id="tab3" class="tab-content hidden text-sm text-slate-600 leading-relaxed">
+                    <p><strong class="text-slate-800">목표:</strong> 환율 리스크를 줄이기 위해 국내 주식 비중을 높인 균형 투자 전략의 세금 효과를 분석합니다.</p>
+                    <p><strong class="text-slate-800">변수 설정:</strong> 미국 주식 비중을 35%로 설정하여, 안정적인 '외국납부세액공제'를 확보하면서도 국내 시장에 집중합니다.</p>
+                    <p><strong class="text-slate-800">예상 결과:</strong> '공격적 성장' 전략보다 세금 부담은 높지만, 100% 국내 투자보다는 월등한 절세 효과를 유지합니다.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dashboard with 1-Year Analysis (Full Width) -->
+        <div class="bg-white p-6 rounded-2xl shadow-lg card-transition mb-8">
+            <h2 class="text-xl font-bold mb-4">장기 자산 성장 및 1년차 분석</h2>
+            <div class="relative h-96">
+                <canvas id="assetGrowthChart"></canvas>
+            </div>
+            <div id="dashboardSummary" class="mt-6 text-center bg-slate-800 text-white p-4 rounded-lg fade-in"></div>
+            
+            <!-- First Year Analysis -->
+            <div class="mt-8 border-t pt-6">
+                <h3 class="text-lg font-bold mb-4 text-center">시뮬레이션 1년차 (2025년 기준) 상세 분석</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-bold text-md mb-2 text-blue-600">세금 계산 내역</h4>
+                        <div class="space-y-2 text-sm bg-slate-50 p-4 rounded-lg">
+                            <div class="flex justify-between"><span>총 수익 (매출)</span><span id="outputRevenue" class="font-semibold"></span></div>
+                            <div class="flex justify-between"><span>(-) 기본 운영비</span><span id="outputExpenses" class="font-semibold"></span></div>
+                            <div class="flex justify-between"><span>(-) 불공제 부가세</span><span id="outputNonDeductibleVat" class="font-bold text-blue-700"></span></div>
+                            <hr class="my-2 border-slate-300">
+                            <div class="flex justify-between font-bold"><span>최종 과세표준</span><span id="outputTaxableIncome"></span></div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-md mb-2 text-green-600">최종 납부세액 분석</h4>
+                         <div class="space-y-2 text-sm bg-slate-50 p-4 rounded-lg">
+                            <div class="flex justify-between"><span>산출세액</span><span id="outputCalculatedTax" class="font-semibold"></span></div>
+                            <div class="flex justify-between tooltip-container">
+                                <span>(-) 부가세 지렛대 효과</span>
+                                <span class="tooltip">불공제 부가세가 비용(손금)으로 인정되어 법인세를 절감하는 효과</span>
+                                <span id="outputLeverageEffect" class="font-bold text-green-700"></span>
+                            </div>
+                            <div class="flex justify-between"><span>(-) 외국납부세액공제</span><span id="outputForeignTaxCredit" class="font-bold text-emerald-700"></span></div>
+                            <hr class="my-2 border-slate-300">
+                            <div class="flex justify-between font-bold text-red-600"><span>최종 납부예상세액</span><span id="outputFinalTax" class="text-lg"></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Yearly Simulation Table (Full Width) -->
+        <div class="bg-white p-6 rounded-2xl shadow-lg card-transition fade-in">
+            <h2 class="text-xl font-bold mb-4">연도별 상세 시뮬레이션 결과</h2>
+            <div class="overflow-x-auto max-h-[400px] relative">
+                <table class="w-full text-sm text-left text-slate-500">
+                    <thead class="text-xs text-slate-700 uppercase bg-slate-100 sticky top-0 z-10">
+                        <tr>
+                            <th scope="col" class="px-4 py-3 text-center whitespace-nowrap">연차</th>
+                            <th scope="col" class="px-4 py-3 text-right whitespace-nowrap">총 자산</th>
+                            <th scope="col" class="px-4 py-3 text-right whitespace-nowrap">과세표준</th>
+                            <th scope="col" class="px-4 py-3 text-right whitespace-nowrap">산출세액</th>
+                            <th scope="col" class="px-4 py-3 text-right whitespace-nowrap">기초 이월액</th>
+                            <th scope="col" class="px-4 py-3 text-right whitespace-nowrap">당해 발생액</th>
+                            <th scope="col" class="px-4 py-3 text-right whitespace-nowrap">사용 공제액</th>
+                            <th scope="col" class="px-4 py-3 text-right whitespace-nowrap">기말 이월액</th>
+                            <th scope="col" class="px-4 py-3 text-right whitespace-nowrap">최종 납부세액</th>
+                        </tr>
+                    </thead>
+                    <tbody id="simulationTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputs = {
+                initialPrincipal: document.getElementById('initialPrincipal'),
+                usDividendYield: document.getElementById('usDividendYield'),
+                krDividendYield: document.getElementById('krDividendYield'),
+                reinvestmentRate: document.getElementById('reinvestmentRate'),
+                usPortfolioRatio: document.getElementById('usPortfolioRatio'),
+                operatingExpenses: document.getElementById('operatingExpenses'),
+                expensesGrowthRate: document.getElementById('expensesGrowthRate'),
+                simulationYears: document.getElementById('simulationYears')
+            };
+
+            const values = {
+                initialPrincipalValue: document.getElementById('initialPrincipalValue'),
+                usDividendYieldValue: document.getElementById('usDividendYieldValue'),
+                krDividendYieldValue: document.getElementById('krDividendYieldValue'),
+                reinvestmentRateValue: document.getElementById('reinvestmentRateValue'),
+                usPortfolioRatioValue: document.getElementById('usPortfolioRatioValue'),
+                operatingExpensesValue: document.getElementById('operatingExpensesValue'),
+                expensesGrowthRateValue: document.getElementById('expensesGrowthRateValue'),
+                simulationYearsValue: document.getElementById('simulationYearsValue')
+            };
+
+            const outputs = {
+                outputRevenue: document.getElementById('outputRevenue'),
+                outputExpenses: document.getElementById('outputExpenses'),
+                outputNonDeductibleVat: document.getElementById('outputNonDeductibleVat'),
+                outputTaxableIncome: document.getElementById('outputTaxableIncome'),
+                outputCalculatedTax: document.getElementById('outputCalculatedTax'),
+                outputLeverageEffect: document.getElementById('outputLeverageEffect'),
+                outputForeignTaxCredit: document.getElementById('outputForeignTaxCredit'),
+                outputFinalTax: document.getElementById('outputFinalTax'),
+                dashboardSummary: document.getElementById('dashboardSummary'),
+                simulationTableBody: document.getElementById('simulationTableBody')
+            };
+            
+            let assetChart;
+
+            const presets = {
+                aggressive: { usDividendYield: 25, krDividendYield: 12, reinvestmentRate: 70, usPortfolioRatio: 80, operatingExpenses: 70000000, expensesGrowthRate: 3 },
+                stable: { usDividendYield: 15, krDividendYield: 8, reinvestmentRate: 50, usPortfolioRatio: 70, operatingExpenses: 100000000, expensesGrowthRate: 1.5 },
+                domestic: { usDividendYield: 25, krDividendYield: 12, reinvestmentRate: 40, usPortfolioRatio: 35, operatingExpenses: 80000000, expensesGrowthRate: 3 }
+            };
+
+            const presetButtons = {
+                aggressive: document.getElementById('presetAggressive'),
+                stable: document.getElementById('presetStable'),
+                domestic: document.getElementById('presetDomestic')
+            };
+
+            function setActivePresetButton(presetName) {
+                Object.keys(presetButtons).forEach(key => {
+                    const button = presetButtons[key];
+                    if (key === presetName) {
+                        button.classList.add('active');
+                        button.classList.remove('bg-slate-100', 'hover:bg-slate-200');
+                    } else {
+                        button.classList.remove('active');
+                        button.classList.add('bg-slate-100', 'hover:bg-slate-200');
+                    }
+                });
+            }
+
+            function applyPreset(presetName) {
+                const presetValues = presets[presetName];
+                Object.keys(presetValues).forEach(key => {
+                    inputs[key].value = presetValues[key];
+                });
+                setActivePresetButton(presetName);
+                runSimulation();
+            }
+
+            function formatKRW(num, compact = false) {
+                if (isNaN(num)) return '0';
+                num = Math.round(num);
+                if (compact) {
+                    if (num >= 100000000) return `${(num / 100000000).toFixed(1)}억`;
+                    if (num >= 10000) return `${(num / 10000).toFixed(0)}만`;
+                }
+                return num.toLocaleString('ko-KR');
+            }
+
+            function calculateCorporateTax(income, year) {
+                if (income <= 0) return 0;
+                
+                let tax = 0;
+                if (year === 1) { 
+                    if (income <= 200000000) tax = income * 0.099;
+                    else tax = (200000000 * 0.099) + ((income - 200000000) * 0.22);
+                } else { 
+                    if (income <= 200000000) tax = income * 0.11;
+                    else tax = (200000000 * 0.11) + ((income - 200000000) * 0.22);
+                }
+                return tax;
+            }
+
+            function runSimulation() {
+                const initialPrincipal = parseFloat(inputs.initialPrincipal.value);
+                const usYield = parseFloat(inputs.usDividendYield.value) / 100;
+                const krYield = parseFloat(inputs.krDividendYield.value) / 100;
+                const reinvestRate = parseFloat(inputs.reinvestmentRate.value) / 100;
+                const usRatio = parseFloat(inputs.usPortfolioRatio.value) / 100;
+                const krRatio = 1 - usRatio;
+                const initialExpenses = parseFloat(inputs.operatingExpenses.value);
+                const expensesGrowthRate = parseFloat(inputs.expensesGrowthRate.value) / 100;
+                const years = parseInt(inputs.simulationYears.value);
+                const usWithholdingTaxRate = 0.15;
+
+                values.initialPrincipalValue.textContent = formatKRW(initialPrincipal, true);
+                values.usDividendYieldValue.textContent = (usYield * 100).toFixed(1);
+                values.krDividendYieldValue.textContent = (krYield * 100).toFixed(1);
+                values.reinvestmentRateValue.textContent = (reinvestRate * 100);
+                values.usPortfolioRatioValue.textContent = (usRatio * 100);
+                values.operatingExpensesValue.textContent = formatKRW(initialExpenses, true);
+                values.expensesGrowthRateValue.textContent = (expensesGrowthRate * 100).toFixed(1);
+                values.simulationYearsValue.textContent = years;
+
+                const labels = Array.from({ length: years + 1 }, (_, i) => `${i}년`);
+                const assetDataWithStrategy = [initialPrincipal];
+                const assetDataWithoutStrategy = [initialPrincipal];
+                const yearlyResults = [];
+
+                let principalWithStrategy = initialPrincipal;
+                let principalWithoutStrategy = initialPrincipal;
+                const carryoverQueue = Array(10).fill(0);
+
+                for (let i = 0; i < years; i++) {
+                    const currentYear = i + 1;
+                    const currentYearVatInclusiveExpenses = initialExpenses * Math.pow(1 + expensesGrowthRate, i);
+
+                    const baseExpenses1 = currentYearVatInclusiveExpenses / 1.1;
+                    const nonDeductibleVat1 = baseExpenses1 * 0.1;
+                    const totalDeductibleExpenses1 = baseExpenses1 + nonDeductibleVat1;
+
+                    let revenue1 = principalWithStrategy * (usRatio * usYield + krRatio * krYield);
+                    let taxableIncome1 = Math.max(0, revenue1 - totalDeductibleExpenses1);
+                    let calculatedTax1 = calculateCorporateTax(taxableIncome1, currentYear);
+                    
+                    let foreignSourceIncome1 = principalWithStrategy * usRatio * usYield;
+                    let foreignTaxPaid1 = foreignSourceIncome1 * usWithholdingTaxRate;
+                    
+                    const totalCarryoverStart = carryoverQueue.reduce((a, b) => a + b, 0);
+                    const totalAvailableForCredit = foreignTaxPaid1 + totalCarryoverStart;
+                    const creditLimit1 = taxableIncome1 > 0 ? (foreignSourceIncome1 / taxableIncome1) * calculatedTax1 : 0;
+                    let usedCreditThisYear = Math.min(calculatedTax1, creditLimit1, totalAvailableForCredit);
+                    usedCreditThisYear = isNaN(usedCreditThisYear) ? 0 : usedCreditThisYear;
+
+                    let creditConsumed = usedCreditThisYear;
+                    const nextCarryoverQueue = Array(10).fill(0);
+
+                    for (let j = 9; j >= 0; j--) {
+                        const useFromThisBucket = Math.min(creditConsumed, carryoverQueue[j]);
+                        const remainingInBucket = carryoverQueue[j] - useFromThisBucket;
+                        creditConsumed -= useFromThisBucket;
+                        if (j < 9 && remainingInBucket > 0) {
+                            nextCarryoverQueue[j + 1] = remainingInBucket;
+                        }
+                    }
+
+                    const useFromCurrentYear = Math.min(creditConsumed, foreignTaxPaid1);
+                    const unusedFromCurrentYear = foreignTaxPaid1 - useFromCurrentYear;
+                    nextCarryoverQueue[0] = unusedFromCurrentYear;
+                    for (let j = 0; j < 10; j++) { carryoverQueue[j] = nextCarryoverQueue[j]; }
+                    
+                    let finalTax1 = Math.max(0, calculatedTax1 - usedCreditThisYear);
+                    let afterTaxProfit1 = revenue1 - currentYearVatInclusiveExpenses - finalTax1;
+                    principalWithStrategy += afterTaxProfit1 * reinvestRate;
+                    assetDataWithStrategy.push(principalWithStrategy);
+                    
+                    const baseExpenses2 = currentYearVatInclusiveExpenses / 1.1;
+                    let revenue2 = principalWithoutStrategy * (usRatio * usYield + krRatio * krYield);
+                    let taxableIncome2 = Math.max(0, revenue2 - baseExpenses2);
+                    let finalTax2 = calculateCorporateTax(taxableIncome2, currentYear); 
+                    let afterTaxProfit2 = revenue2 - currentYearVatInclusiveExpenses - finalTax2;
+                    principalWithoutStrategy += afterTaxProfit2 * reinvestRate;
+                    assetDataWithoutStrategy.push(principalWithoutStrategy);
+                    
+                    yearlyResults.push({
+                        year: currentYear,
+                        totalAsset: principalWithStrategy,
+                        taxableIncome: taxableIncome1,
+                        calculatedTax: calculatedTax1,
+                        carryoverStart: totalCarryoverStart,
+                        creditGenerated: foreignTaxPaid1,
+                        usedCreditThisYear: usedCreditThisYear,
+                        carryoverEnd: carryoverQueue.reduce((a, b) => a + b, 0),
+                        finalTax: finalTax1,
+                        creditLimitFormula: `한도: (${formatKRW(foreignSourceIncome1, true)} / ${formatKRW(taxableIncome1, true)}) × ${formatKRW(calculatedTax1, true)} = ${formatKRW(creditLimit1, true)}`
+                    });
+
+                    if (i === 0) {
+                        const taxableIncomeWithoutLeverage = Math.max(0, revenue1 - baseExpenses1);
+                        const calculatedTaxWithoutLeverage = calculateCorporateTax(taxableIncomeWithoutLeverage, currentYear);
+                        const leverageEffect = Math.max(0, calculatedTaxWithoutLeverage - calculatedTax1);
+
+                        outputs.outputRevenue.textContent = formatKRW(revenue1);
+                        outputs.outputExpenses.textContent = formatKRW(baseExpenses1);
+                        outputs.outputNonDeductibleVat.textContent = '+ ' + formatKRW(nonDeductibleVat1);
+                        outputs.outputTaxableIncome.textContent = formatKRW(taxableIncome1);
+                        outputs.outputCalculatedTax.textContent = formatKRW(calculatedTax1);
+                        outputs.outputLeverageEffect.textContent = '- ' + formatKRW(leverageEffect);
+                        outputs.outputForeignTaxCredit.textContent = '- ' + formatKRW(usedCreditThisYear);
+                        outputs.outputFinalTax.textContent = formatKRW(finalTax1);
+                    }
+                }
+
+                updateChart(labels, assetDataWithStrategy, assetDataWithoutStrategy);
+                populateSummaryTable(yearlyResults);
+
+                const finalAssetWithStrategy = assetDataWithStrategy[assetDataWithStrategy.length - 1];
+                const finalAssetWithoutStrategy = assetDataWithoutStrategy[assetDataWithoutStrategy.length - 1];
+                const difference = finalAssetWithStrategy - finalAssetWithoutStrategy;
+
+                outputs.dashboardSummary.innerHTML = `
+                    <p class="text-lg">
+                        <span class="font-bold text-yellow-300">${years}년 후,</span>
+                        절세 전략을 통해 자산이
+                        <span class="text-2xl font-bold text-green-400">${formatKRW(difference, true)}원</span>
+                        더 많아질 것으로 예상됩니다.
+                    </p>
+                    <p class="text-sm text-slate-400 mt-2">
+                        (전략 적용 후: ${formatKRW(finalAssetWithStrategy, true)}원 / 전략 적용 전: ${formatKRW(finalAssetWithoutStrategy, true)}원)
+                    </p>
+                `;
+                outputs.dashboardSummary.classList.remove('fade-in');
+                void outputs.dashboardSummary.offsetWidth;
+                outputs.dashboardSummary.classList.add('fade-in');
+            }
+
+            function populateSummaryTable(results) {
+                outputs.simulationTableBody.innerHTML = '';
+                let tableContent = '';
+                results.forEach(result => {
+                    tableContent += `
+                        <tr class="bg-white border-b hover:bg-slate-50">
+                            <th scope="row" class="px-4 py-3 font-medium text-slate-900 whitespace-nowrap text-center">${result.year}년차</th>
+                            <td class="px-4 py-3 text-right whitespace-nowrap">${formatKRW(result.totalAsset, true)}</td>
+                            <td class="px-4 py-3 text-right whitespace-nowrap">${formatKRW(result.taxableIncome, true)}</td>
+                            <td class="px-4 py-3 text-right whitespace-nowrap tooltip-container">
+                                ${formatKRW(result.calculatedTax, true)}
+                                <span class="tooltip">${result.creditLimitFormula}</span>
+                            </td>
+                            <td class="px-4 py-3 text-right whitespace-nowrap text-slate-500">${formatKRW(result.carryoverStart, true)}</td>
+                            <td class="px-4 py-3 text-right whitespace-nowrap text-blue-600">${formatKRW(result.creditGenerated, true)}</td>
+                            <td class="px-4 py-3 text-right whitespace-nowrap text-emerald-600 font-semibold">${formatKRW(result.usedCreditThisYear, true)}</td>
+                            <td class="px-4 py-3 text-right whitespace-nowrap text-sky-600">${formatKRW(result.carryoverEnd, true)}</td>
+                            <td class="px-4 py-3 text-right whitespace-nowrap text-red-600 font-bold">${formatKRW(result.finalTax, true)}</td>
+                        </tr>
+                    `;
+                });
+                outputs.simulationTableBody.innerHTML = tableContent;
+            }
+
+            function updateChart(labels, data1, data2) {
+                if (assetChart) {
+                    assetChart.data.labels = labels;
+                    assetChart.data.datasets[0].data = data1;
+                    assetChart.data.datasets[1].data = data2;
+                    assetChart.update();
+                }
+            }
+
+            function createChart() {
+                const ctx = document.getElementById('assetGrowthChart').getContext('2d');
+                assetChart = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels: [], datasets: [
+                        { label: '전략 적용 후 자산', data: [], borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.3, pointRadius: 0 },
+                        { label: '전략 적용 전 자산', data: [], borderColor: '#94a3b8', backgroundColor: 'rgba(148, 163, 184, 0.1)', fill: true, tension: 0.3, borderDash: [5, 5], pointRadius: 0 }
+                    ]},
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        scales: {
+                            y: { ticks: { callback: function(value) { return formatKRW(value, true) + '원'; } } },
+                            x: { ticks: { maxTicksLimit: 10 } }
+                        },
+                        plugins: {
+                            tooltip: { callbacks: { label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) { label += ': '; }
+                                if (context.parsed.y !== null) { label += formatKRW(context.parsed.y) + '원'; }
+                                return label;
+                            }}}
+                        }
+                    }
+                });
+            }
+            
+            // Event listeners and initial run
+            document.getElementById('presetAggressive').addEventListener('click', () => applyPreset('aggressive'));
+            document.getElementById('presetStable').addEventListener('click', () => applyPreset('stable'));
+            document.getElementById('presetDomestic').addEventListener('click', () => applyPreset('domestic'));
+
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.dataset.tab;
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    tabContents.forEach(content => {
+                        content.id === tabId ? content.classList.remove('hidden') : content.classList.add('hidden');
+                    });
+                });
+            });
+
+            Object.values(inputs).forEach(input => { 
+                input.addEventListener('input', () => {
+                    // When a slider is manually changed, deactivate all preset buttons
+                    Object.values(presetButtons).forEach(btn => btn.classList.remove('active'));
+                    runSimulation();
+                });
+            });
+
+            // File Save/Load
+            const saveButton = document.getElementById('saveSettings');
+            const loadButton = document.getElementById('loadSettings');
+            const fileLoader = document.getElementById('fileLoader');
+
+            saveButton.addEventListener('click', () => {
+                const settings = {};
+                Object.keys(inputs).forEach(key => {
+                    settings[key] = inputs[key].value;
+                });
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(settings, null, 2));
+                const downloadAnchorNode = document.createElement('a');
+                downloadAnchorNode.setAttribute("href", dataStr);
+                downloadAnchorNode.setAttribute("download", "51labs_simulation_settings.json");
+                document.body.appendChild(downloadAnchorNode);
+                downloadAnchorNode.click();
+                downloadAnchorNode.remove();
+            });
+
+            loadButton.addEventListener('click', () => {
+                fileLoader.click();
+            });
+
+            fileLoader.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const settings = JSON.parse(e.target.result);
+                            Object.keys(settings).forEach(key => {
+                                if (inputs[key]) {
+                                    inputs[key].value = settings[key];
+                                }
+                            });
+                            Object.values(presetButtons).forEach(btn => btn.classList.remove('active'));
+                            runSimulation();
+                        } catch (error) {
+                            alert("잘못된 파일 형식입니다.");
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+                 // Reset file input to allow loading the same file again
+                event.target.value = '';
+            });
+            
+            createChart();
+            runSimulation();
+        });
+    </script>
+</body>
+</html>
+
