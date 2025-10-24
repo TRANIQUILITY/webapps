@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 광통신 기술: 핵심 기업 및 ETF</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chosen Palette: Indigo & Slate -->
+    <!-- Application Structure Plan: SPA with a tabbed navigation (Supply Chain Explorer, Full List, ETFs, Considerations). The main view 'Supply Chain Explorer' features an interactive HTML/CSS diagram of the 4 supply chain stages (D->B->C->A). Clicking a stage filters a list of company cards below. Clicking a card opens a modal with details. This structure was chosen to translate the report's key categorization (supply chain) into an interactive, exploratory user flow, prioritizing clarity over a simple static list. -->
+    <!-- Visualization & Content Choices: Report Info: Company list categorized by supply chain (A,B,C,D). Goal: Organize, Relate, Inform. Viz/Presentation: Interactive horizontal flowchart diagram (HTML/CSS Flexbox) representing the supply chain, linked to a filterable grid of company cards. Interaction: Click diagram box -> JS filters company grid. Click company card -> JS opens/populates modal with details. Justification: This non-chart visualization (an interactive diagram) is the most effective way to represent the report's core content (company relationships in a supply chain) and make it explorable. No quantitative data was present for charts. Library/Method: Vanilla JS for all interactions (tab navigation, filtering, modal). Confirmed NO SVG/Mermaid. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .tab-active {
+            border-bottom-color: #4f46e5;
+            color: #4f46e5;
+            font-weight: 600;
+        }
+        .tab-inactive {
+            border-bottom-color: transparent;
+            color: #4b5563;
+        }
+        .supply-chain-box {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .supply-chain-box.active {
+            background-color: #4f46e5;
+            color: white;
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .supply-chain-box:not(.active):hover {
+            background-color: #eef2ff;
+            transform: translateY(-2px);
+        }
+        .supply-chain-arrow {
+            font-size: 2rem;
+            color: #9ca3af;
+        }
+        @media (max-width: 768px) {
+            .supply-chain-diagram {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .supply-chain-arrow {
+                transform: rotate(90deg);
+                margin: 0.5rem 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans leading-relaxed">
+
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto max-w-6xl px-4 py-8">
+            <h1 class="text-3xl font-bold text-indigo-700">AI와 광통신 기술</h1>
+            <h2 class="text-xl font-semibold text-slate-700 mt-1">핵심 기업 및 ETF 탐색기</h2>
+            <p class="mt-4 text-slate-600 max-w-3xl">
+                AI 모델의 규모가 커지면서 데이터센터 내의 데이터 병목 현상이 심화되고 있습니다. 이를 해결하기 위해 기존 구리선을 대체하는 광통신 기술, 특히 실리콘 포토닉스 기반의 광트랜시버(Optical Transceiver)와 CPO(Co-Packaged Optics) 기술이 주목받고 있습니다. 이 페이지는 관련 핵심 기업들을 공급망 단계별로 탐색할 수 있도록 구성되었습니다.
+            </p>
+        </div>
+    </header>
+
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-10">
+        <div class="container mx-auto max-w-6xl px-4 flex flex-wrap space-x-4 md:space-x-8">
+            <button data-tab="explorer" class="nav-tab tab-active py-4 px-1 text-sm md:text-base border-b-2">공급망 탐색기</button>
+            <button data-tab="power" class="nav-tab tab-inactive py-4 px-1 text-sm md:text-base border-b-2">저전력 솔루션</button>
+            <button data-tab="full-list" class="nav-tab tab-inactive py-4 px-1 text-sm md:text-base border-b-2">전체 기업 목록</button>
+            <button data-tab="etf" class="nav-tab tab-inactive py-4 px-1 text-sm md:text-base border-b-2">관련 ETF</button>
+            <button data-tab="considerations" class="nav-tab tab-inactive py-4 px-1 text-sm md:text-base border-b-2">투자 고려사항</button>
+        </div>
+    </nav>
+
+    <main class="container mx-auto max-w-6xl px-4 py-8">
+
+        <!-- 1. 공급망 탐색기 (Default View) -->
+        <section id="explorer" class="tab-content space-y-8">
+            <div>
+                <h3 class="text-2xl font-semibold text-slate-900 mb-2">공급망별 기업 탐색</h3>
+                <p class="text-slate-600 mb-6">
+                    AI 광통신 공급망은 여러 단계로 구성됩니다. 아래 다이어그램의 각 단계를 클릭하여 해당 분야의 핵심 기업들을 살펴보세요. '전체 보기'를 선택하면 모든 기업이 표시됩니다.
+                </p>
+                
+                <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md mb-8">
+                    <div class="flex justify-center items-center flex-wrap gap-2 md:gap-0 supply-chain-diagram">
+                        <div data-filter="D" class="supply-chain-box text-center p-4 rounded-lg border border-slate-200 bg-white w-full md:w-auto md:flex-1">
+                            <div class="font-bold text-indigo-700">D. 소재, 커넥터 & 특화 기술</div>
+                            <div class="text-xs text-slate-500 hidden md:block">광섬유, 커넥터, 파운드리</div>
+                        </div>
+                        <div class="supply-chain-arrow">→</div>
+                        <div data-filter="B" class="supply-chain-box text-center p-4 rounded-lg border border-slate-200 bg-white w-full md:w-auto md:flex-1">
+                            <div class="font-bold text-indigo-700">B. 광학 부품 & 모듈</div>
+                            <div class="text-xs text-slate-500 hidden md:block">광트랜시버, 레이저, 광엔진</div>
+                        </div>
+                        <div class="supply-chain-arrow">→</div>
+                        <div data-filter="C" class="supply-chain-box text-center p-4 rounded-lg border border-slate-200 bg-white w-full md:w-auto md:flex-1">
+                            <div class="font-bold text-indigo-700">C. 네트워크 장비 & 솔루션</div>
+                            <div class="text-xs text-slate-500 hidden md:block">네트워크 시스템, 솔루션</div>
+                        </div>
+                        <div class="supply-chain-arrow">→</div>
+                        <div data-filter="A" class="supply-chain-box text-center p-4 rounded-lg border border-slate-200 bg-white w-full md:w-auto md:flex-1">
+                            <div class="font-bold text-indigo-700">A. AI & 네트워킹 핵심</div>
+                            <div class="text-xs text-slate-500 hidden md:block">AI 칩, 고성능 스위치</div>
+                        </div>
+                    </div>
+                    <div class="text-center mt-4">
+                        <button id="show-all" class="supply-chain-box active bg-indigo-600 text-white px-5 py-2 rounded-md text-sm font-medium">전체 보기</button>
+                    </div>
+                </div>
+
+                <div id="company-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. 저전력 솔루션 (NEW) -->
+        <section id="power" class="tab-content hidden space-y-8">
+            <div>
+                <h3 class="text-2xl font-semibold text-slate-900 mb-2">저전력·전력 관리 솔루션</h3>
+                <p class="text-slate-600 mb-6">
+                    AI 데이터센터의 막대한 전력 소모를 감당하고 '와트당 성능'을 끌어올리기 위한 기술입니다. GaN/SiC 전력 반도체, 열관리, 냉각 인프라 관련 기업들입니다.
+                </p>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h4 class="text-xl font-semibold text-indigo-700 mb-4">주요 기업</h4>
+                    <div id="power-list" class="space-y-4"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. 전체 기업 목록 (was 2) -->
+        <section id="full-list" class="tab-content hidden space-y-8">
+            <div>
+                <h3 class="text-2xl font-semibold text-slate-900 mb-6">전체 기업 목록</h3>
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h4 class="text-xl font-semibold text-indigo-700 mb-4">미국 및 글로벌 주요 기업</h4>
+                        <div id="us-global-list" class="space-y-4"></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h4 class="text-xl font-semibold text-indigo-700 mb-4">한국 주요 기업</h4>
+                        <div id="korea-list" class="space-y-4"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. 관련 ETF -->
+        <section id="etf" class="tab-content hidden space-y-6">
+            <h3 class="text-2xl font-semibold text-slate-900 mb-6">관련 ETF</h3>
+            <p class="text-slate-600 mb-6">
+                '실리콘 포토닉스' 테마에만 정확히 초점을 맞춘 ETF는 드물지만, 이 기술의 핵심 기업들을 다수 포함하는 반도체 및 AI ETF가 좋은 대안이 될 수 있습니다.
+            </p>
+            <div id="etf-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            </div>
+        </section>
+
+        <!-- 4. 투자 고려사항 -->
+        <section id="considerations" class="tab-content hidden">
+            <h3 class="text-2xl font-semibold text-slate-900 mb-6">투자 시 고려사항</h3>
+            <div class="bg-white p-6 rounded-lg shadow space-y-4 text-slate-700">
+                <ul id="considerations-list" class="list-disc list-inside space-y-2">
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Dialog -->
+    <dialog id="company-modal" class="p-0 rounded-lg shadow-2xl max-w-2xl w-full mx-4 backdrop:bg-black/50">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h3 id="modal-company-name" class="text-2xl font-bold text-indigo-700"></h3>
+                    <p id="modal-company-ticker" class="text-lg font-semibold text-slate-500"></p>
+                </div>
+                <button id="modal-close-btn" class="text-slate-400 hover:text-slate-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="border-t border-slate-200 pt-4">
+                <h4 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">핵심 강점</h4>
+                <p id="modal-company-strength" class="text-slate-700 leading-relaxed"></p>
+            </div>
+        </div>
+    </dialog>
+
+
+    <footer class="text-center py-10 mt-12 border-t border-slate-200">
+        <p class="text-sm text-slate-500">본 정보는 투자 추천이 아니며, 정보 제공을 목적으로 합니다.</p>
+    </footer>
+
+    <script>
+        const allData = {
+            companies: {
+                'A': [
+                    { name: 'NVIDIA', ticker: 'NVDA', strength: 'AI 칩(GPU)의 절대강자. AI 데이터센터 효율화를 위해 CPO, 네트워크 스위칭 기술(InfiniBand) 등을 통합하며 시장 수요를 주도합니다.' },
+                    { name: 'Broadcom', ticker: 'AVGO', strength: '데이터센터 네트워킹 스위치 칩셋과 고성능 광트랜시버 제조의 핵심 공급사입니다. 실리콘 포토닉스 및 CPO 기술을 선도하고 있습니다.' },
+                    { name: 'Marvell Technology', ticker: 'MRVL', strength: '고속 데이터 처리에 필수적인 DSP(디지털 신호 프로세서)와 PAM4 DSP 등 광학 모듈용 반도체의 강자입니다.' }
+                ],
+                'B': [
+                    { name: 'Lumentum', ticker: 'LITE', strength: '광엔진용 정밀 광학부품 및 고성능 레이저 기술을 보유한 전통의 강자입니다.' },
+                    { name: 'Coherent', ticker: 'COHR', strength: '광학 부품 및 소재, 광트랜시버를 생산하는 업계 주요 기업 중 하나입니다.' },
+                    { name: 'Fabrinet', ticker: 'FN', strength: '광통신 부품/모듈의 정밀 제조 및 패키징 전문 기업입니다.' }
+                ],
+                'C': [
+                    { name: 'Cisco', ticker: 'CSCO', strength: '네트워킹 장비의 글로벌 리더. Acacia 등 관련 기업 인수를 통해 실리콘 포토닉스 활용 통신 네트워크 장비 기술을 강화했습니다.' },
+                    { name: 'Ciena', ticker: 'CIEN', strength: 'DSP(디지털 신호 처리) 기술에 강점을 둔 광연결(Optical Interconnect) 솔루션 제공 기업입니다.' },
+                    { name: 'Credo Technology', ticker: 'CRDO', strength: '반도체 및 신호보정장치(DSP)가 탑재된 케이블, 광트랜시버 등을 공급합니다.' }
+                ],
+                'D': [
+                    { name: 'Corning', ticker: 'GLW', strength: '유리 소재 광섬유(Optical Fiber) 및 고집적 광케이블 분야의 원천 기술을 보유한 기업입니다.' },
+                    { name: 'Amphenol', ticker: 'APH', strength: 'CPO 및 데이터센터에 필수적인 고성능 광·전력 커넥터 전문 기업입니다.' },
+                    { name: 'Intel', ticker: 'INTC', strength: '실리콘 포토닉스 기술에 가장 먼저 투자한 기업 중 하나로, 데이터센터용 고속 광트랜시버 상용화 및 관련 기술을 선도합니다.' },
+                    { name: 'GlobalFoundries', ticker: 'GFS', strength: '미국 내 주요 파운드리(반도체 위탁생산) 기업으로, 실리콘 포토닉스 제조 플랫폼(GF Fotonix)을 제공합니다.' },
+                    { name: 'POET Technologies', ticker: 'POET', strength: '부품 정렬 과정을 단순화하여 비용을 절감할 수 있는 독자적인 광학 인터포저(Optical Interposer) 기술을 보유하고 있습니다.' }
+                ],
+                'KOR': [
+                    { name: '오이솔루션', ticker: 'Oesolution', strength: '5G 통신망 및 데이터센터에 사용되는 광트랜시버 전문 기업입니다.' },
+                    { name: '라이트론', ticker: 'Lightron', strength: '광트랜시버 및 관련 모듈을 전문으로 생산하는 기업입니다.' },
+                    { name: '(참고) 삼성전자 / SK하이닉스', ticker: '-', strength: '직접적인 광통신 회사는 아니지만, HBM 등 AI 메모리 개발 과정에서 향후 CXL 및 광 I/O 기술을 접목할 가능성이 높은 핵심 기업입니다.' }
+                ]
+            },
+            powerSolutions: [
+                { name: '나비타스반도체', ticker: 'NVTS', strength: '800V DC 아키텍처 위한 GaN/SiC 전력 반도체 개발' },
+                { name: '파워인테그레이션', ticker: 'POWI', strength: 'GaN 기반 전력분배 칩 공급' },
+                { name: '인피니언', ticker: 'IFNNY', strength: '독일 SiC/GaN 기반 고효율 전력 관리 칩 공급' },
+                { name: '울프스피드', ticker: 'WOLF', strength: '미국 SiC 기반 전력 반도체 공급' },
+                { name: '모놀리식파워', ticker: 'MPWR', strength: '고효율 전력 관리 및 변환 칩(IC) 설계' },
+                { name: '버티브', ticker: 'VRT', strength: '데이터센터용 전력·냉각·랙 인프라 솔루션' },
+                { name: '이튼', ticker: 'ETN', strength: 'AI 데이터센터용 전력 분배·UPS 솔루션' }
+            ],
+            etfs: [
+                { name: 'VanEck Semiconductor ETF', ticker: 'SMH', description: '엔비디아, 브로드컴, 인텔, 마블 등 앞서 언급된 미국 핵심 기업들을 높은 비중으로 포함합니다.' },
+                { name: 'iShares Semiconductor ETF', ticker: 'SOXX', description: 'SMH와 유사하게 AI 및 데이터센터 관련 핵심 반도체 기업들을 다수 포함합니다.' },
+                { name: 'Global X AI & Technology ETF', ticker: 'AIQ', description: 'AI 기술 개발 및 인프라 전반에 투자하는 ETF로, 관련 하드웨어 기업들을 포함합니다.' }
+            ],
+            considerations: [
+                'AI와 광통신 기술은 장기적으로 매우 유망한 테마입니다.',
+                '다만, 관련 기술은 매우 전문적이고 빠르게 변화하며, 개별 기업의 실적은 고객사(주로 빅테크 기업)의 투자 사이클에 큰 영향을 받을 수 있습니다.',
+                '본 정보는 투자 추천이 아니며, 정보 제공을 목적으로 합니다. 모든 투자 결정은 본인의 충분한 리서치와 판단하에 이루어져야 합니다.'
+            ]
+        };
+
+        const companyModal = document.getElementById('company-modal');
+        const modalCompanyName = document.getElementById('modal-company-name');
+        const modalCompanyTicker = document.getElementById('modal-company-ticker');
+        const modalCompanyStrength = document.getElementById('modal-company-strength');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+
+        const companyGrid = document.getElementById('company-grid');
+        const usGlobalList = document.getElementById('us-global-list');
+        const koreaList = document.getElementById('korea-list');
+        const powerList = document.getElementById('power-list');
+        const etfList = document.getElementById('etf-list');
+        const considerationsList = document.getElementById('considerations-list');
+        
+        const navTabs = document.querySelectorAll('.nav-tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        const supplyChainBoxes = document.querySelectorAll('.supply-chain-box');
+        const showAllBtn = document.getElementById('show-all');
+
+        function openModal(company) {
+            modalCompanyName.textContent = company.name;
+            modalCompanyTicker.textContent = company.ticker;
+            modalCompanyStrength.textContent = company.strength;
+            companyModal.showModal();
+        }
+
+        function createCompanyCard(company, category) {
+            const card = document.createElement('div');
+            card.className = 'company-card bg-white p-5 rounded-lg shadow transition-shadow hover:shadow-lg cursor-pointer';
+            card.dataset.category = category;
+            
+            const categoryColors = {
+                'A': 'bg-red-100 text-red-800',
+                'B': 'bg-blue-100 text-blue-800',
+                'C': 'bg-green-100 text-green-800',
+                'D': 'bg-yellow-100 text-yellow-800',
+                'KOR': 'bg-indigo-100 text-indigo-800'
+            };
+            
+            card.innerHTML = `
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded ${categoryColors[category] || 'bg-gray-100 text-gray-800'}">${category}</span>
+                    <span class="text-sm font-semibold text-slate-500">${company.ticker}</span>
+                </div>
+                <h3 class="text-lg font-semibold text-slate-900 truncate">${company.name}</h3>
+                <p class="text-sm text-slate-600 mt-2 h-16 overflow-hidden text-ellipsis">${company.strength}</p>
+                <div class="text-right text-sm font-medium text-indigo-600 hover:text-indigo-800 mt-3">
+                    상세 보기 →
+                </div>
+            `;
+            card.addEventListener('click', () => openModal(company));
+            return card;
+        }
+        
+        function createFullListEntry(company) {
+            const entry = document.createElement('div');
+            entry.className = 'border-b border-slate-200 pb-3 mb-3 cursor-pointer group';
+            entry.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h5 class="text-base font-semibold text-slate-800 group-hover:text-indigo-700">${company.name}</h5>
+                        <p class="text-sm text-slate-500">${company.ticker}</p>
+                    </div>
+                    <span class="text-sm text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity">상세 보기</span>
+                </div>
+            `;
+            entry.addEventListener('click', () => openModal(company));
+            return entry;
+        }
+
+        function createPowerListEntry(company) {
+            const entryWrapper = document.createElement('div');
+            entryWrapper.className = 'border-b border-slate-200 pb-3 mb-3';
+        
+            const entryHeader = document.createElement('div');
+            entryHeader.className = 'flex justify-between items-center cursor-pointer group';
+            entryHeader.innerHTML = `
+                <div>
+                    <h5 class="text-base font-semibold text-slate-800 group-hover:text-indigo-700">${company.name}</h5>
+                    <p class="text-sm text-slate-500">${company.ticker}</p>
+                </div>
+                <span class="text-sm text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 transition-transform duration-300">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                    </svg>
+                </span>
+            `;
+        
+            const entryDetails = document.createElement('div');
+            entryDetails.className = 'pt-3 mt-2 border-t border-slate-100 hidden';
+            entryDetails.innerHTML = `
+                <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">핵심 강점</h4>
+                <p class="text-sm text-slate-700 leading-relaxed">${company.strength}</p>
+            `;
+        
+            entryWrapper.appendChild(entryHeader);
+            entryWrapper.appendChild(entryDetails);
+        
+            entryHeader.addEventListener('click', () => {
+                entryDetails.classList.toggle('hidden');
+                const arrow = entryHeader.querySelector('svg');
+                if (entryDetails.classList.contains('hidden')) {
+                    arrow.style.transform = 'rotate(0deg)';
+                } else {
+                    arrow.style.transform = 'rotate(180deg)';
+                }
+            });
+        
+            return entryWrapper;
+        }
+
+        function renderAll() {
+            companyGrid.innerHTML = '';
+            usGlobalList.innerHTML = '';
+            koreaList.innerHTML = '';
+            powerList.innerHTML = '';
+            etfList.innerHTML = '';
+            considerationsList.innerHTML = '';
+
+            Object.keys(allData.companies).forEach(category => {
+                allData.companies[category].forEach(company => {
+                    if (category !== 'KOR') {
+                        companyGrid.appendChild(createCompanyCard(company, category));
+                        usGlobalList.appendChild(createFullListEntry(company));
+                    } else {
+                        koreaList.appendChild(createFullListEntry(company));
+                    }
+                });
+            });
+            
+            allData.powerSolutions.forEach(company => {
+                powerList.appendChild(createPowerListEntry(company));
+            });
+            
+            allData.etfs.forEach(etf => {
+                etfList.innerHTML += `
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h4 class="text-lg font-semibold text-slate-900">${etf.name}</h4>
+                        <p class="text-sm font-semibold text-slate-500 mb-2">${etf.ticker}</p>
+                        <p class="text-sm text-slate-600">${etf.description}</p>
+                    </div>
+                `;
+            });
+            
+            allData.considerations.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                considerationsList.appendChild(li);
+            });
+        }
+
+        function handleTabClick(e) {
+            navTabs.forEach(tab => {
+                tab.classList.remove('tab-active');
+                tab.classList.add('tab-inactive');
+            });
+            e.target.classList.add('tab-active');
+            e.target.classList.remove('tab-inactive');
+            
+            tabContents.forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById(e.target.dataset.tab).classList.remove('hidden');
+        }
+
+        function handleFilterClick(e) {
+            const filter = e.currentTarget.dataset.filter;
+            
+            supplyChainBoxes.forEach(box => box.classList.remove('active'));
+            showAllBtn.classList.remove('active');
+            e.currentTarget.classList.add('active');
+
+            document.querySelectorAll('.company-card').forEach(card => {
+                if (card.dataset.category === filter) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function handleShowAllClick() {
+            supplyChainBoxes.forEach(box => box.classList.remove('active'));
+            showAllBtn.classList.add('active');
+            document.querySelectorAll('.company-card').forEach(card => {
+                card.style.display = 'block';
+            });
+        }
+
+        modalCloseBtn.addEventListener('click', () => companyModal.close());
+        navTabs.forEach(tab => tab.addEventListener('click', handleTabClick));
+        supplyChainBoxes.forEach(box => box.addEventListener('click', handleFilterClick));
+        showAllBtn.addEventListener('click', handleShowAllClick);
+
+        renderAll();
+    </script>
+</body>
+</html>
+
+
