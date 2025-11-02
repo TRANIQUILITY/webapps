@@ -1,0 +1,699 @@
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  BookText,
+  Brain,
+  CheckCircle,
+  ChevronRight,
+  ClipboardList,
+  DollarSign,
+  Globe,
+  Home,
+  Menu,
+  Scale,
+  Search,
+  Sidebar,
+  Sparkles,
+  TrendingUp,
+  X
+} from 'lucide-react';
+
+/* --- API 함수들 --- */
+
+// 지수 백오프를 사용한 fetch 래퍼
+const fetchWithExponentialBackoff = async (url, options, retries = 5, delay = 1000) => {
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      if (response.status === 429 && retries > 0) {
+        // console.log(`Rate limited. Retrying in ${delay / 1000}s... (${retries} retries left)`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return fetchWithExponentialBackoff(url, options, retries - 1, delay * 2);
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  } catch (error) {
+    // console.error("Fetch error:", error);
+    if (retries > 0 && error.message.includes('Failed to fetch')) { // 네트워크 오류 등
+      // console.log(`Network error. Retrying in ${delay / 1000}s... (${retries} retries left)`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+      return fetchWithExponentialBackoff(url, options, retries - 1, delay * 2);
+    }
+    throw error;
+  }
+};
+
+// Gemini API 호출 함수
+const callGeminiAPI = async (prompt, systemInstruction = "", useGrounding = false) => {
+  const apiKey = ""; // API 키는 비워 둡니다 (Canvas 환경에서 제공)
+  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+  const payload = {
+    contents: [{ parts: [{ text: prompt }] }],
+    ...(systemInstruction && {
+      systemInstruction: {
+        parts: [{ text: systemInstruction }]
+      }
+    }),
+    ...(useGrounding && {
+      tools: [{ "google_search": {} }]
+    }),
+  };
+
+  try {
+    const result = await fetchWithExponentialBackoff(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const candidate = result.candidates?.[0];
+    if (candidate && candidate.content?.parts?.[0]?.text) {
+      const text = candidate.content.parts[0].text;
+      let sources = [];
+      const groundingMetadata = candidate.groundingMetadata;
+      if (useGrounding && groundingMetadata && groundingMetadata.groundingAttributions) {
+        sources = groundingMetadata.groundingAttributions
+          .map(attribution => ({
+            uri: attribution.web?.uri,
+            title: attribution.web?.title,
+          }))
+          .filter(source => source.uri && source.title);
+      }
+      return { text, sources };
+    } else {
+      // console.error("Invalid API response structure:", result);
+      throw new Error("API 응답에서 텍스트를 추출할 수 없습니다.");
+    }
+  } catch (error) {
+    // console.error("Gemini API 호출 중 오류 발생:", error);
+    throw error; // 오류를 상위로 전파
+  }
+};
+
+/* --- 유틸리티 컴포넌트 --- */
+
+// 카드 컴포넌트
+const InfoCard = ({ title, children }) => (
+  <div className="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl mb-6 overflow-hidden">
+    <div className="px-6 py-5">
+      <h3 className="text-xl font-semibold text-gray-800">{title}</h3>
+    </div>
+    <div className="px-6 py-5 border-t border-gray-200 text-gray-700 leading-relaxed space-y-4">
+      {children}
+    </div>
+  </div>
+);
+
+// 하이라이트 태그 컴포넌트
+const Highlight = ({ type, children }) => {
+  const colors = {
+    '핵심': 'bg-blue-100 text-blue-800',
+    '극복': 'bg-green-100 text-green-800',
+    '결과': 'bg-red-100 text-red-800',
+    '증상': 'bg-yellow-100 text-yellow-800',
+    '원칙': 'bg-indigo-100 text-indigo-800',
+    '활용': 'bg-purple-100 text-purple-800',
+    '장점': 'bg-green-100 text-green-800',
+    '단점': 'bg-red-100 text-red-800',
+    '이유': 'bg-gray-100 text-gray-800',
+    '판단': 'bg-blue-100 text-blue-800',
+    '목적': 'bg-teal-100 text-teal-800',
+    '방법': 'bg-orange-100 text-orange-800',
+    '개념': 'bg-sky-100 text-sky-800',
+  };
+  const colorClass = colors[type] || 'bg-gray-100 text-gray-900';
+  return (
+    <p>
+      <span className={`font-semibold ${colorClass} px-2 py-0.5 rounded-md mr-2`}>{type}</span>
+      {children}
+    </p>
+  );
+};
+
+// Gemini 응답 표시 컴포넌트
+const GeminiResultDisplay = ({ result }) => {
+  if (!result) return null;
+
+  // 마크다운 파싱: **bold** -> <strong>bold</strong>, ### -> 제거
+  const formattedText = result.text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // **bold** 처리
+    .replace(/###\s*(.*)/g, '<h3 class="text-lg font-semibold mt-2 mb-1">$1</h3>'); // ### 처리 (필요시)
+
+  const paragraphs = formattedText.split('\n').filter(p => p.trim() !== '');
+
+  return (
+    <div className="mt-4 p-4 border border-blue-200 bg-blue-50 rounded-lg text-gray-800 space-y-3">
+      {paragraphs.map((para, index) => (
+        <p key={index} dangerouslySetInnerHTML={{ __html: para }} />
+      ))}
+      {result.sources && result.sources.length > 0 && (
+        <div className="mt-4 pt-3 border-t border-blue-200">
+          <h4 className="text-sm font-semibold text-gray-700 mb-2">출처 (Google 검색 기반):</h4>
+          <ul className="list-disc list-inside space-y-1">
+            {result.sources.map((source, index) => (
+              <li key={index} className="text-xs">
+                <a href={source.uri} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">
+                  {source.title || source.uri}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* --- 섹션 컴포넌트들 --- */
+
+// 1. 투자 마인드셋 섹션
+const MindsetSection = () => (
+  <div id="mindset">
+    <h2 className="text-3xl font-extrabold text-gray-900 mb-8">1. 투자 마인드셋 확립 (가장 중요)</h2>
+    <InfoCard title="뇌동매매 금지">
+      <Highlight type="핵심">
+        원칙 없이 감정, 군중심리, 루머에 휩쓸려 충동적으로 매매하는 행위입니다.
+      </Highlight>
+      <Highlight type="극복">
+        기술이 아닌 심리의 문제입니다. '안 해야 한다'는 단호한 결심 외에 특별한 비법은 없습니다. 매매 전 자신의 감정(공포, 탐욕)을 인지하고 기록하는 것(자기 객관화)이 도움이 됩니다.
+      </Highlight>
+    </InfoCard>
+    <InfoCard title="손실회피편향 이해">
+      <Highlight type="핵심">
+        이익의 기쁨보다 손실의 고통을 약 2배 더 크게 느끼는 심리입니다.
+      </Highlight>
+      <Highlight type="결과">
+        이로 인해 수익이 난 종목은 너무 빨리 팔고(이익 상실 공포), 손실이 난 종목은 팔지 못하고 방치하게 됩니다.
+      </Highlight>
+    </InfoCard>
+    <InfoCard title="'종목과 사랑에 빠지지 마라'">
+      <Highlight type="핵심">
+        특정 종목에 감정적으로 애착을 가지면 객관성을 잃습니다.
+      </Highlight>
+      <Highlight type="증상">
+        해당 종목의 좋은 소식만 찾아보고, 나쁜 소식은 외면하거나 합리화(정당화)하기 시작합니다.
+      </Highlight>
+      <Highlight type="원칙">
+        기업 가치(펀더멘털) 대비 주가가 과도하다고 판단되면, 수익/손실 여부와 관계없이 기계적으로 매도해야 합니다.
+      </Highlight>
+    </InfoCard>
+    <InfoCard title="'자기 결정권' 확립 (매수 이유)">
+      <Highlight type="핵심">
+        남의 말을 듣고 사면 언제 팔아야 할지 알 수 없습니다. 모든 투자의 '매수 이유'는 반드시 스스로 명확하게 정립해야 합니다.
+      </Highlight>
+      <Highlight type="활용">
+        이 '매수 이유'가 훼손되는 시점이 바로 '매도(손절) 이유'가 됩니다.
+      </Highlight>
+    </InfoCard>
+  </div>
+);
+
+// 2. 투자 대상 선정 섹션
+const SelectionSection = () => {
+  const [ticker, setTicker] = useState("");
+  const [report, setReport] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleReportGeneration = async () => {
+    if (!ticker) {
+      setError("종목명을 입력해주세요.");
+      return;
+    }
+    setIsLoading(true);
+    setError(null);
+    setReport(null);
+
+    const systemPrompt = "당신은 초보 투자자를 위한 친절한 주식 분석가입니다. 사용자가 요청한 종목에 대해 긍정적 요인, 부정적(위험) 요인, 그리고 핵심 요약(결론)을 구분하여 매우 간결하게 설명합니다. 모든 정보는 Google 검색을 기반으로 최신 정보를 반영해야 합니다.";
+    const userPrompt = `"${ticker}" 종목에 대한 초보자용 AI 리포트를 작성해줘. 긍정적 요인, 부정적 요인, 핵심 요약을 반드시 포함해줘.`;
+
+    try {
+      const result = await callGeminiAPI(userPrompt, systemPrompt, true);
+      setReport(result);
+    } catch (err) {
+      setError("리포트 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+      // console.error(err);
+    }
+    setIsLoading(false);
+  };
+
+  return (
+    <div id="selection">
+      <h2 className="text-3xl font-extrabold text-gray-900 mb-8">2. 투자 대상 선정 (무엇을 살까?)</h2>
+      
+      <InfoCard title="개별주식 vs. ETF (초보자)">
+        <ul className="list-none space-y-3">
+          <li>
+            <strong className="text-gray-800">개별주식 (예: 삼성전자):</strong><br/>
+            기업 하나하나에 직접 투자하는 방식입니다.<br/>
+            <span className="text-sm text-green-600 font-medium">장점:</span> 기업 분석이 성공하면 ETF 대비 높은 수익을 기대할 수 있습니다.<br/>
+            <span className="text-sm text-red-600 font-medium">단점:</span> 기업 가치(PER, PBR 등)와 산업 동향을 직접 분석해야 하는 어려움이 있으며, 변동성이 큽니다.
+          </li>
+          <li>
+            <strong className="text-gray-800">ETF (상장지수펀드):</strong><br/>
+            KOSPI 200 같은 특정 지수나 여러 종목의 묶음을 추종하는 펀드입니다. 주식처럼 쉽게 사고팔 수 있습니다.<br/>
+            <span className="text-sm text-green-600 font-medium">장점:</span> 1주만 사도 자동 분산 투자 효과(안정성)가 있으며, 운용보수가 낮고 투명합니다.<br/>
+            <span className="text-sm text-red-600 font-medium">단점:</span> 단기 고수익이 어려우며 장기 투자에 더 적합합니다.
+          </li>
+        </ul>
+      </InfoCard>
+
+      <InfoCard title="ETF 목적 구분 (배당 vs. 시세차익)">
+        <ul className="list-none space-y-3">
+          <li>
+            <strong className="text-gray-800">시세차익 추구형 (예: KODEX KOSPI 200):</strong><br/>
+            <span className="text-sm text-gray-600">핵심:</span> KOSPI 200 지수의 상승률을 그대로 따라가도록 설계되었습니다.<br/>
+            <span className="text-sm text-gray-600">특징:</span> 배당금은 적지만, 시장 전체가 성장할 때 자산 성장을 목표로 합니다.
+          </li>
+          <li>
+            <strong className="text-gray-800">현금흐름 추구형 (예: 커버드콜 ETF):</strong><br/>
+            <span className="text-sm text-gray-600">핵심:</span> 주가 상승분(시세차익)을 일부 포기하는 대신, 그 대가(옵션 프리미엄)를 받아 안정적인 월배당을 추구합니다.<br/>
+            <span className="text-sm text-gray-600">특징:</span> 시장이 횡보하거나 하락할 때 상대적으로 유리하지만, 상승장에서는 시세차익형보다 수익이 낮을 수 있습니다.
+          </li>
+        </ul>
+      </InfoCard>
+
+      <InfoCard title="[참고] 2025년 11월 기준 추천 테마 (학습용 예시)">
+        <p className="text-sm text-gray-600 mb-4">특정 종목 추천이 아니며, 현재 시장 트렌드를 이해하기 위한 학습용 예시입니다.</p>
+        <ul className="list-none space-y-3">
+          <li>
+            <strong className="text-gray-800">반도체 섹터:</strong><br/>
+            <span className="text-sm text-gray-600">설명:</span> AI 및 데이터센터 수요 증가로 HBM(고대역폭 메모리) 등 차세대 반도체 시장이 주목받고 있습니다. (예: 삼성전자, SK하이닉스)
+          </li>
+          <li>
+            <strong className="text-gray-800">AI 전력 인프라 ETF:</strong><br/>
+            <span className="text-sm text-gray-600">설명:</span> AI 구동에 막대한 전력이 필요함에 따라, 관련 전력 설비, 변압기, 데이터센터 기업에 분산 투자합니다. (예: HANARO K-AI&데이터센터)
+          </li>
+          <li>
+            <strong className="text-gray-800">한국 KOSPI 지수 연동 ETF:</strong><br/>
+            <span className="text-sm text-gray-600">성장형:</span> KODEX 200 (시장 전체의 성장에 투자)<br/>
+            <span className="text-sm text-gray-600">배당형:</span> RISE 200 위클리커버드콜 (안정적 현금흐름 추구)
+          </li>
+          <li>
+            <strong className="text-gray-800">글로벌 분산 ETF (Gemini 추천):</strong><br/>
+            <span className="text-sm text-gray-600">설명:</span> 초보 투자자라면 국내 시장에만 한정하기보다, 전 세계 우량 기업에 분산 투자하는 것이 안정적일 수 있습니다. (예: TIGER 미국 S&P500)
+          </li>
+        </ul>
+      </InfoCard>
+
+      {/* --- AI 종목 리포트 --- */}
+      <InfoCard title="✨ AI 종목 리포트 (초보자용)">
+        <p className="text-sm text-gray-600 mb-4">
+          관심 있는 종목명(예: 삼성전자, Apple)을 입력하면 AI가 최신 정보를 바탕으로 핵심 요약을 제공합니다. (Google 검색 기반)
+        </p>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <input
+            type="text"
+            value={ticker}
+            onChange={(e) => setTicker(e.target.value)}
+            placeholder="종목명 입력 (예: SK하이닉스)"
+            className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            disabled={isLoading}
+          />
+          <button
+            onClick={handleReportGeneration}
+            disabled={isLoading}
+            className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed"
+          >
+            {isLoading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                생성 중...
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-5 w-5 mr-2" />
+                리포트 생성
+              </>
+            )}
+          </button>
+        </div>
+        {error && <p className="text-red-600 text-sm mt-3">{error}</p>}
+        <GeminiResultDisplay result={report} />
+      </InfoCard>
+
+    </div>
+  );
+};
+
+// 3. 매매 실행 원칙 섹션
+const TradingSection = () => (
+  <div id="trading">
+    <h2 className="text-3xl font-extrabold text-gray-900 mb-8">3. 매매 실행 원칙 (어떻게 사고팔까?)</h2>
+    <InfoCard title="체결강도 이해하기 (실질 매수세)">
+      <p>
+        <strong className="text-gray-800">호가창의 함정:</strong> 호가창에 쌓인 '매수잔량'(파란불)이 많다고 매수세가 강한 것이 아닙니다. 이는 '아직 체결되지 않은' 대기 주문일 뿐이며, 투자자를 속이기 위한 '허매수'일 수 있습니다.
+      </p>
+      <p>
+        <strong className="text-gray-800">진짜 매수세 (체결강도):</strong> 주가를 실제로 움직이는 힘은 '실시간 체결'입니다.
+      </p>
+      <ul className="list-disc list-outside ml-5 space-y-2">
+        <li>
+          <strong className="text-blue-600">체결강도 &gt; 100:</strong> 현재가보다 비싸게 사려는 힘(체결매수)이 더 강함. (실질 매수세 ↑)
+        </li>
+        <li>
+          <strong className="text-red-600">체결강도 &lt; 100:</strong> 현재가보다 싸게 던지는 힘(체결매도)이 더 강함. (실질 매도세 ↑)
+        </li>
+      </ul>
+    </InfoCard>
+    <InfoCard title="분할매수 원칙">
+      <Highlight type="원칙 1 (비중)">
+        최초 매수금액은 총 투자 예정 금액의 50%를 넘지 않습니다. 항상 현금(총알)을 보유해야 합니다.
+      </Highlight>
+      <Highlight type="원칙 2 (시점)">
+        추가 매수(물타기)는 '손해 구간'에서만 합니다. 수익 구간에서 사면 평균 매수단가만 높아져 불리해집니다.
+      </Highlight>
+      <Highlight type="원칙 3 (계획)">
+        -10%, -20% 등 본인만의 손실률 기준을 정해두고 추가 매수 시점을 계획합니다.
+      </Highlight>
+    </InfoCard>
+    <InfoCard title="분할매도 원칙">
+      <Highlight type="원칙 1 (심리)">
+        최고점을 맞추는 것은 불가능합니다. 심리적 안정을 위해 50%씩 2번에 나눠 파는 것이 가장 좋습니다.
+      </Highlight>
+      <Highlight type="원칙 2 (효과)">
+        절반 매도 후 주가가 더 오르면 '남은 50%가 수익이라 좋다', 주가가 내리면 '절반이라도 비싸게 팔아서 좋다'는 심리적 안정감을 줍니다.
+      </Highlight>
+    </InfoCard>
+    <InfoCard title="목표 수익률 설정">
+      <Highlight type="현실적 목표">
+        연 15%, 30% 같은 높은 목표보다 '72의 법칙'을 활용하는 것이 현실적입니다.
+      </Highlight>
+      <Highlight type="72의 법칙">
+        (72 ÷ 연평균 수익률) = 원금이 2배가 되는 기간. (예: 10년 만에 2배가 목표라면, 연 7.2% 수익률이 목표가 됩니다).
+      </Highlight>
+    </InfoCard>
+  </div>
+);
+
+// 4. 리스크 관리 섹션
+const RiskSection = () => (
+  <div id="risk">
+    <h2 className="text-3xl font-extrabold text-gray-900 mb-8">4. 리스크 관리 및 복기 (손실 최소화)</h2>
+    <InfoCard title="손절매(Stop-Loss) 기준 수립">
+      <Highlight type="개념">
+        손절매는 '실패'가 아니라 더 큰 손실을 막는 '보험'입니다.
+      </Highlight>
+      <Highlight type="최악의 기준">
+        '매수가 대비 -10%' 같은 기계적인 비율 설정은 '바보짓'입니다. 시장의 정상적인 변동성에도 물량을 털리게 됩니다.
+      </Highlight>
+      <Highlight type="최고의 기준">
+        앞에서 설정한 '매수 이유의 훼손'이 가장 논리적인 손절 기준입니다. (예: 'A 지지선'을 보고 샀다면, 'A 지지선이 붕괴될 때' 팝니다).
+      </Highlight>
+    </InfoCard>
+    <InfoCard title="거래 복기 (매매일지)">
+      <Highlight type="목적">
+        감정적 대응을 구조적 분석으로 바꾸는 과정입니다.
+      </Highlight>
+      <Highlight type="방법">
+        ①매수 이유(계획) ②실제 매매(실행) ③계획과 실행이 달랐던 원인 분석(리뷰) 3단계를 기록합니다. 증권사의 '복기 차트' 기능도 유용합니다.
+      </Highlight>
+    </InfoCard>
+  </div>
+);
+
+// 5. 시장 상황 이해 섹션
+const MarketSection = () => (
+  <div id="market">
+    <h2 className="text-3xl font-extrabold text-gray-900 mb-8">5. 시장 상황 이해 (거시지표 및 경쟁사)</h2>
+    <InfoCard title="시장 심리 지표 참고">
+      <p>
+        <strong className="text-gray-800">공포·탐욕 지수:</strong> 0에 가까울수록 '극단적 공포'(과매도), 100에 가까울수록 '극단적 탐욕'(과매수)을 의미합니다. 역발상 투자의 참고 자료로 활용됩니다.
+        <a href="https://money.cnn.com/data/fear-and-greed/" target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline ml-2">[CNNMoney 링크]</a>
+      </p>
+      <p>
+        <strong className="text-gray-800">VIX 지수 (공포 지수):</strong> 주가와 반대로 움직이며, 지수가 비정상적으로 급등(예: 40 이상)하면 시장이 패닉 상태임을 의미합니다.
+        <a href="https://www.investing.com/indices/volatility-s-p-500" target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline ml-2">[Investing.com 링크]</a>
+      </p>
+    </InfoCard>
+    <InfoCard title="거시 경제지표 확인">
+      <p>
+        <strong className="text-gray-800">환율, 유가, 금 시세 등:</strong> 주요 거시지표는 시장 전반의 위험 선호 심리를 반영합니다. 원/달러 환율 상승(원화 약세)은 보통 외국인 자금 이탈로 국내 증시에 부담을 줍니다.
+        <br/>
+        <span className="inline-flex items-center flex-wrap mt-2 gap-2">
+          <a href="https://www.investing.com/currencies/usd-krw" target="_blank" rel="noopener noreferrer" className="text-xs font-medium bg-gray-100 text-blue-600 px-2 py-0.5 rounded-md hover:bg-gray-200 transition-colors">원/달러 환율</a>
+          <a href="https://www.investing.com/commodities/crude-oil" target="_blank" rel="noopener noreferrer" className="text-xs font-medium bg-gray-100 text-blue-600 px-2 py-0.5 rounded-md hover:bg-gray-200 transition-colors">WTI 유가</a>
+          <a href="https://www.investing.com/commodities/gold-spot" target="_blank" rel="noopener noreferrer" className="text-xs font-medium bg-gray-100 text-blue-600 px-2 py-0.5 rounded-md hover:bg-gray-200 transition-colors">금 시세</a>
+        </span>
+      </p>
+    </InfoCard>
+    <InfoCard title="경쟁사(보완재) 주가 확인">
+      <Highlight type="이유">
+        동일 산업(예: 반도체)은 업황을 공유하므로 주가가 동조화됩니다.
+      </Highlight>
+      <Highlight type="활용">
+        삼성전자 투자 시, 경쟁사인 SK하이닉스나 미국 '마이크론'의 주가를 함께 확인해야 합니다. (마이크론은 선행지표 역할을 하기도 합니다).
+      </Highlight>
+      <Highlight type="판단">
+        내 종목만 빠지면 '개별 악재', 경쟁사와 다 같이 빠지면 '산업 전체의 악재'로 판단하고 대응합니다.
+      </Highlight>
+    </InfoCard>
+  </div>
+);
+
+// 6. 세금 문제 섹션
+const TaxSection = () => (
+  <div id="tax">
+    <h2 className="text-3xl font-extrabold text-gray-900 mb-8">6. [심화] 세금 문제 (특히 해외 주식)</h2>
+    <InfoCard title="양도소득세 (매매차익)">
+      <ul className="list-disc list-outside ml-5 space-y-2">
+        <li><strong className="text-gray-800">대상:</strong> 해외 주식 매매로 발생한 연간 '순수익' (모든 종목 손익 통산)</li>
+        <li><strong className="text-gray-800">공제:</strong> 연 250만 원 기본 공제.</li>
+        <li><strong className="text-gray-800">세율:</strong> 250만 원 초과 금액에 대해 22% (지방세 포함).</li>
+        <li><strong className="text-gray-800">신고:</strong> 본인이 직접 다음 해 5월에 자진 신고 및 납부해야 합니다. (수익이 250만 원 이하여도 신고는 해야 공제 혜택을 받습니다).</li>
+      </ul>
+    </InfoCard>
+    <InfoCard title="배당소득세 (배당금)">
+      <ul className="list-disc list-outside ml-5 space-y-2">
+        <li><strong className="text-gray-800">미국:</strong> 현지에서 15%를 원천징수합니다. 한국 세율(15.4%)과 비슷하여 국내 추가 징수 세금은 사실상 없습니다.</li>
+        <li><strong className="text-gray-800">중국:</strong> 현지 10% 징수. 한국 세율과의 차액인 4.4%가 국내에서 추가 징수됩니다.</li>
+        <li><strong className="text-gray-800">금융소득종합과세:</strong> 1년간 국내외 모든 '이자+배당' 소득 합계가 2,000만 원을 초과하면, 초과분은 다음 해 5월 근로소득 등과 합산되어 높은 누진세율로 과세됩니다.</li>
+      </ul>
+    </InfoCard>
+  </div>
+);
+
+// 7. AI 마켓 브리핑 섹션
+const AIMarketSection = () => {
+  const [briefing, setBriefing] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const getMarketBriefing = async () => {
+    setIsLoading(true);
+    setError(null);
+    setBriefing(null);
+
+    const systemPrompt = "당신은 'AI 앵커 제미나이'입니다. 글로벌 증시 마감 상황과 주요 경제 뉴스를 초보 투자자도 이해하기 쉽게, 친절하고 부드러운 어조로 요약합니다. 핵심 내용을 강조할 때는 **bold** 마크다운을 사용하고, ### 같은 마크다운은 절대 사용하지 마세요.";
+    const userPrompt = "현재 시간 기준, 글로벌 마켓(미국 증시, 국내 증시) 마감 상황과 가장 중요한 경제 뉴스 몇 가지를 요약해서 브리핑해줘.";
+
+    try {
+      const result = await callGeminiAPI(userPrompt, systemPrompt, true);
+      setBriefing(result);
+    } catch (err) {
+      setError("브리핑 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+      // console.error(err);
+    }
+    setIsLoading(false);
+  };
+
+  return (
+    <div id="ai-market">
+      <h2 className="text-3xl font-extrabold text-gray-900 mb-8">7. AI 실시간 마켓 브리핑</h2>
+      <InfoCard title="✨ AI 앵커 제미나이의 마켓 브리핑">
+        <p className="text-sm text-gray-600 mb-4">
+          버튼을 클릭하면 AI가 현재 글로벌 증시 상황과 주요 뉴스를 실시간으로 요약해 드립니다. (Google 검색 기반)
+        </p>
+        <button
+          onClick={getMarketBriefing}
+          disabled={isLoading}
+          className="w-full flex items-center justify-center px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-75 transition-all disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed"
+        >
+          {isLoading ? (
+            <>
+              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              브리핑 생성 중...
+            </>
+          ) : (
+            <>
+              <Sparkles className="h-5 w-5 mr-2" />
+              실시간 브리핑 받기
+            </>
+          )}
+        </button>
+        {error && <p className="text-red-600 text-sm mt-3">{error}</p>}
+        <GeminiResultDisplay result={briefing} />
+      </InfoCard>
+    </div>
+  );
+};
+
+// 8. 용어집 섹션
+const GlossarySection = () => (
+  <div id="glossary">
+    <h2 className="text-3xl font-extrabold text-gray-900 mb-8">8. 주식 필수 용어집</h2>
+    <InfoCard title="기본 용어">
+      <ul className="list-none space-y-3">
+        <li><strong className="text-gray-800">KOSPI (코스피):</strong> 한국거래소의 유가증권시장에 상장된 기업들의 주가 지수. (예: 삼성전자, 현대차)</li>
+        <li><strong className="text-gray-800">KOSDAQ (코스닥):</strong> 주로 중소/벤처기업들이 상장된 시장. 코스피보다 변동성이 큰 경향이 있습니다.</li>
+        <li><strong className="text-gray-800">펀더멘털 (Fundamental):</strong> 기업의 본질적인 가치. (예: 재무 상태, 성장성, 수익성 등)</li>
+        <li><strong className="text-gray-800">뇌동매매:</strong> 시장의 인기나 루머에 휩쓸려 충동적으로 주식을 사고파는 행위.</li>
+        <li><strong className="text-gray-800">손절매 (Stop-Loss):</strong> 추가 하락을 막기 위해 손해를 감수하고 주식을 파는 것.</li>
+      </ul>
+    </InfoCard>
+    <InfoCard title="기업 분석 지표 (영어 약자)">
+      <ul className="list-none space-y-3">
+        <li>
+          <strong className="text-gray-800">PER (Price Earnings Ratio):</strong> 주가수익비율.<br/>
+          <span className="text-sm text-gray-600">설명:</span> 주가 ÷ 1주당 순이익. 기업이 버는 돈에 비해 주가가 싼지 비싼지(고평가/저평가)를 나타냅니다. (낮을수록 저평가)
+        </li>
+        <li>
+          <strong className="text-gray-800">PBR (Price Book-value Ratio):</strong> 주가순자산비율.<br/>
+          <span className="text-sm text-gray-600">설명:</span> 주가 ÷ 1주당 순자산. 기업의 청산가치(순자산) 대비 주가가 싼지 비싼지를 나타냅니다. (낮을수록 저평가, 1 미만이면 청산가치보다 쌈)
+        </li>
+        <li>
+          <strong className="text-gray-800">ROE (Return On Equity):</strong> 자기자본이익률.<br/>
+          <span className="text-sm text-gray-600">설명:</span> 당기순이익 ÷ 자기자본. 주주의 돈(자기자본)으로 얼마나 효율적으로 돈을 버는지(수익성)를 나타냅니다. (높을수록 좋음)
+        </li>
+      </ul>
+    </InfoCard>
+    <InfoCard title="상품 용어">
+      <ul className="list-none space-y-3">
+        <li>
+          <strong className="text-gray-800">ETF (Exchange Traded Fund):</strong> 상장지수펀드.<br/>
+          <span className="text-sm text-gray-600">설명:</span> KOSPI 200 같은 특정 지수나 자산 묶음을 주식처럼 실시간으로 사고팔 수 있게 만든 금융상품.
+        </li>
+        <li>
+          <strong className="text-gray-800">커버드콜 (Covered Call):</strong><br/>
+          <span className="text-sm text-gray-600">설명:</span> 주식을 보유하면서 동시에 해당 주식의 콜옵션(살 수 있는 권리)을 매도하는 전략. 주가 상승폭은 제한되지만, 대신 옵션 매도 프리미엄(수수료)을 받아 안정적인 배당/인컴 수익을 추구합니다.
+        </li>
+      </ul>
+    </InfoCard>
+  </div>
+);
+
+/* --- 메인 앱 컴포넌트 --- */
+export default function App() {
+  const [activeSection, setActiveSection] = useState('mindset');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const mainContentRef = useRef(null);
+
+  const sections = [
+    { id: 'mindset', title: '1. 투자 마인드셋', icon: Brain, component: MindsetSection },
+    { id: 'selection', title: '2. 투자 대상 선정', icon: Search, component: SelectionSection },
+    { id: 'trading', title: '3. 매매 실행 원칙', icon: Scale, component: TradingSection },
+    { id: 'risk', title: '4. 리스크 관리', icon: CheckCircle, component: RiskSection },
+    { id: 'market', title: '5. 시장 상황 이해', icon: Globe, component: MarketSection },
+    { id: 'tax', title: '6. 세금 문제', icon: DollarSign, component: TaxSection },
+    { id: 'ai-market', title: '7. AI 마켓 브리핑', icon: Sparkles, component: AIMarketSection },
+    { id: 'glossary', title: '8. 용어집', icon: BookText, component: GlossarySection },
+  ];
+
+  const ActiveComponent = sections.find(s => s.id === activeSection)?.component || MindsetSection;
+
+  const handleNavClick = (id) => {
+    setActiveSection(id);
+    if (mainContentRef.current) {
+      mainContentRef.current.scrollTop = 0; // 섹션 변경 시 스크롤 상단으로
+    }
+    setIsSidebarOpen(false); // 모바일에서 메뉴 클릭 시 사이드바 닫기
+  };
+
+  return (
+    <div className="flex h-screen w-full bg-gray-100 font-inter">
+      {/* --- 사이드바 (데스크탑) --- */}
+      <nav className="hidden md:flex md:flex-col md:w-72 bg-gray-900 text-gray-300 shadow-xl fixed h-full">
+        <div className="flex items-center justify-center h-20 shadow-md">
+          <TrendingUp className="h-8 w-8 text-emerald-400" />
+          <h1 className="text-2xl font-bold ml-3 text-white">투자 입문 가이드</h1>
+        </div>
+        <ul className="flex-grow mt-6 space-y-2 px-4">
+          {sections.map(section => (
+            <li key={section.id}>
+              <button
+                onClick={() => handleNavClick(section.id)}
+                className={`flex items-center w-full px-4 py-3 rounded-lg transition-all duration-200 ${
+                  activeSection === section.id
+                    ? 'bg-emerald-500 text-white font-semibold shadow-md'
+                    : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                }`}
+              >
+                <section.icon className="h-5 w-5 mr-3" />
+                <span>{section.title}</span>
+                <ChevronRight className="h-4 w-4 ml-auto" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      {/* --- 모바일 사이드바 (숨겨짐) --- */}
+      <div
+        className={`fixed inset-0 z-30 bg-black bg-opacity-50 transition-opacity md:hidden ${
+          isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={() => setIsSidebarOpen(false)}
+      ></div>
+      <nav
+        className={`fixed top-0 left-0 h-full w-72 bg-gray-900 text-gray-300 shadow-xl z-40 transform transition-transform duration-300 ease-in-out md:hidden ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="flex items-center justify-between h-20 shadow-md px-6">
+          <div className="flex items-center">
+            <TrendingUp className="h-8 w-8 text-emerald-400" />
+            <h1 className="text-2xl font-bold ml-3 text-white">투자 입문</h1>
+          </div>
+          <button onClick={() => setIsSidebarOpen(false)} className="text-gray-400 hover:text-white">
+            <X className="h-6 w-6" />
+          </button>
+        </div>
+        <ul className="mt-6 space-y-2 px-4">
+          {sections.map(section => (
+            <li key={section.id}>
+              <button
+                onClick={() => handleNavClick(section.id)}
+                className={`flex items-center w-full px-4 py-3 rounded-lg transition-all duration-200 ${
+                  activeSection === section.id
+                    ? 'bg-emerald-500 text-white font-semibold shadow-md'
+                    : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                }`}
+              >
+                <section.icon className="h-5 w-5 mr-3" />
+                <span>{section.title}</span>
+                <ChevronRight className="h-4 w-4 ml-auto" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      {/* --- 메인 컨텐츠 영역 --- */}
+      <main className="flex-1 flex flex-col h-screen md:ml-72">
+        {/* 모바일 헤더 */}
+        <header className="md:hidden flex items-center justify-between h-16 bg-white shadow-md px-4 sticky top-0 z-10">
+          <button onClick={() => setIsSidebarOpen(true)} className="text-gray-700">
+            <Menu className="h-6 w-6" />
+          </button>
+          <h2 className="text-lg font-semibold text-gray-800">
+            {sections.find(s => s.id === activeSection)?.title || '투자 입문 가이드'}
+          </h2>
+          <span className="w-6"></span> {/* 오른쪽 정렬용 빈 공간 */}
+        </header>
+        
+        {/* 컨텐츠 */}
+        <div ref={mainContentRef} className="flex-1 overflow-y-auto p-6 md:p-10 bg-gray-50">
+          <ActiveComponent />
+        </div>
+      </main>
+    </div>
+  );
+}
+
