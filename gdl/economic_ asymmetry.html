@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자본주의의 숨겨진 세금: 임금 노동자의 생존 전략</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F3F4F6;
+            color: #111827;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .card {
+            background-color: #FFFFFF;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 1.5rem;
+        }
+        .text-primary { color: #004AAD; }
+        .bg-primary { background-color: #004AAD; }
+        .text-secondary { color: #00C6E0; }
+        .bg-secondary { background-color: #00C6E0; }
+        .bg-tertiary { background-color: #80F0FF; }
+    </style>
+</head>
+<body>
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-3xl md:text-5xl font-bold mb-4 text-primary">자본주의의 숨겨진 세금</h1>
+            <p class="text-lg md:text-xl text-gray-700">임금 노동자의 부의 가치가 하락하는 이유와 생존 전략</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            <div class="card md:col-span-1">
+                <h2 class="text-2xl font-bold mb-4 text-primary">1. '화폐 환상'의 함정</h2>
+                <p class="mb-4 text-gray-700">우리는 액면가(숫자)에 현혹되어 돈의 실질 가치(구매력) 하락을 인지하지 못합니다. 양적 완화로 인한 인플레이션은 사실상 우리의 부에 부과되는 '숨겨진 세금'입니다.</p>
+                <div class="chart-container">
+                    <canvas id="realWageChart"></canvas>
+                </div>
+                <p class="mt-4 text-sm text-gray-600 text-center">차트는 10년간의 명목 임금 상승률과 물가 상승을 감안한 실질 구매력 상승률의 격차를 보여줍니다.</p>
+            </div>
+
+            <div class="card md:col-span-1">
+                <h2 class="text-2xl font-bold mb-4 text-primary">2. '보이지 않는' 지출</h2>
+                <p class="mb-4 text-gray-700">부가세, 간접세 등은 세금으로 인식되기보다 단순 '지출'로 여겨집니다. 이러한 '보이지 않는 세금'의 확대는 실질 소득을 더욱 감소시켜 자산 격차를 심화시킵니다.</p>
+                <div class="chart-container" style="max-height: 300px; height: 300px;">
+                    <canvas id="hiddenTaxChart"></canvas>
+                </div>
+                <p class="mt-4 text-sm text-gray-600 text-center">인플레이션과 간접세는 당신의 소득에서 '숨겨진' 비용으로 차감되는 몫을 시각화합니다.</p>
+            </div>
+
+            <div class="card md:col-span-2">
+                <h2 class="text-2xl font-bold mb-4 text-primary">3. 근로 소득 vs 자산 소득: 격차의 핵심</h2>
+                <p class="mb-4 text-gray-700">문제의 본질은 '근로 소득' 상승 속도가 '자산 가격' 상승 속도를 결코 따라잡기 어렵다는 데 있습니다. 노동력만으로는 자본의 증식 속도를 이길 수 없는 구조가 부익부 빈익빈을 가속화합니다.</p>
+                <div class="chart-container max-w-4xl" style="height: 400px; max-height: 500px;">
+                    <canvas id="assetGrowthChart"></canvas>
+                </div>
+                <p class="mt-4 text-sm text-gray-600 text-center">지난 10년간 평균 임금 상승률은 S&P 500 지수 및 주요국 부동산 지수 상승률을 크게 하회했습니다.</p>
+            </div>
+
+            <h2 class="text-3xl font-bold text-center my-8 md:col-span-2 text-primary">개인 생존 전략: 자산의 확보</h2>
+
+            <div class="card md:col-span-1">
+                <h3 class="text-2xl font-bold mb-4 text-primary">전략 1: 금융 자산 투자</h3>
+                <p class="mb-4 text-gray-700">노동 가치를 '가치 저장 수단'으로 이전해야 합니다. 인플레이션을 방어하고 자본 수익을 추구하는 금융 자산 포트폴리오 구축이 필수적입니다.</p>
+                <div class="chart-container" style="max-height: 300px; height: 300px;">
+                    <canvas id="portfolioChart"></canvas>
+                </div>
+                <p class="mt-4 text-sm text-gray-600 text-center">인플레이션 헤지 및 성장을 위한 분산 포트폴리오 예시입니다.</p>
+            </div>
+
+            <div class="card md:col-span-1">
+                <h3 class="text-2xl font-bold mb-4 text-primary">주요 전략: 미국/해외 주식</h3>
+                <p class="mb-4 text-gray-700">단순히 국내 시장을 넘어, 글로벌 성장의 과실을 공유하고 통화 분산 효과를 누리는 것이 중요합니다.</p>
+                <ul class="list-disc list-inside space-y-2 text-gray-700">
+                    <li><strong class="font-semibold text-gray-900">글로벌 성장 접근:</strong> 전 세계 1등 기업들에 투자하여 성장을 공유합니다.</li>
+                    <li><strong class="font-semibold text-gray-900">통화 분산 (환 헤지):</strong> 자산을 원화(KRW)가 아닌 달러(USD) 등 기축 통화로 보유하여 자국 통화 가치 하락을 방어합니다.</li>
+                </ul>
+
+                <h3 class="text-2xl font-bold mt-6 mb-4 text-primary">안정 자산: 국채</h3>
+                <p class="text-gray-700">포트폴리오의 변동성을 줄이고 자본을 보존하는 '안전 마진' 역할을 합니다. 시장 위기 시 현금화할 수 있는 유동성을 제공합니다.</p>
+            </div>
+
+            <div class="card md:col-span-1">
+                <h3 class="text-2xl font-bold mb-4 text-primary">전략 2: 실물 자산 (부동산)</h3>
+                <p class="mb-4 text-gray-700">부동산은 인플레이션 시기에 가치가 함께 상승하는 대표적인 '실물 자산'입니다. 통화량 증가에 따른 화폐 가치 하락을 방어하는 강력한 수단입니다.</p>
+                <div class="space-y-3">
+                    <div>
+                        <strong class="font-semibold text-green-600">장점:</strong>
+                        <p class="text-gray-700">인플레이션 헤지, 레버리지(대출) 활용을 통한 자본 수익률 극대화.</p>
+                    </div>
+                    <div>
+                        <strong class="font-semibold text-red-600">단점:</strong>
+                        <p class="text-gray-700">높은 진입 장벽(초기 비용), 낮은 유동성(현금화 속도), 정부 정책 및 금리 리스크.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card md:col-span-1">
+                <h3 class="text-2xl font-bold mb-4 text-primary">새로운 부의 구축 로드맵</h3>
+                <p class="mb-6 text-gray-700">근로 소득에만 의존하는 구조에서 벗어나, 소득을 자산으로 전환하는 파이프라인을 구축해야 합니다.</p>
+                <div class="flex flex-col items-center space-y-4">
+                    <div class="bg-primary text-white p-3 rounded-lg shadow-md w-full text-center font-bold">
+                        1. 근로 소득 (Labor Income)
+                    </div>
+                    <div class="text-4xl text-gray-400 font-light">↓</div>
+                    <div class="bg-gray-200 p-3 rounded-lg shadow-inner w-full text-center font-bold text-gray-800">
+                        2. 종잣돈 마련 (Seed Money Accumulation)
+                    </div>
+                    <div class="text-4xl text-gray-400 font-light">↓</div>
+                    <div class="w-full text-center font-bold text-gray-800">3. 자산 분배 (Asset Allocation)</div>
+                    <div class="grid grid-cols-2 gap-4 w-full mt-2">
+                        <div class="bg-secondary text-white p-4 rounded-lg shadow-md text-center flex items-center justify-center">
+                            안정 자산<br>(국채, 예금)
+                        </div>
+                        <div class="bg-tertiary text-gray-800 p-4 rounded-lg shadow-md text-center flex items-center justify-center">
+                            성장/실물 자산<br>(해외 주식, 부동산)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card md:col-span-2 mt-8">
+                <h2 class="text-3xl font-bold text-center mb-4 text-primary">결론: '버는 자'에서 '소유하는 자'로</h2>
+                <p class="text-lg text-center text-gray-700 max-w-3xl mx-auto">
+                    현재의 시스템은 노동의 가치를 현금으로 보유하는 사람에게 불리하게 설계되어 있습니다. 이 구조를 이해하고, 금융 이해력을 높여 당신의 노동 가치를 '자산'으로 적극 전환하는 전략을 지금 바로 시작해야 합니다.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+
+            const wrapLabel = (label, maxWidth) => {
+                const words = label.split(' ');
+                const lines = [];
+                let currentLine = '';
+                words.forEach(word => {
+                    if ((currentLine + ' ' + word).trim().length > maxWidth) {
+                        lines.push(currentLine.trim());
+                        currentLine = word;
+                    } else {
+                        currentLine = (currentLine + ' ' + word).trim();
+                    }
+                });
+                lines.push(currentLine.trim());
+                return lines;
+            };
+
+            const commonTooltipCallbacks = {
+                title: function(tooltipItems) {
+                    const item = tooltipItems[0];
+                    let label = item.chart.data.labels[item.dataIndex];
+                    if (Array.isArray(label)) {
+                        return label.join(' ');
+                    } else {
+                        return label;
+                    }
+                }
+            };
+            
+            const chartColors = {
+                primary: '#004AAD',
+                secondary: '#00C6E0',
+                tertiary: '#80F0FF',
+                grey: '#9CA3AF',
+                lightGrey: '#E5E7EB',
+                danger: '#EF4444'
+            };
+
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: commonTooltipCallbacks,
+                        backgroundColor: '#111827',
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        padding: 10,
+                        cornerRadius: 4,
+                        displayColors: true,
+                        boxPadding: 3,
+                    },
+                    legend: {
+                        labels: {
+                            font: {
+                                family: "'Noto Sans KR', sans-serif",
+                                size: 12
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            font: {
+                                family: "'Noto Sans KR', sans-serif",
+                                size: 11
+                            }
+                        },
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            font: {
+                                family: "'Noto Sans KR', sans-serif",
+                                size: 11
+                            }
+                        },
+                        grid: {
+                            color: '#E5E7EB',
+                            borderDash: [2, 4],
+                        }
+                    }
+                }
+            };
+
+            const commonPieOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: commonTooltipCallbacks,
+                        backgroundColor: '#111827',
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        padding: 10,
+                        cornerRadius: 4,
+                        displayColors: true,
+                        boxPadding: 3,
+                    },
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                family: "'Noto Sans KR', sans-serif",
+                                size: 12
+                            },
+                            padding: 15
+                        }
+                    }
+                }
+            };
+
+            if (document.getElementById('realWageChart')) {
+                const ctx = document.getElementById('realWageChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['2015', '2017', '2019', '2021', '2023', '2025 (예상)'],
+                        datasets: [
+                            {
+                                label: '명목 임금 (액면가)',
+                                data: [100, 108, 117, 125, 132, 138],
+                                borderColor: chartColors.primary,
+                                backgroundColor: 'rgba(0, 74, 173, 0.1)',
+                                fill: true,
+                                tension: 0.3
+                            },
+                            {
+                                label: '실질 구매력 (물가 반영)',
+                                data: [100, 104, 107, 108, 106, 105],
+                                borderColor: chartColors.danger,
+                                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                                fill: true,
+                                tension: 0.3,
+                                borderDash: [5, 5]
+                            }
+                        ]
+                    },
+                    options: commonOptions
+                });
+            }
+
+            if (document.getElementById('hiddenTaxChart')) {
+                const ctx = document.getElementById('hiddenTaxChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['실효 소득', '직접세 (소득세 등)', '숨겨진 세금 (인플레이션)', '보이지 않는 세금 (간접세)'],
+                        datasets: [{
+                            label: '소득 100% 중 비중',
+                            data: [65, 15, 12, 8],
+                            backgroundColor: [
+                                chartColors.primary,
+                                chartColors.grey,
+                                chartColors.danger,
+                                chartColors.secondary
+                            ],
+                            borderColor: '#FFFFFF',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: commonPieOptions
+                });
+            }
+
+            if (document.getElementById('assetGrowthChart')) {
+                const ctx = document.getElementById('assetGrowthChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['2015', '2017', '2019', '2021', '2023', '2025 (예상)'],
+                        datasets: [
+                            {
+                                label: '미국 S&P 500 지수',
+                                data: [100, 125, 155, 220, 240, 270],
+                                borderColor: chartColors.primary,
+                                backgroundColor: 'transparent',
+                                tension: 0.1,
+                                borderWidth: 3
+                            },
+                            {
+                                label: '주요국 부동산 지수',
+                                data: [100, 115, 130, 170, 185, 195],
+                                borderColor: chartColors.secondary,
+                                backgroundColor: 'transparent',
+                                tension: 0.1,
+                                borderWidth: 3
+                            },
+                            {
+                                label: '평균 임금 상승률',
+                                data: [100, 108, 117, 125, 132, 138],
+                                borderColor: chartColors.grey,
+                                backgroundColor: 'transparent',
+                                tension: 0.1,
+                                borderWidth: 3,
+                                borderDash: [5, 5]
+                            }
+                        ]
+                    },
+                    options: commonOptions
+                });
+            }
+            
+            if (document.getElementById('portfolioChart')) {
+                const ctx = document.getElementById('portfolioChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: [
+                            '미국/해외 주식 (성장)', 
+                            '국채 (안정 자산)', 
+                            wrapLabel('부동산/실물자산 (인플레 헤지)', 16), 
+                            '국내 주식 (보조)'
+                        ],
+                        datasets: [{
+                            label: '포트폴리오 비중',
+                            data: [40, 25, 25, 10],
+                            backgroundColor: [
+                                chartColors.primary,
+                                chartColors.grey,
+                                chartColors.secondary,
+                                chartColors.tertiary,
+                            ],
+                            borderColor: '#FFFFFF',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: commonPieOptions
+                });
+            }
+
+        });
+    </script>
+
+</body>
+</html>
