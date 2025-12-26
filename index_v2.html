@@ -20,12 +20,11 @@
             --accent-gold: #f59e0b;   /* Gold for Finance/Highlights */
             --border-light: #e2e8f0;  /* Slate 200 */
             
-            /* Jira Status Colors */
-            --jira-todo: #dfe1e6;
-            --jira-inprogress: #deebff;
-            --jira-inprogress-text: #0747a6;
-            --jira-done: #e3fcef;
-            --jira-done-text: #006644;
+            /* Jira Tag Colors (Business Areas) */
+            --tag-aii-bg: #e3fcef; --tag-aii-text: #006644; /* AI Investment - Greenish */
+            --tag-aid-bg: #eae6ff; --tag-aid-text: #403294; /* AI Development - Purpleish */
+            --tag-cma-bg: #fff0b3; --tag-cma-text: #172b4d; /* Management Automation - Yellowish */
+            --tag-suc-bg: #deebff; --tag-suc-text: #0747a6; /* Consulting - Blueish */
             
             --header-height: 70px;
         }
@@ -159,7 +158,7 @@
             filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.2));
         }
 
-        nav ul { display: flex; gap: 2.5rem; }
+        nav ul { display: flex; gap: 2rem; } /* Reduced gap from 2.5rem to 2rem */
         
         nav a {
             font-size: 0.95rem;
@@ -167,6 +166,7 @@
             color: #64748b;
             position: relative;
             cursor: pointer;
+            white-space: nowrap; /* Prevent line breaks in menu items */
         }
 
         nav a:hover, nav a.active { color: var(--accent-blue); }
@@ -391,7 +391,7 @@
             display: flex;
             flex-direction: column;
             gap: 1rem;
-            max-width: 600px;
+            max-width: 400px; /* Reduced width since we have 3 columns now */
         }
         
         .column-header {
@@ -415,31 +415,47 @@
             background: #ffffff;
             border-radius: 3px;
             box-shadow: 0 1px 2px rgba(9, 30, 66, 0.25);
-            padding: 12px;
+            padding: 10px 12px;
             cursor: pointer;
             transition: background 0.1s;
             border-left: 4px solid transparent;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
         .jira-card:hover { background: #ebecf0; }
-        .jira-card.type-wip { border-left-color: var(--accent-gold); }
-        .jira-card.type-done { border-left-color: #10b981; }
+        
+        /* Updated Border Colors based on Business Area */
+        .jira-card.tag-aii { border-left-color: #006644; }
+        .jira-card.tag-aid { border-left-color: #403294; }
+        .jira-card.tag-cma { border-left-color: #ffab00; }
+        .jira-card.tag-suc { border-left-color: #0747a6; }
 
-        .card-title { font-size: 0.95rem; font-weight: 500; color: #172b4d; line-height: 1.4; }
-        .card-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
+        .card-title { font-size: 0.9rem; font-weight: 500; color: #172b4d; line-height: 1.4; }
+        
+        .card-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
         .meta-left { display: flex; align-items: center; gap: 8px; }
-        .issue-key { font-size: 0.75rem; color: #5e6c84; font-weight: 600; }
-        .issue-type-icon { font-size: 0.8rem; }
+        
+        .issue-key { font-size: 0.7rem; color: #5e6c84; font-weight: 600; }
+        
         .meta-right { display: flex; align-items: center; gap: 8px; }
-        .priority-icon { color: #de350b; font-size: 0.8rem; }
-        .priority-icon.medium { color: #ff991f; } 
-        .avatar { width: 24px; height: 24px; border-radius: 50%; background: #0052cc; color: white; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-        .status-badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 3px; font-weight: 700; text-transform: uppercase; }
-        .status-inprogress { background: var(--jira-inprogress); color: var(--jira-inprogress-text); }
-        .status-done { background: var(--jira-done); color: var(--jira-done-text); }
+        
+        .avatar { width: 22px; height: 22px; border-radius: 50%; background: #0052cc; color: white; font-size: 0.65rem; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        
+        /* New Tag Styles */
+        .area-tag {
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .tag-aii { background: var(--tag-aii-bg); color: var(--tag-aii-text); }
+        .tag-aid { background: var(--tag-aid-bg); color: var(--tag-aid-text); }
+        .tag-cma { background: var(--tag-cma-bg); color: var(--tag-cma-text); }
+        .tag-suc { background: var(--tag-suc-bg); color: var(--tag-suc-text); }
 
         /* --- Container #4: Achievements & Footer --- */
         #achievements {
@@ -509,21 +525,34 @@
 
         @media (max-width: 768px) {
             /* Adjust header padding and menu */
-            header { padding: 0 5%; }
-            .menu-toggle { display: block; }
+            header { padding: 0 4%; } /* Slightly reduced padding */
+            
+            /* Hide Hamburger Menu */
+            .menu-toggle { display: none; } 
+            
+            /* Show Nav Inline on Mobile */
             nav ul {
-                display: none;
-                flex-direction: column;
-                position: absolute;
-                top: var(--header-height);
-                right: 0;
-                width: 100%;
-                background: #fff;
-                padding: 1rem;
-                text-align: center;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                display: flex;
+                flex-direction: row; /* Horizontal */
+                position: static; /* Remove absolute positioning */
+                top: auto;
+                right: auto;
+                width: auto;
+                background: transparent;
+                padding: 0;
+                box-shadow: none;
+                gap: 0.7rem; /* Tight gap for mobile */
+                align-items: center;
             }
-            nav ul.show { display: flex; }
+            
+            nav a {
+                font-size: 0.8rem; /* Smaller font for menu */
+            }
+
+            .logo {
+                font-size: 1.3rem; /* Smaller logo for space */
+                margin-right: auto; /* Push nav to right if needed, though space-between handles it */
+            }
             
             /* Section padding adjustments for mobile */
             section {
@@ -532,7 +561,8 @@
 
             /* Intro */
             .hero-main { font-size: 2rem; margin-bottom: 3rem; } 
-            .feature-item-row { flex-direction: column; align-items: center; text-align: center; gap: 0.8rem; padding: 1.5rem; }
+            /* Changed alignment to left-aligned for mobile as requested */
+            .feature-item-row { flex-direction: column; align-items: flex-start; text-align: left; gap: 0.8rem; padding: 1.5rem; }
             
             /* Business Grid: 1 column on mobile */
             .business-grid { grid-template-columns: 1fr; gap: 2rem; }
@@ -652,9 +682,9 @@
                         </div>
                     </div>
                     <ul class="biz-content-list">
-                        <li>AI를 활용한 3세대 ETF 투자로 연간 S&P500 수익 달성 목표</li>
-                        <li>시장 분석 자동화 및 리밸런싱 시뮬레이션</li>
-                        <li>지능형 수익율 변동 및 위험 관리 모니터링 관리</li>
+                        <li>법인에 최적화된 투자로 S&P500 수익 달성 목표</li>
+                        <li>시장 분석 자동화 및 리밸런싱 알고리즘 적용</li>
+                        <li>지능형 수익율 변동 감지 및 위험 관리 자동화</li>
                     </ul>
                 </div>
 
@@ -665,9 +695,9 @@
                         <span class="biz-badge">정보통신업</span>
                     </div>
                     <ul class="biz-content-list">
-                        <li>연령대별(20~50대) 투자 목적에 맞는 투자 가이드 서비스</li>
-                        <li>개인별로 최적화된 은퇴 설계 AI Agent 개발</li>
-                        <li>투자 관련 원천 기술(특허) 확보 중</li>
+                        <li>나를 이해하는 투자 개인화 서비스</li>
+                        <li>은퇴 설계를 위한 Wealth-Care 서비스</li>
+                        <li>개인화 서비스를 위한 원천 기술(특허) 확보 중</li>
                     </ul>
                 </div>
 
@@ -678,9 +708,9 @@
                         <span class="biz-badge">정보통신업</span>
                     </div>
                     <ul class="biz-content-list">
-                        <li>법인의 성장 시뮬레이션 및 연간 관리 도구 개발</li>
-                        <li>법인 전문 에이전트 개발 및 절세 실행 서비스 제공</li>
-                        <li>전체 현황을 확인할 수 있는 통합 법인 대시보드 구현</li>
+                        <li>생애주기 성장 시뮬레이터 개발</li>
+                        <li>목표에 맞게 비용 관리 및 절세 에이전트 서비스</li>
+                        <li>통합 관리 대시보드 구현</li>
                     </ul>
                 </div>
 
@@ -691,9 +721,9 @@
                         <span class="biz-badge">서비스업</span>
                     </div>
                     <ul class="biz-content-list">
-                        <li>금융과 IT를 결합한 창업 전략 지원</li>
-                        <li>은퇴 이후 법인 설립 및 운영 안내</li>
-                        <li>주식 투자 관련 컨설팅 (현금 흐름 창출 중심)</li>
+                        <li>금융과 IT를 결합한 창업 전략 가이드</li>
+                        <li>법인 설립 형태 및 운영 노하우 상담</li>
+                        <li>금융 투자 관련 컨설팅 (종목 추천 아님!)</li>
                     </ul>
                 </div>
 
@@ -705,141 +735,169 @@
             <h2 class="section-title">프로젝트 현황</h2>
             <div class="content-box">
                 <div class="jira-board">
+                    
+                    <!-- Column: Backlog -->
+                    <div class="jira-column">
+                        <div class="column-header">
+                            <span>Backlog</span>
+                            <span class="card-count">3</span>
+                        </div>
+                        
+                        <div class="jira-card tag-aid">
+                            <span class="card-title">마이데이터 서비스 연계 투자 자동화</span>
+                            <div class="card-meta">
+                                <div class="meta-left">
+                                    <span class="issue-key">AID-301</span>
+                                </div>
+                                <div class="meta-right">
+                                    <span class="area-tag tag-aid">AID</span>
+                                    <span class="avatar">PM</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="jira-card tag-aid">
+                            <span class="card-title">Gamification 요소 발굴 및 적용</span>
+                            <div class="card-meta">
+                                <div class="meta-left">
+                                    <span class="issue-key">AID-302</span>
+                                </div>
+                                <div class="meta-right">
+                                    <span class="area-tag tag-aid">AID</span>
+                                    <span class="avatar">UX</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="jira-card tag-aid">
+                            <span class="card-title">연구개발 분야 벤처 인증</span>
+                            <div class="card-meta">
+                                <div class="meta-left">
+                                    <span class="issue-key">AID-303</span>
+                                </div>
+                                <div class="meta-right">
+                                    <span class="area-tag tag-aid">AID</span>
+                                    <span class="avatar">CTO</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Column: In Progress -->
                     <div class="jira-column">
                         <div class="column-header">
                             <span>In Progress</span>
                             <span class="card-count">4</span>
                         </div>
                         
-                        <div class="jira-card type-wip">
-                            <span class="card-title">금융 투자 개인화 서비스 원천 기술 특허 출원</span>
+                        <div class="jira-card tag-aid">
+                            <span class="card-title">투자 개인화 서비스 원천 기술 특허</span>
                             <div class="card-meta">
                                 <div class="meta-left">
-                                    <span class="issue-type-icon">💡</span>
-                                    <span class="issue-key">PAT-101</span>
+                                    <span class="issue-key">AID-101</span>
                                 </div>
                                 <div class="meta-right">
-                                    <span class="status-badge status-inprogress">IN PROGRESS</span>
-                                    <span class="avatar">PM</span>
+                                    <span class="area-tag tag-aid">AID</span>
+                                    <span class="avatar">IP</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="jira-card type-wip">
-                            <span class="card-title">소규모 법인 운영 자동화 웹서비스 개발</span>
+                        <div class="jira-card tag-cma">
+                            <span class="card-title">연간 법인 운영 통합 대시보드 구축</span>
                             <div class="card-meta">
                                 <div class="meta-left">
-                                    <span class="issue-type-icon">💻</span>
-                                    <span class="issue-key">DEV-204</span>
+                                    <span class="issue-key">CMA-201</span>
                                 </div>
                                 <div class="meta-right">
-                                    <span class="status-badge status-inprogress">DEV</span>
-                                    <span class="avatar">FE</span>
+                                    <span class="area-tag tag-cma">CMA</span>
+                                    <span class="avatar">DEV</span>
                                 </div>
                             </div>
                         </div>
 
-                         <div class="jira-card type-wip">
-                            <span class="card-title">은퇴 개인화 서비스 기획</span>
+                         <div class="jira-card tag-aid">
+                            <span class="card-title">은퇴 설계 AI Chatbot</span>
                             <div class="card-meta">
                                 <div class="meta-left">
-                                    <span class="issue-type-icon">📋</span>
-                                    <span class="issue-key">PLN-301</span>
+                                    <span class="issue-key">AID-102</span>
                                 </div>
                                 <div class="meta-right">
-                                    <span class="priority-icon medium">▲</span>
+                                    <span class="area-tag tag-aid">AID</span>
                                     <span class="avatar">AI</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="jira-card type-wip">
-                            <span class="card-title">투자 포트폴리오 평가 및 리밸런싱 분석 자동화</span>
+                        <div class="jira-card tag-aii">
+                            <span class="card-title">포트폴리오 평가 및 리밸런싱 자동화</span>
                             <div class="card-meta">
                                 <div class="meta-left">
-                                    <span class="issue-type-icon">⚙️</span>
-                                    <span class="issue-key">ANA-402</span>
+                                    <span class="issue-key">AII-101</span>
                                 </div>
                                 <div class="meta-right">
-                                    <span class="status-badge status-inprogress">TEST</span>
+                                    <span class="area-tag tag-aii">AII</span>
                                     <span class="avatar">QA</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Column: Done -->
                     <div class="jira-column">
                         <div class="column-header">
                             <span>Done</span>
-                            <span class="card-count">5</span>
+                            <span class="card-count">4</span>
                         </div>
 
-                        <div class="jira-card type-done">
-                            <span class="card-title">회사 홈페이지 개편</span>
+                        <div class="jira-card tag-cma">
+                            <span class="card-title">생애주기 성장 시뮬레이터 개발</span>
                             <div class="card-meta">
                                 <div class="meta-left">
-                                    <span class="issue-type-icon">🎨</span>
-                                    <span class="issue-key">WEB-001</span>
+                                    <span class="issue-key">CMA-101</span>
                                 </div>
                                 <div class="meta-right">
-                                    <span class="status-badge status-done">DONE</span>
+                                    <span class="area-tag tag-cma">CMA</span>
                                     <span class="avatar">DS</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="jira-card type-done">
-                            <span class="card-title">법인 연간 운영 및 비용 관리 Simulator</span>
+                        <div class="jira-card tag-cma">
+                            <span class="card-title">비용 관리 및 절세 시뮬레이터 개발</span>
                             <div class="card-meta">
                                 <div class="meta-left">
-                                    <span class="issue-type-icon">📊</span>
-                                    <span class="issue-key">FIN-102</span>
+                                    <span class="issue-key">CMA-102</span>
                                 </div>
                                 <div class="meta-right">
-                                    <span class="status-badge status-done">DONE</span>
+                                    <span class="area-tag tag-cma">CMA</span>
                                     <span class="avatar">CFO</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="jira-card type-done">
-                            <span class="card-title">법인 자금 흐름 관리 Dashboard</span>
+                        <div class="jira-card tag-suc">
+                            <span class="card-title">창업 멘토링 가이드 및 서비스 개발</span>
                             <div class="card-meta">
                                 <div class="meta-left">
-                                    <span class="issue-type-icon">📉</span>
-                                    <span class="issue-key">FIN-103</span>
+                                    <span class="issue-key">SUC-101</span>
                                 </div>
                                 <div class="meta-right">
-                                    <span class="status-badge status-done">DONE</span>
-                                    <span class="avatar">CFO</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="jira-card type-done">
-                            <span class="card-title">법인 성장 시나리오 Simulator</span>
-                            <div class="card-meta">
-                                <div class="meta-left">
-                                    <span class="issue-type-icon">🚀</span>
-                                    <span class="issue-key">BIZ-201</span>
-                                </div>
-                                <div class="meta-right">
-                                    <span class="status-badge status-done">DONE</span>
+                                    <span class="area-tag tag-suc">SUC</span>
                                     <span class="avatar">CEO</span>
                                 </div>
                             </div>
                         </div>
-                        
-                         <div class="jira-card type-done">
-                            <span class="card-title">법인 절세 Dashboard 구축</span>
+
+                        <div class="jira-card tag-cma">
+                            <span class="card-title">회사 랜딩 페이지 v1, v2 개발</span>
                             <div class="card-meta">
                                 <div class="meta-left">
-                                    <span class="issue-type-icon">💰</span>
-                                    <span class="issue-key">TAX-101</span>
+                                    <span class="issue-key">CMA-001</span>
                                 </div>
                                 <div class="meta-right">
-                                    <span class="status-badge status-done">DONE</span>
-                                    <span class="avatar">ACC</span>
+                                    <span class="area-tag tag-cma">CMA</span>
+                                    <span class="avatar">FE</span>
                                 </div>
                             </div>
                         </div>
