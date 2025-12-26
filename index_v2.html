@@ -36,28 +36,23 @@
             box-sizing: border-box;
         }
 
-        body, html {
+        html {
+            scroll-behavior: smooth; /* Smooth scrolling for anchor links */
+            scroll-padding-top: var(--header-height); /* Prevent header from covering content */
+        }
+
+        body {
             /* Updated Font Family to Paperlogy with fallback */
             font-family: 'Paperlogy', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: var(--bg-white);
             color: var(--text-dark);
             line-height: 1.5;
-            height: 100%;
-            overflow: hidden; /* Disable native scroll for JS control */
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            overflow-y: auto;   /* Enable native vertical scroll */
         }
 
         a { text-decoration: none; color: inherit; transition: color 0.2s; }
         ul { list-style: none; }
-
-        /* --- Full Page Scroll Wrapper --- */
-        .container-wrapper {
-            height: 100%;
-            width: 100%;
-            position: relative;
-            transform: translate3d(0, 0, 0); 
-            /* Fixed: Removed CSS transition to prevent conflict with JS animation loop */
-            will-change: transform; /* Performance optimization */
-        }
 
         /* --- Global Canvas for Background (Fixed) --- */
         #bg-canvas {
@@ -69,19 +64,20 @@
             z-index: 1; 
             pointer-events: none; 
             opacity: 0; 
-            transition: opacity 0.8s ease; /* Synced with scroll speed */
+            transition: opacity 0.8s ease; 
         }
 
         /* --- Section Common Styles --- */
         section {
-            height: 100vh;
+            min-height: 100vh; /* Allow content to grow beyond viewport */
+            height: auto;
             width: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: center; /* Keeps content centered vertically */
+            justify-content: center; 
             align-items: center;
-            /* Adjusted Padding: Reduced top padding to prevent content overflow */
-            padding: calc(var(--header-height) + 10px) 5% 0; 
+            /* Adjusted Padding for better spacing on mobile and desktop */
+            padding: 100px 5% 100px; 
             position: relative;
             overflow: hidden;
             z-index: 0; 
@@ -97,7 +93,7 @@
             color: var(--text-dark);
         }
 
-        /* Animation Timing Adjustment: Matches scroll duration (0.8s) */
+        /* Animation Styles */
         .content-box {
             max-width: 1400px;
             width: 100%;
@@ -115,7 +111,7 @@
 
         .section-title {
             font-size: 2.2rem;
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
             text-align: center;
             font-weight: 800;
             letter-spacing: -1px;
@@ -191,7 +187,6 @@
         .hero-main {
             font-size: 3rem; 
             font-weight: 800;
-            /* Optimized Margin: Reduced from 6rem to 3rem to fit content in 100vh */
             margin-bottom: 3rem; 
             line-height: 1.2;
             letter-spacing: -1px;
@@ -218,21 +213,19 @@
             /* Staggered Animation Initial State */
             opacity: 0;
             transform: translateY(30px);
-            /* Transition handled by class toggle, not conflict with scroll */
             transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        /* When section is visible, trigger features list with delay */
         section.visible .hero-features-list {
             opacity: 1;
             transform: translateY(0);
-            transition-delay: 0.5s; /* Slightly reduced delay */
+            transition-delay: 0.5s; 
         }
 
         .feature-item-row {
             background: rgba(255,255,255,0.05);
             backdrop-filter: blur(5px);
-            padding: 1.2rem 2rem; /* Compact padding */
+            padding: 1.2rem 2rem; 
             border-radius: 16px;
             border: 1px solid rgba(255,255,255,0.1);
             display: flex;
@@ -263,6 +256,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
         }
 
         .feature-content p {
@@ -286,7 +280,7 @@
         
         section.visible .graph-path {
              stroke-dashoffset: 0;
-             transition-delay: 1.0s; /* Draw graph after list appears */
+             transition-delay: 1.0s; 
         }
         
         section:not(.visible) .graph-path {
@@ -307,13 +301,13 @@
             background: #fff;
             border: 1px solid var(--border-light);
             border-radius: 12px;
-            padding: 0; /* Removed padding for header fill */
+            padding: 0; 
             text-align: center;
             transition: all 0.3s;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* Ensure header corners clip */
+            overflow: hidden; 
             height: 100%;
         }
 
@@ -323,27 +317,25 @@
             border-color: var(--accent-blue);
         }
 
-        /* --- Redesigned Business Card Layout --- */
         .biz-header-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background-color: var(--accent-blue); /* Default Blue Header */
+            background-color: var(--accent-blue); 
             padding: 1.5rem 2rem;
             width: 100%;
             flex-wrap: wrap;
             gap: 10px;
         }
 
-        /* Specialized Style for Core Business Card */
         .biz-header-row.core-business {
-            background: linear-gradient(135deg, #0f172a 0%, #1e40af 100%); /* Darker, Premium Gradient */
+            background: linear-gradient(135deg, #0f172a 0%, #1e40af 100%); 
         }
         
         .biz-header-row h3 {
             margin: 0;
-            color: #ffffff !important; /* White Title */
-            font-size: 1.4rem; /* Increased Size */
+            color: #ffffff !important; 
+            font-size: 1.4rem; 
             font-weight: 700;
             text-align: left;
         }
@@ -351,14 +343,13 @@
         .biz-badge {
             font-size: 0.75rem;
             font-weight: 700;
-            color: var(--accent-blue); /* Blue Text */
-            background: #ffffff; /* White Badge Background */
+            color: var(--accent-blue); 
+            background: #ffffff; 
             padding: 4px 12px;
             border-radius: 20px;
             white-space: nowrap;
         }
 
-        /* Specialized Tag for Main Business */
         .biz-badge.main-tag {
             background-color: var(--accent-gold);
             color: #ffffff;
@@ -367,13 +358,13 @@
         .biz-content-list {
             text-align: left;
             margin: 0;
-            padding: 2rem 2rem 2rem 3rem; /* Adjusted Padding for list */
+            padding: 2rem 2rem 2rem 3rem; 
             width: 100%;
             font-size: 0.95rem;
-            color: #475569; /* Darker text for readability */
+            color: #475569; 
             line-height: 1.8;
             background-color: #fff;
-            flex-grow: 1; /* Fill remaining height */
+            flex-grow: 1; 
         }
         
         .biz-content-list li {
@@ -386,11 +377,14 @@
             display: flex;
             gap: 2rem;
             justify-content: center;
-            height: 70vh;
+            /* Height is auto to allow free scroll */
+            height: auto; 
+            flex-wrap: wrap; /* Wrap allowed for mobile */
         }
 
         .jira-column {
             flex: 1;
+            min-width: 300px; /* Ensure column has width before wrapping */
             background: #f4f5f7;
             border-radius: 8px;
             padding: 1rem;
@@ -398,7 +392,6 @@
             flex-direction: column;
             gap: 1rem;
             max-width: 600px;
-            overflow-y: auto;
         }
         
         .column-header {
@@ -506,24 +499,49 @@
         /* --- Mobile Toggle --- */
         .menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: #0f172a; }
 
-        /* --- Responsive --- */
+        /* --- Responsive Design --- */
         @media (max-width: 1024px) {
             .hero-main { font-size: 2.5rem; }
-            .jira-board { flex-direction: column; overflow-y: scroll; display: block; }
-            /* Adjusted height for responsiveness */
-            .jira-column { margin-bottom: 2rem; max-width: 100%; height: auto; max-height: 30vh; } 
+            .jira-board { flex-direction: column; }
+            .jira-column { margin-bottom: 2rem; width: 100%; max-width: 100%; } 
             .content-box { max-width: 100%; }
         }
 
         @media (max-width: 768px) {
-            /* ... existing header styles ... */
+            /* Adjust header padding and menu */
+            header { padding: 0 5%; }
+            .menu-toggle { display: block; }
+            nav ul {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: var(--header-height);
+                right: 0;
+                width: 100%;
+                background: #fff;
+                padding: 1rem;
+                text-align: center;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
             nav ul.show { display: flex; }
             
-            .hero-main { font-size: 1.8rem; margin-bottom: 2rem; } /* Compact for mobile */
-            .business-grid { grid-template-columns: 1fr; gap: 1rem; }
-            .achievement-box { padding: 2rem 1rem; }
-            .feature-item-row { flex-direction: column; align-items: center; text-align: center; gap: 0.5rem; padding: 1rem; }
-            /* ... */
+            /* Section padding adjustments for mobile */
+            section {
+                padding: 120px 20px 60px; /* More top padding for header */
+            }
+
+            /* Intro */
+            .hero-main { font-size: 2rem; margin-bottom: 3rem; } 
+            .feature-item-row { flex-direction: column; align-items: center; text-align: center; gap: 0.8rem; padding: 1.5rem; }
+            
+            /* Business Grid: 1 column on mobile */
+            .business-grid { grid-template-columns: 1fr; gap: 2rem; }
+            
+            /* Projects */
+            .jira-column { margin-bottom: 2rem; }
+
+            /* Achievements */
+            .achievement-box { padding: 3rem 1rem; }
         }
     </style>
 </head>
@@ -534,20 +552,19 @@
 
     <!-- Header -->
     <header>
-        <a href="#about" class="logo" onclick="moveToSection(0); return false;">51labs</a>
+        <a href="#about" class="logo">51labs</a>
         <div class="menu-toggle">☰</div>
         <nav>
             <ul>
-                <!-- Nav Links call custom JS instead of href anchor -->
-                <li><a onclick="moveToSection(0)" class="active">소개</a></li>
-                <li><a onclick="moveToSection(1)">사업영역</a></li>
-                <li><a onclick="moveToSection(2)">프로젝트</a></li>
-                <li><a onclick="moveToSection(3)">성과</a></li>
+                <li><a href="#about" class="active">소개</a></li>
+                <li><a href="#business">사업영역</a></li>
+                <li><a href="#projects">프로젝트</a></li>
+                <li><a href="#achievements">성과</a></li>
             </ul>
         </nav>
     </header>
 
-    <div class="container-wrapper" id="scroller">
+    <div class="container-wrapper">
 
         <!-- Container #1: 51labs? (Dark) -->
         <section id="about" class="section-dark">
@@ -853,157 +870,60 @@
     </div>
 
     <script>
-        // --- Custom Full Page Scroll Engine ---
-        let currentSectionIndex = 0;
+        // --- Native Scroll with Intersection Observer ---
         const sections = document.querySelectorAll("section");
-        const totalSections = sections.length;
-        const scroller = document.getElementById("scroller");
-        const canvas = document.getElementById("bg-canvas");
         const navLinks = document.querySelectorAll("nav ul li a");
-        
-        let isAnimating = false;
-        
-        // Easing Function for Smoothness (easeInOutCubic)
-        function easeInOutCubic(t) {
-            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-        }
+        const canvas = document.getElementById("bg-canvas");
+        const navUl = document.querySelector('nav ul');
+        const menuToggle = document.querySelector('.menu-toggle');
 
-        // Custom Animation Function
-        function smoothScrollTo(targetY, duration) {
-            const startY = -currentSectionIndex * window.innerHeight; // Current translate Y
-            const distance = -targetY - startY; // Negative because we translate up
-            let startTime = null;
+        // Observer for Active Navigation & Animation Trigger
+        const observerOptions = {
+            root: null, // Use viewport
+            rootMargin: '-30% 0px -30% 0px', // Trigger when section is in middle 40% of screen
+            threshold: 0.1
+        };
 
-            function animation(currentTime) {
-                if (startTime === null) startTime = currentTime;
-                const timeElapsed = currentTime - startTime;
-                const progress = Math.min(timeElapsed / duration, 1);
-                const ease = easeInOutCubic(progress);
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    // 1. Highlight Nav
+                    let current = entry.target.getAttribute("id");
+                    navLinks.forEach((link) => {
+                        link.classList.remove("active");
+                        if (link.getAttribute("href").includes(current)) {
+                            link.classList.add("active");
+                        }
+                    });
 
-                const newY = startY + (distance * ease);
-                scroller.style.transform = `translate3d(0, ${newY}px, 0)`;
+                    // 2. Trigger Animations
+                    entry.target.classList.add("visible");
 
-                if (timeElapsed < duration) {
-                    requestAnimationFrame(animation);
-                } else {
-                    isAnimating = false;
-                    updateActiveState();
-                }
-            }
-
-            isAnimating = true;
-            requestAnimationFrame(animation);
-        }
-
-        function moveToSection(index) {
-            if (index < 0 || index >= totalSections || (index === currentSectionIndex && !isAnimating)) return;
-            
-            currentSectionIndex = index;
-            const targetY = index * window.innerHeight;
-            
-            // Duration reduced to 800ms for faster feel
-            smoothScrollTo(targetY, 800); 
-        }
-
-        function updateActiveState() {
-            // Update Nav
-            navLinks.forEach((link, idx) => {
-                if (idx === currentSectionIndex) link.classList.add("active");
-                else link.classList.remove("active");
-            });
-
-            // Trigger Animations in Sections
-            sections.forEach((sec, idx) => {
-                if (idx === currentSectionIndex) {
-                    sec.classList.add("visible");
-                    // Canvas Opacity logic
-                    if (sec.classList.contains("section-dark")) {
+                    // 3. Canvas Opacity
+                    if (entry.target.classList.contains("section-dark")) {
                         canvas.style.opacity = "0.4";
                     } else {
                         canvas.style.opacity = "0";
                     }
-                } else {
-                    sec.classList.remove("visible");
                 }
             });
-        }
+        }, observerOptions);
 
-        // --- Wheel Event Handling ---
-        let wheelTimeout;
-        window.addEventListener('wheel', (e) => {
-            if (isAnimating) return;
-            
-            // Simple threshold to avoid sensitive trackpads
-            if (Math.abs(e.deltaY) < 15) return;
-
-            clearTimeout(wheelTimeout);
-            wheelTimeout = setTimeout(() => {
-                if (e.deltaY > 0) {
-                    moveToSection(currentSectionIndex + 1);
-                } else {
-                    moveToSection(currentSectionIndex - 1);
-                }
-            }, 50); // Small debounce
-        }, { passive: true });
-
-        // --- Touch Event Handling (Swipe) ---
-        let touchStartY = 0;
-        window.addEventListener('touchstart', (e) => {
-            touchStartY = e.touches[0].clientY;
-        });
-
-        window.addEventListener('touchend', (e) => {
-            if (isAnimating) return;
-            const touchEndY = e.changedTouches[0].clientY;
-            const diff = touchStartY - touchEndY;
-
-            if (Math.abs(diff) > 50) { // Swipe threshold
-                if (diff > 0) {
-                    moveToSection(currentSectionIndex + 1);
-                } else {
-                    moveToSection(currentSectionIndex - 1);
-                }
-            }
-        });
-        
-        // --- Keyboard Support ---
-        window.addEventListener('keydown', (e) => {
-            if (isAnimating) return;
-            if (e.key === 'ArrowDown' || e.key === 'PageDown') {
-                moveToSection(currentSectionIndex + 1);
-            } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
-                moveToSection(currentSectionIndex - 1);
-            }
+        sections.forEach((section) => {
+            observer.observe(section);
         });
 
         // --- Mobile Menu Toggle ---
-        const menuToggle = document.querySelector('.menu-toggle');
-        const navUl = document.querySelector('nav ul');
-
         menuToggle.addEventListener('click', () => {
             navUl.classList.toggle('show');
         });
 
+        // Close menu when a link is clicked
         navLinks.forEach(link => {
             link.addEventListener('click', () => {
                 navUl.classList.remove('show');
             });
         });
-
-        // --- Window Resize Handler ---
-        window.addEventListener('resize', () => {
-            // Re-adjust position immediately without animation
-            const targetY = currentSectionIndex * window.innerHeight;
-            scroller.style.transition = 'none';
-            scroller.style.transform = `translate3d(0, -${targetY}px, 0)`;
-            
-            // Re-init canvas
-            resizeCanvas();
-            initParticles();
-        });
-
-        // --- Initial Load ---
-        updateActiveState();
 
         // --- Dynamic Background Animation (Connected Nodes) ---
         const ctx = canvas.getContext('2d');
@@ -1072,6 +992,11 @@
             }
             requestAnimationFrame(animate);
         }
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initParticles();
+        });
 
         resizeCanvas();
         initParticles();
