@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiftyone Labs | 51labs</title>
+    
+    <!-- Paperlogy Font Import -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Freesentation/paperlogy@main/Paperlogy.css">
+
+    <style>
+        /* --- CSS Variables & Reset --- */
+        :root {
+            /* Colors */
+            --bg-dark: #0f172a;       /* Dark Navy (Section 1, 3, Footer) */
+            --bg-white: #ffffff;      /* White (Header, Section 2, 4) */
+            --text-dark: #1e293b;     /* Slate 800 */
+            --text-light: #f8fafc;    /* Slate 50 */
+            --accent-blue: #3b82f6;   /* Jira Blue / Finance Blue */
+            --accent-gold: #f59e0b;   /* Gold for Finance/Highlights */
+            --border-light: #e2e8f0;  /* Slate 200 */
+            
+            /* Jira Status Colors */
+            --jira-todo: #dfe1e6;
+            --jira-inprogress: #deebff;
+            --jira-inprogress-text: #0747a6;
+            --jira-done: #e3fcef;
+            --jira-done-text: #006644;
+            
+            --header-height: 70px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            /* Updated Font Family to Paperlogy with fallback */
+            font-family: 'Paperlogy', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-white);
+            color: var(--text-dark);
+            line-height: 1.5;
+            height: 100%;
+            overflow: hidden; /* Disable native scroll for JS control */
+        }
+
+        a { text-decoration: none; color: inherit; transition: color 0.2s; }
+        ul { list-style: none; }
+
+        /* --- Full Page Scroll Wrapper --- */
+        .container-wrapper {
+            height: 100%;
+            width: 100%;
+            position: relative;
+            transform: translate3d(0, 0, 0); 
+            /* Fixed: Removed CSS transition to prevent conflict with JS animation loop */
+            will-change: transform; /* Performance optimization */
+        }
+
+        /* --- Global Canvas for Background (Fixed) --- */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1; 
+            pointer-events: none; 
+            opacity: 0; 
+            transition: opacity 0.8s ease; /* Synced with scroll speed */
+        }
+
+        /* --- Section Common Styles --- */
+        section {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Keeps content centered vertically */
+            align-items: center;
+            /* Adjusted Padding: Reduced top padding to prevent content overflow */
+            padding: calc(var(--header-height) + 10px) 5% 0; 
+            position: relative;
+            overflow: hidden;
+            z-index: 0; 
+        }
+
+        .section-dark {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+        }
+        
+        .section-light {
+            background-color: var(--bg-white);
+            color: var(--text-dark);
+        }
+
+        /* Animation Timing Adjustment: Matches scroll duration (0.8s) */
+        .content-box {
+            max-width: 1400px;
+            width: 100%;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s; 
+            z-index: 10; 
+            position: relative;
+        }
+
+        section.visible .content-box {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-weight: 800;
+            letter-spacing: -1px;
+            z-index: 10;
+            position: relative;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        section.visible .section-title {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Header (White Theme) --- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--header-height);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 3%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-light);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-blue) 0%, #2dd4bf 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent; 
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.2));
+        }
+
+        nav ul { display: flex; gap: 2.5rem; }
+        
+        nav a {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #64748b;
+            position: relative;
+            cursor: pointer;
+        }
+
+        nav a:hover, nav a.active { color: var(--accent-blue); }
+        
+        nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent-blue);
+        }
+
+        /* --- Container #1: 51labs? --- */
+        #about .hero-text { text-align: center; }
+
+        .hero-main {
+            font-size: 3rem; 
+            font-weight: 800;
+            /* Optimized Margin: Reduced from 6rem to 3rem to fit content in 100vh */
+            margin-bottom: 3rem; 
+            line-height: 1.2;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+        }
+
+        .hero-main .highlight {
+            background: none;
+            -webkit-text-fill-color: initial;
+            color: #cbd5e1; 
+            font-weight: 400;
+            display: inline-block;
+        }
+
+        .hero-features-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem; 
+            max-width: 800px;
+            margin: 0 auto;
+            align-items: center;
+            width: 100%;
+            
+            /* Staggered Animation Initial State */
+            opacity: 0;
+            transform: translateY(30px);
+            /* Transition handled by class toggle, not conflict with scroll */
+            transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* When section is visible, trigger features list with delay */
+        section.visible .hero-features-list {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: 0.5s; /* Slightly reduced delay */
+        }
+
+        .feature-item-row {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(5px);
+            padding: 1.2rem 2rem; /* Compact padding */
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            transition: transform 0.3s, border-color 0.3s;
+            width: 100%;
+            text-align: left;
+        }
+        
+        .feature-item-row:hover {
+            transform: translateX(5px);
+            border-color: var(--accent-blue);
+            background: rgba(255,255,255,0.08);
+        }
+
+        .feature-icon-wrapper {
+            font-size: 2rem;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .feature-content h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-content p {
+            font-size: 0.95rem;
+            color: #94a3b8;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .graph-svg {
+            width: 100px;
+            height: 30px;
+            overflow: visible;
+        }
+        
+        .graph-path {
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            transition: stroke-dashoffset 2s ease-out;
+        }
+        
+        section.visible .graph-path {
+             stroke-dashoffset: 0;
+             transition-delay: 1.0s; /* Draw graph after list appears */
+        }
+        
+        section:not(.visible) .graph-path {
+            stroke-dashoffset: 100;
+            transition: none; 
+        }
+
+        /* --- Container #2: Business --- */
+        .business-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .biz-card {
+            background: #fff;
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 0; /* Removed padding for header fill */
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Ensure header corners clip */
+            height: 100%;
+        }
+
+        .biz-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border-color: var(--accent-blue);
+        }
+
+        /* --- Redesigned Business Card Layout --- */
+        .biz-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--accent-blue); /* Default Blue Header */
+            padding: 1.5rem 2rem;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        /* Specialized Style for Core Business Card */
+        .biz-header-row.core-business {
+            background: linear-gradient(135deg, #0f172a 0%, #1e40af 100%); /* Darker, Premium Gradient */
+        }
+        
+        .biz-header-row h3 {
+            margin: 0;
+            color: #ffffff !important; /* White Title */
+            font-size: 1.4rem; /* Increased Size */
+            font-weight: 700;
+            text-align: left;
+        }
+        
+        .biz-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent-blue); /* Blue Text */
+            background: #ffffff; /* White Badge Background */
+            padding: 4px 12px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        /* Specialized Tag for Main Business */
+        .biz-badge.main-tag {
+            background-color: var(--accent-gold);
+            color: #ffffff;
+        }
+
+        .biz-content-list {
+            text-align: left;
+            margin: 0;
+            padding: 2rem 2rem 2rem 3rem; /* Adjusted Padding for list */
+            width: 100%;
+            font-size: 0.95rem;
+            color: #475569; /* Darker text for readability */
+            line-height: 1.8;
+            background-color: #fff;
+            flex-grow: 1; /* Fill remaining height */
+        }
+        
+        .biz-content-list li {
+            list-style-type: disc;
+            margin-bottom: 0.4rem;
+        }
+
+        /* --- Container #3: Projects --- */
+        .jira-board {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            height: 70vh;
+        }
+
+        .jira-column {
+            flex: 1;
+            background: #f4f5f7;
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 600px;
+            overflow-y: auto;
+        }
+        
+        .column-header {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #42526e;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .card-count {
+            background: #dfe1e6;
+            padding: 0 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+
+        .jira-card {
+            background: #ffffff;
+            border-radius: 3px;
+            box-shadow: 0 1px 2px rgba(9, 30, 66, 0.25);
+            padding: 12px;
+            cursor: pointer;
+            transition: background 0.1s;
+            border-left: 4px solid transparent;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .jira-card:hover { background: #ebecf0; }
+        .jira-card.type-wip { border-left-color: var(--accent-gold); }
+        .jira-card.type-done { border-left-color: #10b981; }
+
+        .card-title { font-size: 0.95rem; font-weight: 500; color: #172b4d; line-height: 1.4; }
+        .card-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
+        .meta-left { display: flex; align-items: center; gap: 8px; }
+        .issue-key { font-size: 0.75rem; color: #5e6c84; font-weight: 600; }
+        .issue-type-icon { font-size: 0.8rem; }
+        .meta-right { display: flex; align-items: center; gap: 8px; }
+        .priority-icon { color: #de350b; font-size: 0.8rem; }
+        .priority-icon.medium { color: #ff991f; } 
+        .avatar { width: 24px; height: 24px; border-radius: 50%; background: #0052cc; color: white; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .status-badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 3px; font-weight: 700; text-transform: uppercase; }
+        .status-inprogress { background: var(--jira-inprogress); color: var(--jira-inprogress-text); }
+        .status-done { background: var(--jira-done); color: var(--jira-done-text); }
+
+        /* --- Container #4: Achievements & Footer --- */
+        #achievements {
+            justify-content: space-between;
+            padding-bottom: 0;
+        }
+
+        .achievement-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 2rem 0;
+        }
+
+        .achievement-box {
+            background: #fff;
+            border: 2px dashed var(--border-light);
+            padding: 4rem;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .notice-text {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 1rem;
+        }
+        
+        .sub-notice { color: #64748b; font-size: 1.1rem; }
+
+        /* --- Footer --- */
+        footer {
+            width: 100%;
+            padding: 40px 20px;
+            background-color: var(--bg-dark);
+            color: #94a3b8;
+            font-size: 0.85rem;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .footer-content p {
+            margin-bottom: 8px;
+        }
+        
+        .footer-content p:last-child {
+            margin-bottom: 0;
+            opacity: 0.7;
+        }
+
+        /* --- Mobile Toggle --- */
+        .menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: #0f172a; }
+
+        /* --- Responsive --- */
+        @media (max-width: 1024px) {
+            .hero-main { font-size: 2.5rem; }
+            .jira-board { flex-direction: column; overflow-y: scroll; display: block; }
+            /* Adjusted height for responsiveness */
+            .jira-column { margin-bottom: 2rem; max-width: 100%; height: auto; max-height: 30vh; } 
+            .content-box { max-width: 100%; }
+        }
+
+        @media (max-width: 768px) {
+            /* ... existing header styles ... */
+            nav ul.show { display: flex; }
+            
+            .hero-main { font-size: 1.8rem; margin-bottom: 2rem; } /* Compact for mobile */
+            .business-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .achievement-box { padding: 2rem 1rem; }
+            .feature-item-row { flex-direction: column; align-items: center; text-align: center; gap: 0.5rem; padding: 1rem; }
+            /* ... */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Dynamic Background Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Header -->
+    <header>
+        <a href="#about" class="logo" onclick="moveToSection(0); return false;">51labs</a>
+        <div class="menu-toggle">☰</div>
+        <nav>
+            <ul>
+                <!-- Nav Links call custom JS instead of href anchor -->
+                <li><a onclick="moveToSection(0)" class="active">소개</a></li>
+                <li><a onclick="moveToSection(1)">사업영역</a></li>
+                <li><a onclick="moveToSection(2)">프로젝트</a></li>
+                <li><a onclick="moveToSection(3)">성과</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container-wrapper" id="scroller">
+
+        <!-- Container #1: 51labs? (Dark) -->
+        <section id="about" class="section-dark">
+            <div class="content-box hero-text">
+                <h1 class="hero-main">
+                    Reset,<br>
+                    Recharge,<br>
+                    Replan<br>
+                    <span class="highlight">with us</span>
+                </h1>
+                
+                <div class="hero-features-list">
+                    
+                    <!-- Item 1: 51labs Definition -->
+                    <div class="feature-item-row">
+                        <div class="feature-icon-wrapper">⛏️</div>
+                        <div class="feature-content">
+                            <h3>51labs는</h3>
+                            <p>지금까지 경험한 기술과 노하우 51%를 무기로 남은 49%를 채워가겠다는 의미</p>
+                        </div>
+                    </div>
+
+                    <!-- Item 2: Investment -->
+                    <div class="feature-item-row">
+                        <div class="feature-icon-wrapper">⚖️</div>
+                        <div class="feature-content">
+                            <h3>
+                                15년의 금융 투자자 경험
+                                <svg class="graph-svg" viewBox="0 0 100 30">
+                                    <defs>
+                                        <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+                                            <stop offset="0%" stop-color="#3b82f6"/>
+                                            <stop offset="100%" stop-color="#2dd4bf"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M0 25 L20 18 L40 22 L60 10 L80 15 L100 2" 
+                                          fill="none" 
+                                          stroke="url(#lineGrad)" 
+                                          stroke-width="3" 
+                                          stroke-linecap="round"
+                                          stroke-linejoin="round"
+                                          class="graph-path"/>
+                                </svg>
+                            </h3>
+                            <p>최근 5년간 평균 <strong style="color:var(--accent-gold);">12.58%</strong> 수익 달성</p>
+                        </div>
+                    </div>
+
+                    <!-- Item 3: Engineer -->
+                    <div class="feature-item-row">
+                        <div class="feature-icon-wrapper">💻</div>
+                        <div class="feature-content">
+                            <h3>25년차 소프트웨어 엔지니어 경력</h3>
+                            <p>삼성전자와 42dot 근무를 통한 기술 내재화</p>
+                        </div>
+                    </div>
+
+                    <!-- Item 4: AI Persona -->
+                    <div class="feature-item-row">
+                        <div class="feature-icon-wrapper">🤝</div>
+                        <div class="feature-content">
+                            <h3>AI 기반 새로운 협업 방식 시도</h3>
+                            <p>필요한 역할을 AI Persona로 정의하고 사람과 AI가 협업하는 체계 구축</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Container #2: Business Areas (White) -->
+        <section id="business" class="section-light">
+            <h2 class="section-title">사업 영역</h2>
+            <div class="content-box business-grid">
+                
+                <!-- Card 1 (Core Business) -->
+                <div class="biz-card">
+                    <!-- Added 'core-business' class for darker background -->
+                    <div class="biz-header-row core-business">
+                        <h3>AI와 함께 투자 실행</h3>
+                        <div style="display: flex; gap: 5px;">
+                            <span class="biz-badge">금융업</span>
+                            <!-- Added '주업종' Tag with Gold Color -->
+                            <span class="biz-badge main-tag">주업종</span>
+                        </div>
+                    </div>
+                    <ul class="biz-content-list">
+                        <li>AI를 활용한 3세대 ETF 투자로 연간 S&P500 수익 달성 목표</li>
+                        <li>시장 분석 자동화 및 리밸런싱 시뮬레이션</li>
+                        <li>지능형 수익율 변동 및 위험 관리 모니터링 관리</li>
+                    </ul>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="biz-card">
+                    <div class="biz-header-row">
+                        <h3>AI Agent 서비스 개발</h3>
+                        <span class="biz-badge">정보통신업</span>
+                    </div>
+                    <ul class="biz-content-list">
+                        <li>연령대별(20~50대) 투자 목적에 맞는 투자 가이드 서비스</li>
+                        <li>개인별로 최적화된 은퇴 설계 AI Agent 개발</li>
+                        <li>투자 관련 원천 기술(특허) 확보 중</li>
+                    </ul>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="biz-card">
+                    <div class="biz-header-row">
+                        <h3>소규모 법인 운영 자동화</h3>
+                        <span class="biz-badge">정보통신업</span>
+                    </div>
+                    <ul class="biz-content-list">
+                        <li>법인의 성장 시뮬레이션 및 연간 관리 도구 개발</li>
+                        <li>법인 전문 에이전트 개발 및 절세 실행 서비스 제공</li>
+                        <li>전체 현황을 확인할 수 있는 통합 법인 대시보드 구현</li>
+                    </ul>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="biz-card">
+                    <div class="biz-header-row">
+                        <h3>창업 컨설팅</h3>
+                        <span class="biz-badge">서비스업</span>
+                    </div>
+                    <ul class="biz-content-list">
+                        <li>금융과 IT를 결합한 창업 전략 지원</li>
+                        <li>은퇴 이후 법인 설립 및 운영 안내</li>
+                        <li>주식 투자 관련 컨설팅 (현금 흐름 창출 중심)</li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Container #3: Projects (Dark + Jira Style) -->
+        <section id="projects" class="section-dark">
+            <h2 class="section-title">프로젝트 현황</h2>
+            <div class="content-box">
+                <div class="jira-board">
+                    <div class="jira-column">
+                        <div class="column-header">
+                            <span>In Progress</span>
+                            <span class="card-count">4</span>
+                        </div>
+                        
+                        <div class="jira-card type-wip">
+                            <span class="card-title">금융 투자 개인화 서비스 원천 기술 특허 출원</span>
+                            <div class="card-meta">
+                                <div class="meta-left">
+                                    <span class="issue-type-icon">💡</span>
+                                    <span class="issue-key">PAT-101</span>
+                                </div>
+                                <div class="meta-right">
+                                    <span class="status-badge status-inprogress">IN PROGRESS</span>
+                                    <span class="avatar">PM</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="jira-card type-wip">
+                            <span class="card-title">소규모 법인 운영 자동화 웹서비스 개발</span>
+                            <div class="card-meta">
+                                <div class="meta-left">
+                                    <span class="issue-type-icon">💻</span>
+                                    <span class="issue-key">DEV-204</span>
+                                </div>
+                                <div class="meta-right">
+                                    <span class="status-badge status-inprogress">DEV</span>
+                                    <span class="avatar">FE</span>
+                                </div>
+                            </div>
+                        </div>
+
+                         <div class="jira-card type-wip">
+                            <span class="card-title">은퇴 개인화 서비스 기획</span>
+                            <div class="card-meta">
+                                <div class="meta-left">
+                                    <span class="issue-type-icon">📋</span>
+                                    <span class="issue-key">PLN-301</span>
+                                </div>
+                                <div class="meta-right">
+                                    <span class="priority-icon medium">▲</span>
+                                    <span class="avatar">AI</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="jira-card type-wip">
+                            <span class="card-title">투자 포트폴리오 평가 및 리밸런싱 분석 자동화</span>
+                            <div class="card-meta">
+                                <div class="meta-left">
+                                    <span class="issue-type-icon">⚙️</span>
+                                    <span class="issue-key">ANA-402</span>
+                                </div>
+                                <div class="meta-right">
+                                    <span class="status-badge status-inprogress">TEST</span>
+                                    <span class="avatar">QA</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="jira-column">
+                        <div class="column-header">
+                            <span>Done</span>
+                            <span class="card-count">5</span>
+                        </div>
+
+                        <div class="jira-card type-done">
+                            <span class="card-title">회사 홈페이지 개편</span>
+                            <div class="card-meta">
+                                <div class="meta-left">
+                                    <span class="issue-type-icon">🎨</span>
+                                    <span class="issue-key">WEB-001</span>
+                                </div>
+                                <div class="meta-right">
+                                    <span class="status-badge status-done">DONE</span>
+                                    <span class="avatar">DS</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="jira-card type-done">
+                            <span class="card-title">법인 연간 운영 및 비용 관리 Simulator</span>
+                            <div class="card-meta">
+                                <div class="meta-left">
+                                    <span class="issue-type-icon">📊</span>
+                                    <span class="issue-key">FIN-102</span>
+                                </div>
+                                <div class="meta-right">
+                                    <span class="status-badge status-done">DONE</span>
+                                    <span class="avatar">CFO</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="jira-card type-done">
+                            <span class="card-title">법인 자금 흐름 관리 Dashboard</span>
+                            <div class="card-meta">
+                                <div class="meta-left">
+                                    <span class="issue-type-icon">📉</span>
+                                    <span class="issue-key">FIN-103</span>
+                                </div>
+                                <div class="meta-right">
+                                    <span class="status-badge status-done">DONE</span>
+                                    <span class="avatar">CFO</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="jira-card type-done">
+                            <span class="card-title">법인 성장 시나리오 Simulator</span>
+                            <div class="card-meta">
+                                <div class="meta-left">
+                                    <span class="issue-type-icon">🚀</span>
+                                    <span class="issue-key">BIZ-201</span>
+                                </div>
+                                <div class="meta-right">
+                                    <span class="status-badge status-done">DONE</span>
+                                    <span class="avatar">CEO</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                         <div class="jira-card type-done">
+                            <span class="card-title">법인 절세 Dashboard 구축</span>
+                            <div class="card-meta">
+                                <div class="meta-left">
+                                    <span class="issue-type-icon">💰</span>
+                                    <span class="issue-key">TAX-101</span>
+                                </div>
+                                <div class="meta-right">
+                                    <span class="status-badge status-done">DONE</span>
+                                    <span class="avatar">ACC</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Container #4: Achievements & Footer (White) -->
+        <section id="achievements" class="section-light">
+            <h2 class="section-title">성과</h2>
+            <div class="content-box achievement-container">
+                <div class="achievement-box">
+                    <h3 class="notice-text">2026년 1월 업데이트 예정</h3>
+                    <p class="sub-notice">각 사업영역별 상세 성과 지표가 공개됩니다.</p>
+                </div>
+            </div>
+            
+            <footer>
+                <div class="footer-content">
+                    <p>All Rights Reserved by 오일랩스 유한회사 | 51labs LLC.</p>
+                    <p>사업자등록번호: 172-88-03237 | 소재지: 서울시 서초구 사임당로8길 13, 4층</p>
+                </div>
+            </footer>
+        </section>
+        
+    </div>
+
+    <script>
+        // --- Custom Full Page Scroll Engine ---
+        let currentSectionIndex = 0;
+        const sections = document.querySelectorAll("section");
+        const totalSections = sections.length;
+        const scroller = document.getElementById("scroller");
+        const canvas = document.getElementById("bg-canvas");
+        const navLinks = document.querySelectorAll("nav ul li a");
+        
+        let isAnimating = false;
+        
+        // Easing Function for Smoothness (easeInOutCubic)
+        function easeInOutCubic(t) {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        // Custom Animation Function
+        function smoothScrollTo(targetY, duration) {
+            const startY = -currentSectionIndex * window.innerHeight; // Current translate Y
+            const distance = -targetY - startY; // Negative because we translate up
+            let startTime = null;
+
+            function animation(currentTime) {
+                if (startTime === null) startTime = currentTime;
+                const timeElapsed = currentTime - startTime;
+                const progress = Math.min(timeElapsed / duration, 1);
+                const ease = easeInOutCubic(progress);
+
+                const newY = startY + (distance * ease);
+                scroller.style.transform = `translate3d(0, ${newY}px, 0)`;
+
+                if (timeElapsed < duration) {
+                    requestAnimationFrame(animation);
+                } else {
+                    isAnimating = false;
+                    updateActiveState();
+                }
+            }
+
+            isAnimating = true;
+            requestAnimationFrame(animation);
+        }
+
+        function moveToSection(index) {
+            if (index < 0 || index >= totalSections || (index === currentSectionIndex && !isAnimating)) return;
+            
+            currentSectionIndex = index;
+            const targetY = index * window.innerHeight;
+            
+            // Duration reduced to 800ms for faster feel
+            smoothScrollTo(targetY, 800); 
+        }
+
+        function updateActiveState() {
+            // Update Nav
+            navLinks.forEach((link, idx) => {
+                if (idx === currentSectionIndex) link.classList.add("active");
+                else link.classList.remove("active");
+            });
+
+            // Trigger Animations in Sections
+            sections.forEach((sec, idx) => {
+                if (idx === currentSectionIndex) {
+                    sec.classList.add("visible");
+                    // Canvas Opacity logic
+                    if (sec.classList.contains("section-dark")) {
+                        canvas.style.opacity = "0.4";
+                    } else {
+                        canvas.style.opacity = "0";
+                    }
+                } else {
+                    sec.classList.remove("visible");
+                }
+            });
+        }
+
+        // --- Wheel Event Handling ---
+        let wheelTimeout;
+        window.addEventListener('wheel', (e) => {
+            if (isAnimating) return;
+            
+            // Simple threshold to avoid sensitive trackpads
+            if (Math.abs(e.deltaY) < 15) return;
+
+            clearTimeout(wheelTimeout);
+            wheelTimeout = setTimeout(() => {
+                if (e.deltaY > 0) {
+                    moveToSection(currentSectionIndex + 1);
+                } else {
+                    moveToSection(currentSectionIndex - 1);
+                }
+            }, 50); // Small debounce
+        }, { passive: true });
+
+        // --- Touch Event Handling (Swipe) ---
+        let touchStartY = 0;
+        window.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+        });
+
+        window.addEventListener('touchend', (e) => {
+            if (isAnimating) return;
+            const touchEndY = e.changedTouches[0].clientY;
+            const diff = touchStartY - touchEndY;
+
+            if (Math.abs(diff) > 50) { // Swipe threshold
+                if (diff > 0) {
+                    moveToSection(currentSectionIndex + 1);
+                } else {
+                    moveToSection(currentSectionIndex - 1);
+                }
+            }
+        });
+        
+        // --- Keyboard Support ---
+        window.addEventListener('keydown', (e) => {
+            if (isAnimating) return;
+            if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+                moveToSection(currentSectionIndex + 1);
+            } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+                moveToSection(currentSectionIndex - 1);
+            }
+        });
+
+        // --- Mobile Menu Toggle ---
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navUl = document.querySelector('nav ul');
+
+        menuToggle.addEventListener('click', () => {
+            navUl.classList.toggle('show');
+        });
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                navUl.classList.remove('show');
+            });
+        });
+
+        // --- Window Resize Handler ---
+        window.addEventListener('resize', () => {
+            // Re-adjust position immediately without animation
+            const targetY = currentSectionIndex * window.innerHeight;
+            scroller.style.transition = 'none';
+            scroller.style.transform = `translate3d(0, -${targetY}px, 0)`;
+            
+            // Re-init canvas
+            resizeCanvas();
+            initParticles();
+        });
+
+        // --- Initial Load ---
+        updateActiveState();
+
+        // --- Dynamic Background Animation (Connected Nodes) ---
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+
+        function resizeCanvas() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5; // Slow movement
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2 + 1;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = '#3b82f6';
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const count = Math.floor(width / 10); 
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+
+                for (let j = i; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 120) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(59, 130, 246, ${1 - distance / 120})`; 
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        resizeCanvas();
+        initParticles();
+        animate();
+
+    </script>
+</body>
+</html>
