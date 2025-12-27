@@ -256,7 +256,7 @@
 
         /* Updated: Linear Gradient Highlighter Style */
         .highlight-marker {
-            /* Gradient from Red-Orange to Orange */
+            /* Default Gradient: Red-Orange to Orange */
             background: linear-gradient(90deg, #ff3131 0%, #ff914d 100%);
             color: #ffffff; 
             padding: 2px 6px;
@@ -264,6 +264,16 @@
             font-weight: 600;
             box-decoration-break: clone;
             -webkit-box-decoration-break: clone;
+        }
+
+        /* Variant: Green Gradient */
+        .highlight-marker.marker-green {
+            background: linear-gradient(90deg, #0097b2 0%, #7ed975 100%);
+        }
+
+        /* Variant: Blue Gradient */
+        .highlight-marker.marker-blue {
+            background: linear-gradient(90deg, #004aad 0%, #5ed0e6 100%);
         }
 
         /* --- Container #2: Business --- */
@@ -598,7 +608,7 @@
                     
                     <p class="intro-paragraph">
                         <strong>51labs(오일랩스)</strong>는 2025년 7월 21일,<br>
-                        새로운 도전을 시작한 <span class="highlight-marker">투자·소프트웨어 개발 법인</span>입니다.
+                        새로운 도전을 시작한 투자·소프트웨어 개발 법인입니다.
                     </p>
 
                     <p class="intro-paragraph">
@@ -610,12 +620,12 @@
 
                     <p class="intro-paragraph">
                         51labs는 AI와 함께 일하는 법을 적극적으로 실현하는<br>
-                        <span class="highlight-marker">작은 연구실</span>입니다.
+                        <span class="highlight-marker marker-green">작은 연구실</span>입니다.
                     </p>
 
                     <p class="intro-paragraph">
                         낡은 엔지니어에게는 낯선 여정이지만,<br>
-                        <span class="highlight-marker">성과로 증명</span>하겠습니다!
+                        <span class="highlight-marker marker-blue">성과로 증명</span>하겠습니다!
                     </p>
 
                 </div>
