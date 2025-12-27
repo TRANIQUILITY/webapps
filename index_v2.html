@@ -187,6 +187,7 @@
         .hero-main {
             font-size: 3rem; 
             font-weight: 800;
+            /* Optimized Margin: Adjusted for text layout */
             margin-bottom: 3rem; 
             line-height: 1.2;
             letter-spacing: -1px;
@@ -201,92 +202,64 @@
             display: inline-block;
         }
 
-        .hero-features-list {
+        /* --- New Intro Text Styles --- */
+        .intro-text-container {
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
             display: flex;
             flex-direction: column;
-            gap: 1rem; 
-            max-width: 800px;
-            margin: 0 auto;
-            align-items: center;
-            width: 100%;
-            
-            /* Staggered Animation Initial State */
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+            gap: 2.5rem; /* Space between paragraphs */
         }
 
-        section.visible .hero-features-list {
+        .intro-paragraph {
+            font-size: 1.15rem;
+            color: #e2e8f0; /* Slate 200 - Brighter than description */
+            line-height: 1.7;
+            font-weight: 300;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1.0s cubic-bezier(0.22, 1, 0.36, 1);
+            word-break: keep-all; /* Prevent awkward word breaks in Korean */
+        }
+
+        /* Staggered Animation Delays */
+        section.visible .intro-paragraph:nth-child(1) {
             opacity: 1;
             transform: translateY(0);
-            transition-delay: 0.5s; 
+            transition-delay: 0.4s;
+        }
+        section.visible .intro-paragraph:nth-child(2) {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: 1.2s; /* Wait for reading */
+        }
+        section.visible .intro-paragraph:nth-child(3) {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: 2.0s;
+        }
+        section.visible .intro-paragraph:nth-child(4) {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: 2.8s;
         }
 
-        .feature-item-row {
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(5px);
-            padding: 1.2rem 2rem; 
-            border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            align-items: flex-start;
-            gap: 1.5rem;
-            transition: transform 0.3s, border-color 0.3s;
-            width: 100%;
-            text-align: left;
-        }
-        
-        .feature-item-row:hover {
-            transform: translateX(5px);
-            border-color: var(--accent-blue);
-            background: rgba(255,255,255,0.08);
+        /* Removed old gold highlight-text style */
+        /* .highlight-text { ... } */
+
+        /* New Green Highlighter Style */
+        .highlight-marker {
+            background-color: rgba(34, 197, 94, 0.25); /* Green highlight background */
+            color: #ffffff; /* Changed text color to White */
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            box-decoration-break: clone;
+            -webkit-box-decoration-break: clone;
         }
 
-        .feature-icon-wrapper {
-            font-size: 2rem;
-            min-width: 50px;
-            text-align: center;
-        }
-
-        .feature-content h3 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            color: var(--text-light);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap; /* Allow wrapping on small screens */
-        }
-
-        .feature-content p {
-            font-size: 0.95rem;
-            color: #94a3b8;
-            line-height: 1.5;
-            margin: 0;
-        }
-
-        .graph-svg {
-            width: 100px;
-            height: 30px;
-            overflow: visible;
-        }
-        
-        .graph-path {
-            stroke-dasharray: 100;
-            stroke-dashoffset: 100;
-            transition: stroke-dashoffset 2s ease-out;
-        }
-        
-        section.visible .graph-path {
-             stroke-dashoffset: 0;
-             transition-delay: 1.0s; 
-        }
-        
-        section:not(.visible) .graph-path {
-            stroke-dashoffset: 100;
-            transition: none; 
-        }
+        /* Removed .hero-features-list styles */
 
         /* --- Container #2: Business --- */
         .business-grid {
@@ -461,6 +434,9 @@
         #achievements {
             justify-content: space-between;
             padding-bottom: 0;
+            /* Remove horizontal padding from section to allow footer to span full width */
+            padding-left: 0;
+            padding-right: 0;
         }
 
         .achievement-container {
@@ -470,7 +446,8 @@
             justify-content: center;
             align-items: center;
             width: 100%;
-            padding: 2rem 0;
+            /* Add padding back to content container */
+            padding: 2rem 5%; 
         }
 
         .achievement-box {
@@ -504,12 +481,13 @@
         }
 
         .footer-content p {
-            margin-bottom: 8px;
+            margin-bottom: 6px; /* Slightly reduced margin for better spacing */
+            line-height: 1.4;
         }
         
         .footer-content p:last-child {
             margin-bottom: 0;
-            opacity: 0.7;
+            /* opacity: 0.7; Removed opacity for better readability of address */
         }
 
         /* --- Mobile Toggle --- */
@@ -561,9 +539,9 @@
 
             /* Intro */
             .hero-main { font-size: 2rem; margin-bottom: 3rem; } 
-            /* Changed alignment to left-aligned for mobile as requested */
-            .feature-item-row { flex-direction: column; align-items: flex-start; text-align: left; gap: 0.8rem; padding: 1.5rem; }
             
+            .intro-paragraph { font-size: 1rem; gap: 2rem; }
+
             /* Business Grid: 1 column on mobile */
             .business-grid { grid-template-columns: 1fr; gap: 2rem; }
             
@@ -606,60 +584,30 @@
                     <span class="highlight">with us</span>
                 </h1>
                 
-                <div class="hero-features-list">
+                <!-- Updated Intro Content: Sequential Text -->
+                <div class="intro-text-container">
                     
-                    <!-- Item 1: 51labs Definition -->
-                    <div class="feature-item-row">
-                        <div class="feature-icon-wrapper">⛏️</div>
-                        <div class="feature-content">
-                            <h3>51labs는</h3>
-                            <p>지금까지 경험한 기술과 노하우 51%를 무기로 남은 49%를 채워가겠다는 의미</p>
-                        </div>
-                    </div>
+                    <p class="intro-paragraph">
+                        <strong>51labs(오일랩스, Fiftyone Labs)</strong>는 2025년 7월 21일,<br>
+                        새로운 도전을 시작한 <span class="highlight-marker">투자·소프트웨어 개발 법인</span>입니다.
+                    </p>
 
-                    <!-- Item 2: Investment -->
-                    <div class="feature-item-row">
-                        <div class="feature-icon-wrapper">⚖️</div>
-                        <div class="feature-content">
-                            <h3>
-                                15년의 금융 투자자 경험
-                                <svg class="graph-svg" viewBox="0 0 100 30">
-                                    <defs>
-                                        <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
-                                            <stop offset="0%" stop-color="#3b82f6"/>
-                                            <stop offset="100%" stop-color="#2dd4bf"/>
-                                        </linearGradient>
-                                    </defs>
-                                    <path d="M0 25 L20 18 L40 22 L60 10 L80 15 L100 2" 
-                                          fill="none" 
-                                          stroke="url(#lineGrad)" 
-                                          stroke-width="3" 
-                                          stroke-linecap="round"
-                                          stroke-linejoin="round"
-                                          class="graph-path"/>
-                                </svg>
-                            </h3>
-                            <p>최근 5년간 평균 <strong style="color:var(--accent-gold);">12.58%</strong> 수익 달성</p>
-                        </div>
-                    </div>
+                    <p class="intro-paragraph">
+                        <span class="highlight-marker">15년의 투자 경험</span>과 <span class="highlight-marker">25년의 소프트웨어 엔지니어 경력</span>을 지닌 대표가<br>
+                        두 분야의 전문성을 결합해 독창적인 비즈니스 모델을 구축했습니다.
+                    </p>
 
-                    <!-- Item 3: Engineer -->
-                    <div class="feature-item-row">
-                        <div class="feature-icon-wrapper">💻</div>
-                        <div class="feature-content">
-                            <h3>25년차 소프트웨어 엔지니어 경력</h3>
-                            <p>삼성전자와 42dot 근무를 통한 기술 내재화</p>
-                        </div>
-                    </div>
+                    <p class="intro-paragraph">
+                        AI가 산업과 일의 방식을 빠르게 바꾸고 있지만,<br>
+                        51labs는 이러한 변화를 피하지 않고<br>
+                        AI와 함께 일하는 법을 적극적으로 실험하는 <span class="highlight-marker">작은 연구실</span>입니다.
+                    </p>
 
-                    <!-- Item 4: AI Persona -->
-                    <div class="feature-item-row">
-                        <div class="feature-icon-wrapper">🤝</div>
-                        <div class="feature-content">
-                            <h3>AI 기반 새로운 협업 방식 시도</h3>
-                            <p>필요한 역할을 AI Persona로 정의하고 사람과 AI가 협업하는 체계 구축</p>
-                        </div>
-                    </div>
+                    <p class="intro-paragraph">
+                        인간 전문가와 <span class="highlight-marker">AI의 긴밀한 협업</span>을 통해,<br>
+                        한 사람의 역량으로 다섯 명의 성과를 내는<br>
+                        <span class="highlight-marker">새로운 일하는 방식</span>을 만들어갑니다.
+                    </p>
 
                 </div>
             </div>
@@ -750,7 +698,7 @@
                                     <span class="issue-key">AID-301</span>
                                 </div>
                                 <div class="meta-right">
-                                    <span class="area-tag tag-aid">AID</span>
+                                    <!-- Removed text tag -->
                                     <span class="avatar">PM</span>
                                 </div>
                             </div>
@@ -763,7 +711,7 @@
                                     <span class="issue-key">AID-302</span>
                                 </div>
                                 <div class="meta-right">
-                                    <span class="area-tag tag-aid">AID</span>
+                                    <!-- Removed text tag -->
                                     <span class="avatar">UX</span>
                                 </div>
                             </div>
@@ -776,7 +724,7 @@
                                     <span class="issue-key">AID-303</span>
                                 </div>
                                 <div class="meta-right">
-                                    <span class="area-tag tag-aid">AID</span>
+                                    <!-- Removed text tag -->
                                     <span class="avatar">CTO</span>
                                 </div>
                             </div>
@@ -787,7 +735,7 @@
                     <div class="jira-column">
                         <div class="column-header">
                             <span>In Progress</span>
-                            <span class="card-count">4</span>
+                            <span class="card-count">5</span> <!-- Updated count -->
                         </div>
                         
                         <div class="jira-card tag-aid">
@@ -797,7 +745,7 @@
                                     <span class="issue-key">AID-101</span>
                                 </div>
                                 <div class="meta-right">
-                                    <span class="area-tag tag-aid">AID</span>
+                                    <!-- Removed text tag -->
                                     <span class="avatar">IP</span>
                                 </div>
                             </div>
@@ -810,7 +758,7 @@
                                     <span class="issue-key">CMA-201</span>
                                 </div>
                                 <div class="meta-right">
-                                    <span class="area-tag tag-cma">CMA</span>
+                                    <!-- Removed text tag -->
                                     <span class="avatar">DEV</span>
                                 </div>
                             </div>
@@ -823,7 +771,7 @@
                                     <span class="issue-key">AID-102</span>
                                 </div>
                                 <div class="meta-right">
-                                    <span class="area-tag tag-aid">AID</span>
+                                    <!-- Removed text tag -->
                                     <span class="avatar">AI</span>
                                 </div>
                             </div>
@@ -836,8 +784,21 @@
                                     <span class="issue-key">AII-101</span>
                                 </div>
                                 <div class="meta-right">
-                                    <span class="area-tag tag-aii">AII</span>
+                                    <!-- Removed text tag -->
                                     <span class="avatar">QA</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Added Item -->
+                        <div class="jira-card tag-aii">
+                            <span class="card-title">2025년 투자 성과 정리</span>
+                            <div class="card-meta">
+                                <div class="meta-left">
+                                    <span class="issue-key">AII-102</span>
+                                </div>
+                                <div class="meta-right">
+                                    <span class="avatar">FIN</span>
                                 </div>
                             </div>
                         </div>
@@ -847,7 +808,20 @@
                     <div class="jira-column">
                         <div class="column-header">
                             <span>Done</span>
-                            <span class="card-count">4</span>
+                            <span class="card-count">7</span> <!-- Updated count -->
+                        </div>
+
+                        <!-- Added Item -->
+                        <div class="jira-card tag-aid">
+                            <span class="card-title">은퇴 설계 개인화 서비스 PoC 개발</span>
+                            <div class="card-meta">
+                                <div class="meta-left">
+                                    <span class="issue-key">AID-001</span>
+                                </div>
+                                <div class="meta-right">
+                                    <span class="avatar">AI</span>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="jira-card tag-cma">
@@ -857,7 +831,7 @@
                                     <span class="issue-key">CMA-101</span>
                                 </div>
                                 <div class="meta-right">
-                                    <span class="area-tag tag-cma">CMA</span>
+                                    <!-- Removed text tag -->
                                     <span class="avatar">DS</span>
                                 </div>
                             </div>
@@ -870,7 +844,7 @@
                                     <span class="issue-key">CMA-102</span>
                                 </div>
                                 <div class="meta-right">
-                                    <span class="area-tag tag-cma">CMA</span>
+                                    <!-- Removed text tag -->
                                     <span class="avatar">CFO</span>
                                 </div>
                             </div>
@@ -883,8 +857,34 @@
                                     <span class="issue-key">SUC-101</span>
                                 </div>
                                 <div class="meta-right">
-                                    <span class="area-tag tag-suc">SUC</span>
+                                    <!-- Removed text tag -->
                                     <span class="avatar">CEO</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Added Item -->
+                        <div class="jira-card tag-suc">
+                            <span class="card-title">Multi-Persona 협업 규칙 적용</span>
+                            <div class="card-meta">
+                                <div class="meta-left">
+                                    <span class="issue-key">SUC-001</span>
+                                </div>
+                                <div class="meta-right">
+                                    <span class="avatar">PM</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Added Item -->
+                        <div class="jira-card tag-suc">
+                            <span class="card-title">법인세 시뮬레이터 개발</span>
+                            <div class="card-meta">
+                                <div class="meta-left">
+                                    <span class="issue-key">SUC-002</span>
+                                </div>
+                                <div class="meta-right">
+                                    <span class="avatar">TAX</span>
                                 </div>
                             </div>
                         </div>
@@ -896,7 +896,7 @@
                                     <span class="issue-key">CMA-001</span>
                                 </div>
                                 <div class="meta-right">
-                                    <span class="area-tag tag-cma">CMA</span>
+                                    <!-- Removed text tag -->
                                     <span class="avatar">FE</span>
                                 </div>
                             </div>
@@ -919,8 +919,11 @@
             
             <footer>
                 <div class="footer-content">
-                    <p>All Rights Reserved by 오일랩스 유한회사 | 51labs LLC.</p>
-                    <p>사업자등록번호: 172-88-03237 | 소재지: 서울시 서초구 사임당로8길 13, 4층</p>
+                    <p>Made with Gemini v3.0</p>
+                    <p>All Rights Reserved by</p>
+                    <p>오일랩스 유한회사 | 51labs LLC.</p>
+                    <p>사업자등록번호: 172-88-03237</p>
+                    <p>소재지: 서울시 서초구 사임당로8길 13, 4층</p>
                 </div>
             </footer>
         </section>
