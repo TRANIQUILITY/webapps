@@ -8,12 +8,15 @@
     <!-- Paperlogy Font Import -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Freesentation/paperlogy@main/Paperlogy.css">
     
-    <!-- Libre Baskerville Font Import -->
+    <!-- Libre Baskerville Font Import (HTML Link method) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
     <style>
+        /* --- CSS Font Import Backup (@import method for mobile compatibility) --- */
+        @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+
         /* --- CSS Variables & Reset --- */
         :root {
             /* Colors */
@@ -189,7 +192,8 @@
         #about .hero-text { text-align: center; }
 
         .hero-main {
-            font-family: 'Libre Baskerville', serif; /* Font Changed */
+            /* Updated Font Family Stack for better Mobile Compatibility */
+            font-family: 'Libre Baskerville', Georgia, 'Times New Roman', Times, serif; 
             font-size: 3rem; 
             font-weight: 400;
             margin-bottom: 3rem; 
