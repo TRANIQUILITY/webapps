@@ -146,17 +146,16 @@
 
         .logo {
             font-size: 1.6rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--accent-blue) 0%, #2dd4bf 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            color: transparent; 
+            /* Gradient & Shadow Removed, Solid Black Color Applied */
+            color: #000000;
             display: flex;
             align-items: center;
-            gap: 5px;
-            filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.2));
+            gap: 1px; /* Tighter gap for text logo */
         }
+        
+        /* Font weights for logo parts */
+        .logo-bold { font-weight: 800; }
+        .logo-normal { font-weight: 400; }
 
         nav ul { display: flex; gap: 2rem; } /* Reduced gap from 2.5rem to 2rem */
         
@@ -245,21 +244,17 @@
             transition-delay: 2.8s;
         }
 
-        /* Removed old gold highlight-text style */
-        /* .highlight-text { ... } */
-
-        /* New Green Highlighter Style */
+        /* Updated: Linear Gradient Highlighter Style */
         .highlight-marker {
-            background-color: rgba(34, 197, 94, 0.25); /* Green highlight background */
-            color: #ffffff; /* Changed text color to White */
+            /* Gradient from Red-Orange to Orange */
+            background: linear-gradient(90deg, #ff3131 0%, #ff914d 100%);
+            color: #ffffff; 
             padding: 2px 6px;
             border-radius: 4px;
             font-weight: 600;
             box-decoration-break: clone;
             -webkit-box-decoration-break: clone;
         }
-
-        /* Removed .hero-features-list styles */
 
         /* --- Container #2: Business --- */
         .business-grid {
@@ -560,14 +555,18 @@
 
     <!-- Header -->
     <header>
-        <a href="#about" class="logo">51labs</a>
+        <!-- Updated Logo: Black color, Bold 51, Normal labs -->
+        <a href="#about" class="logo" onclick="moveToSection(0); return false;">
+            <span class="logo-bold">51</span><span class="logo-normal">labs</span>
+        </a>
         <div class="menu-toggle">☰</div>
         <nav>
             <ul>
-                <li><a href="#about" class="active">소개</a></li>
-                <li><a href="#business">사업영역</a></li>
-                <li><a href="#projects">프로젝트</a></li>
-                <li><a href="#achievements">성과</a></li>
+                <!-- Nav Links call custom JS instead of href anchor -->
+                <li><a onclick="moveToSection(0)" class="active">소개</a></li>
+                <li><a onclick="moveToSection(1)">사업영역</a></li>
+                <li><a onclick="moveToSection(2)">프로젝트</a></li>
+                <li><a onclick="moveToSection(3)">성과</a></li>
             </ul>
         </nav>
     </header>
@@ -593,20 +592,20 @@
                     </p>
 
                     <p class="intro-paragraph">
-                        <span class="highlight-marker">15년의 투자 경험</span>과 <span class="highlight-marker">25년의 소프트웨어 엔지니어 경력</span>을 지닌 대표가<br>
-                        두 분야의 전문성을 결합해 독창적인 비즈니스 모델을 구축했습니다.
+                        <span class="highlight-marker">15년의 투자 경험</span>과<br>
+                        <span class="highlight-marker">25년의 소프트웨어 엔지니어 경력</span>을 지닌 대표가<br>
+                        두 분야의 전문성을 결합한<br>
+                        새로운 비지니스 모델을 만들어갑니다.
                     </p>
 
                     <p class="intro-paragraph">
-                        AI가 산업과 일의 방식을 빠르게 바꾸고 있지만,<br>
-                        51labs는 이러한 변화를 피하지 않고<br>
-                        AI와 함께 일하는 법을 적극적으로 실험하는 <span class="highlight-marker">작은 연구실</span>입니다.
+                        51labs는 AI와 함께 일하는 법을 적극적으로 실현하는<br>
+                        <span class="highlight-marker">작은 연구실</span>입니다.
                     </p>
 
                     <p class="intro-paragraph">
-                        인간 전문가와 <span class="highlight-marker">AI의 긴밀한 협업</span>을 통해,<br>
-                        한 사람의 역량으로 다섯 명의 성과를 내는<br>
-                        <span class="highlight-marker">새로운 일하는 방식</span>을 만들어갑니다.
+                        낡은 엔지니어에게는 낯선 여정이지만,<br>
+                        <span class="highlight-marker">성과로 증명</span>하겠습니다!
                     </p>
 
                 </div>
@@ -630,7 +629,7 @@
                         </div>
                     </div>
                     <ul class="biz-content-list">
-                        <li>법인에 최적화된 투자로 S&P500 수익 달성 목표</li>
+                        <li>현금흐름 창출 최적화로 S&P500 수익율 목표</li>
                         <li>시장 분석 자동화 및 리밸런싱 알고리즘 적용</li>
                         <li>지능형 수익율 변동 감지 및 위험 관리 자동화</li>
                     </ul>
@@ -948,14 +947,14 @@
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
-                    // 1. Highlight Nav
-                    let current = entry.target.getAttribute("id");
-                    navLinks.forEach((link) => {
-                        link.classList.remove("active");
-                        if (link.getAttribute("href").includes(current)) {
-                            link.classList.add("active");
-                        }
-                    });
+                    // 1. Highlight Nav (Fixed: Use index instead of href)
+                    const index = Array.from(sections).indexOf(entry.target);
+                    if (index !== -1) {
+                        navLinks.forEach((link, i) => {
+                            if (i === index) link.classList.add("active");
+                            else link.classList.remove("active");
+                        });
+                    }
 
                     // 2. Trigger Animations
                     entry.target.classList.add("visible");
@@ -1058,6 +1057,15 @@
             resizeCanvas();
             initParticles();
         });
+
+        // --- Native Smooth Scroll Function ---
+        function moveToSection(index) {
+            const targetY = sections[index].offsetTop;
+            window.scrollTo({
+                top: targetY - 70, // Adjust for header
+                behavior: 'smooth'
+            });
+        }
 
         resizeCanvas();
         initParticles();
