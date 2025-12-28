@@ -81,10 +81,11 @@
             width: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: center; 
+            /* Changed from center to flex-start to keep header distance constant */
+            justify-content: flex-start; 
             align-items: center;
-            /* Adjusted Padding for better spacing on mobile and desktop */
-            padding: 100px 5% 100px; 
+            /* Increased top padding to position content correctly below header */
+            padding: 180px 5% 100px; 
             position: relative;
             overflow: hidden;
             z-index: 0; 
@@ -551,7 +552,8 @@
             
             /* Section padding adjustments for mobile */
             section {
-                padding: 120px 20px 60px; /* More top padding for header */
+                padding: 150px 20px 60px; /* Fixed top padding for mobile */
+                justify-content: flex-start; /* Ensure start alignment */
             }
 
             /* Intro */
