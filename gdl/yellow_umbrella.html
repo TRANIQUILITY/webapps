@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>노란우산공제 최적 납입 플랜 (7,500만원 구간)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            yellow: '#F59E0B', // Amber 500
+                            blue: '#1E3A8A',   // Blue 900
+                            teal: '#14B8A6',   // Teal 500
+                            red: '#EF4444',    // Red 500
+                            light: '#F3F4F6'   // Gray 100
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Noto Sans KR', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&display=swap');
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F8FAFC;
+        }
+
+        /* Chart Container Styling Requirements */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+
+        @media (max-width: 640px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+
+        /* Custom Card Styling */
+        .info-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s;
+        }
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* CSS Flowchart Elements (No SVG) */
+        .flow-step {
+            border: 2px solid #E5E7EB;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            background-color: white;
+            position: relative;
+            text-align: center;
+        }
+        .flow-arrow-down {
+            width: 2px;
+            height: 20px;
+            background-color: #CBD5E1;
+            margin: 0 auto;
+        }
+        .flow-arrow-down::after {
+            content: '▼';
+            color: #CBD5E1;
+            position: absolute;
+            bottom: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <!-- Header Section -->
+    <header class="bg-brand-blue text-white py-12 px-4 shadow-lg">
+        <div class="max-w-5xl mx-auto text-center">
+            <div class="inline-block bg-brand-yellow text-brand-blue font-bold px-4 py-1 rounded-full mb-4 text-sm shadow-md">
+                과세 연봉 7,500만원 기준
+            </div>
+            <h1 class="text-4xl md:text-5xl font-black mb-4 leading-tight">
+                노란우산공제<br>최적의 납입 전략은?
+            </h1>
+            <p class="text-xl md:text-2xl text-blue-100 font-light">
+                세금은 줄이고, 혜택은 극대화하는 <span class="font-bold text-brand-yellow">월 25만 원</span>의 마법
+            </p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-8 space-y-12">
+
+        <!-- Section 1: Introduction & Key Conclusion -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="col-span-1 md:col-span-3">
+                <div class="bg-white p-6 rounded-xl shadow-sm border-l-8 border-brand-yellow">
+                    <h2 class="text-2xl font-bold mb-2">💡 핵심 결론 미리보기</h2>
+                    <p class="text-slate-600 mb-4">
+                        연봉 7,500만 원(과세표준 구간)인 대표님에게 가장 효율적인 납입액은 <strong>월 25만 원</strong>입니다. 
+                        더 많이 넣는다고 해서 세금 혜택이 늘어나지 않으며, 오히려 자금이 묶이는 기회비용이 발생합니다.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Key Metric 1 -->
+            <div class="info-card p-6 text-center border-t-4 border-brand-blue">
+                <div class="text-4xl mb-2">💰</div>
+                <h3 class="text-lg font-semibold text-slate-500">최적 월 납입액</h3>
+                <p class="text-3xl font-bold text-brand-blue">250,000원</p>
+                <p class="text-sm text-slate-400 mt-1">연간 300만원</p>
+            </div>
+
+            <!-- Key Metric 2 -->
+            <div class="info-card p-6 text-center border-t-4 border-brand-teal">
+                <div class="text-4xl mb-2">📉</div>
+                <h3 class="text-lg font-semibold text-slate-500">연간 절세 효과</h3>
+                <p class="text-3xl font-bold text-brand-teal">792,000원</p>
+                <p class="text-sm text-slate-400 mt-1">세율 26.4% 적용 시</p>
+            </div>
+
+            <!-- Key Metric 3 -->
+            <div class="info-card p-6 text-center border-t-4 border-brand-yellow">
+                <div class="text-4xl mb-2">📊</div>
+                <h3 class="text-lg font-semibold text-slate-500">확정 수익률 효과</h3>
+                <p class="text-3xl font-bold text-brand-yellow">26.4%</p>
+                <p class="text-sm text-slate-400 mt-1">투자 관점 해석</p>
+            </div>
+        </section>
+
+        <!-- Section 2: Why 3 Million Won? (Data Context) -->
+        <section>
+            <div class="mb-6">
+                <h2 class="text-3xl font-bold text-brand-blue mb-3">1. 왜 '연간 300만 원'인가요?</h2>
+                <p class="text-slate-600 text-lg">
+                    노란우산공제는 소득 구간에 따라 소득공제 한도가 다르게 적용됩니다. 
+                    연봉 7,500만 원은 <strong>'4천만 원 초과 ~ 1억 원 이하'</strong> 구간에 해당하여, 
+                    법적으로 받을 수 있는 최대 공제액이 300만 원으로 제한됩니다.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="font-bold text-lg mb-4 text-center">소득 구간별 공제 한도 비교</h3>
+                    <div class="chart-container">
+                        <canvas id="limitChart"></canvas>
+                    </div>
+                    <p class="text-center text-sm text-slate-500 mt-4">
+                        * 귀하의 소득(7,500만원)은 중앙 구간에 해당합니다.
+                    </p>
+                </div>
+                <div class="space-y-4">
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                        <h4 class="font-bold text-brand-blue">📌 소득 구간 확인</h4>
+                        <p class="text-sm text-slate-700">귀하의 과세 표준 연봉은 7,500만 원입니다. 이는 세법상 가장 넓은 중위 구간(4천~1억)에 속합니다.</p>
+                    </div>
+                    <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-100">
+                        <h4 class="font-bold text-brand-yellow">📌 한도의 의미</h4>
+                        <p class="text-sm text-slate-700">300만 원을 초과해서 납입하더라도, 초과분에 대해서는 소득공제 혜택이 <strong>'0원'</strong>입니다. 즉, 절세 목적이라면 한도를 딱 맞추는 것이 핵심입니다.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: The Efficiency Analysis (Comparative) -->
+        <section class="bg-slate-50 p-8 rounded-2xl border border-slate-200">
+            <div class="mb-6 text-center">
+                <h2 class="text-3xl font-bold text-brand-blue mb-3">2. 월 25만 원 vs 월 50만 원</h2>
+                <p class="text-slate-600 max-w-2xl mx-auto">
+                    많은 분들이 "많이 넣으면 좋겠지"라고 생각하여 월 50만 원 이상을 납입합니다. 
+                    하지만 효율성을 따져보면 <strong>월 25만 원(연 300만 원)</strong> 전략이 압도적으로 유리합니다.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Chart: Efficiency Comparison -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="font-bold text-lg mb-4 text-center">납입 금액별 공제 효율성 비교</h3>
+                    <div class="chart-container">
+                        <canvas id="efficiencyChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Analysis Text -->
+                <div class="flex flex-col justify-center space-y-6">
+                    <!-- Scenario A -->
+                    <div class="flex items-start">
+                        <div class="bg-brand-teal text-white font-bold rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0">A</div>
+                        <div>
+                            <h4 class="font-bold text-lg">월 25만 원 플랜 (추천 ✅)</h4>
+                            <p class="text-slate-600 text-sm mt-1">
+                                연 300만 원 전액이 소득공제 대상입니다. 납입한 모든 금액이 절세에 기여하며, 유동성을 해치지 않는 가장 가성비 높은 선택입니다.
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Scenario B -->
+                    <div class="flex items-start">
+                        <div class="bg-brand-red text-white font-bold rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0">B</div>
+                        <div>
+                            <h4 class="font-bold text-lg">월 50만 원 플랜 (비추천 ⚠️)</h4>
+                            <p class="text-slate-600 text-sm mt-1">
+                                연 600만 원을 납입하지만, 절반인 300만 원은 공제 혜택이 없습니다. 
+                                <br><span class="text-brand-red font-semibold text-xs">⚠️ 초과 납입분은 장기적으로 돈이 묶이는 단점만 존재합니다.</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: ROI Visualization -->
+        <section>
+            <div class="mb-6">
+                <h2 class="text-3xl font-bold text-brand-blue mb-3">3. 투자 수익률로 환산한다면?</h2>
+                <p class="text-slate-600 text-lg">
+                    노란우산공제를 단순 저축이 아닌 <strong>'투자 상품'</strong>으로 바라보세요. 
+                    연말정산(종합소득세 신고) 시 돌려받는 세금을 수익으로 계산하면 놀라운 결과가 나옵니다.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                 <!-- ROI Breakdown -->
+                 <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="font-bold text-lg mb-4 text-center">300만원 납입 시 실질 효과</h3>
+                    <div class="chart-container">
+                        <canvas id="roiChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- ROI Explanation -->
+                <div class="bg-white p-6 rounded-xl shadow-md flex flex-col justify-center">
+                    <h3 class="text-xl font-bold mb-4 border-b pb-2">수익 구조 분석</h3>
+                    <ul class="space-y-4">
+                        <li class="flex justify-between items-center">
+                            <span class="text-slate-600">① 연간 총 납입액</span>
+                            <span class="font-bold text-lg">3,000,000원</span>
+                        </li>
+                        <li class="flex justify-between items-center">
+                            <span class="text-slate-600">② 적용 세율 (본세+지방세)</span>
+                            <span class="font-bold text-lg text-brand-blue">26.4%</span>
+                        </li>
+                        <li class="flex justify-between items-center bg-yellow-50 p-2 rounded">
+                            <span class="text-slate-800 font-bold">③ 예상 절세액 (수익)</span>
+                            <span class="font-bold text-xl text-brand-teal">+792,000원</span>
+                        </li>
+                    </ul>
+                    <div class="mt-6 bg-slate-100 p-4 rounded text-sm text-slate-600">
+                        <p>
+                            시중 은행 적금 이율이 3~4%인 것과 비교하면, 
+                            <strong>26.4%의 확정 수익</strong>은 놓쳐서는 안 될 재테크 기회입니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Future Strategy (2025/2026) -->
+        <section class="bg-slate-800 text-white p-8 rounded-2xl shadow-xl">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-brand-yellow mb-3">4. 2025년 이후 전략 가이드</h2>
+                <p class="text-slate-300">
+                    올해는 전 직장 소득 합산 이슈로 공제가 어렵지만, 
+                    <strong>내년(2026년)부터는 법인 대표 8,000만 원 상향 기준</strong>을 활용할 수 있습니다.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Checklist 1: Income Definition -->
+                <div class="bg-slate-700 p-6 rounded-xl border border-slate-600">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <span class="bg-brand-red text-white text-xs px-2 py-1 rounded mr-2">주의</span>
+                        총급여액(연봉) 포함 항목
+                    </h3>
+                    <p class="text-slate-300 text-sm mb-4">
+                        법인 대표로서 받는 근로소득이 <strong>8,000만 원</strong>을 넘지 않도록 설계해야 합니다.
+                    </p>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center"><span class="mr-2">✅</span> 기본 급여</li>
+                        <li class="flex items-center"><span class="mr-2">✅</span> 상여금</li>
+                        <li class="flex items-center"><span class="mr-2">✅</span> 각종 수당 (비과세 제외)</li>
+                    </ul>
+                </div>
+
+                <!-- Checklist 2: Excluded Income -->
+                <div class="bg-slate-700 p-6 rounded-xl border border-slate-600">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <span class="bg-brand-teal text-white text-xs px-2 py-1 rounded mr-2">팁</span>
+                        8,000만 원 한도 제외 항목
+                    </h3>
+                    <p class="text-slate-300 text-sm mb-4">
+                        아래 소득은 급여에 포함되지 않으므로, 이를 활용해 전체 소득을 늘리면서 공제 자격을 유지하세요.
+                    </p>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center"><span class="mr-2">🆗</span> <strong>배당 소득</strong> (주식 투자)</li>
+                        <li class="flex items-center"><span class="mr-2">🆗</span> <strong>이자 소득</strong> (예적금)</li>
+                        <li class="flex items-center"><span class="mr-2">🆗</span> <strong>양도 소득</strong> (주식/부동산 실현 손익)</li>
+                        <li class="flex items-center"><span class="mr-2">🆗</span> <strong>부동산 임대 소득</strong> (오피스텔 등)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Strategy Step Diagram (CSS Only) -->
+            <div class="mt-8 pt-8 border-t border-slate-600">
+                <h3 class="text-center font-bold mb-6">📅 내년도 실행 로드맵</h3>
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-slate-800">
+                    <div class="flow-step w-full md:w-1/3 bg-white">
+                        <div class="font-bold text-brand-blue">1. 연봉 설정</div>
+                        <div class="text-xs mt-1">내년 대표 급여를<br>8,000만원 이하로 책정</div>
+                    </div>
+                    <div class="hidden md:block text-slate-400 text-2xl">➔</div>
+                    <div class="block md:hidden text-slate-400 text-xl">⬇</div>
+                    
+                    <div class="flow-step w-full md:w-1/3 bg-white">
+                        <div class="font-bold text-brand-blue">2. 추가 소득 분리</div>
+                        <div class="text-xs mt-1">초과 필요 자금은<br>배당/임대 소득으로 수령</div>
+                    </div>
+                    <div class="hidden md:block text-slate-400 text-2xl">➔</div>
+                    <div class="block md:hidden text-slate-400 text-xl">⬇</div>
+
+                    <div class="flow-step w-full md:w-1/3 bg-yellow-100 border-yellow-400">
+                        <div class="font-bold text-brand-yellow-dark">3. 노란우산 가입</div>
+                        <div class="text-xs mt-1">월 25만 원 납입 시작<br>연말정산 혜택 확보</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-200 py-6 text-center text-slate-500 text-sm">
+        <p>© 2025 Yellow Umbrella Strategy Analysis. <br>본 자료는 세법 개정 사항을 반영하여 작성되었습니다.</p>
+    </footer>
+
+    <!-- Script for Charts -->
+    <script>
+        // --- Helper Function: String Splitting for Labels ---
+        function splitLabel(str, maxLen) {
+            if (str.length <= maxLen) return str;
+            const words = str.split(' ');
+            const lines = [];
+            let currentLine = words[0];
+
+            for (let i = 1; i < words.length; i++) {
+                if ((currentLine + ' ' + words[i]).length <= maxLen) {
+                    currentLine += ' ' + words[i];
+                } else {
+                    lines.push(currentLine);
+                    currentLine = words[i];
+                }
+            }
+            lines.push(currentLine);
+            return lines;
+        }
+
+        // --- Common Tooltip Config for Multiline Labels ---
+        const commonTooltipOptions = {
+            callbacks: {
+                title: function(tooltipItems) {
+                    const item = tooltipItems[0];
+                    let label = item.chart.data.labels[item.dataIndex];
+                    if (Array.isArray(label)) {
+                        return label.join(' ');
+                    } else {
+                        return label;
+                    }
+                }
+            }
+        };
+
+        // --- Chart 1: Income Bracket vs Limit ---
+        const ctxLimit = document.getElementById('limitChart').getContext('2d');
+        new Chart(ctxLimit, {
+            type: 'bar',
+            data: {
+                labels: [
+                    splitLabel('4천만원 이하', 16), 
+                    splitLabel('4천만원 초과 ~ 1억원 이하 (현재 구간)', 16), 
+                    splitLabel('1억원 초과', 16)
+                ],
+                datasets: [{
+                    label: '최대 소득공제 한도 (만원)',
+                    data: [500, 300, 200],
+                    backgroundColor: ['#CBD5E1', '#F59E0B', '#CBD5E1'], // Highlight middle
+                    borderWidth: 0,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y', // Horizontal Bar
+                plugins: {
+                    legend: { display: false },
+                    tooltip: commonTooltipOptions
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: { display: false }
+                    },
+                    y: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // --- Chart 2: Efficiency Comparison (250k vs 500k) ---
+        const ctxEff = document.getElementById('efficiencyChart').getContext('2d');
+        new Chart(ctxEff, {
+            type: 'bar',
+            data: {
+                labels: ['월 25만 원 납입', '월 50만 원 납입'],
+                datasets: [
+                    {
+                        label: '소득공제 적용 (혜택 O)',
+                        data: [300, 300],
+                        backgroundColor: '#14B8A6', // Teal
+                        stack: 'Stack 0'
+                    },
+                    {
+                        label: '공제 미적용 (혜택 X)',
+                        data: [0, 300],
+                        backgroundColor: '#EF4444', // Red
+                        stack: 'Stack 0'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: commonTooltipOptions,
+                    legend: { position: 'bottom' }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '연간 금액 (만원)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // --- Chart 3: ROI Doughnut Chart ---
+        const ctxRoi = document.getElementById('roiChart').getContext('2d');
+        new Chart(ctxRoi, {
+            type: 'doughnut',
+            data: {
+                labels: ['순수 납입 원금 (환급 후)', '절세 혜택 (수익)'],
+                datasets: [{
+                    data: [2208000, 792000], // 3,000,000 - 792,000 = 2,208,000
+                    backgroundColor: ['#E2E8F0', '#F59E0B'],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed !== null) {
+                                    label += new Intl.NumberFormat('ko-KR').format(context.parsed) + '원';
+                                }
+                                return label;
+                            },
+                            title: commonTooltipOptions.callbacks.title
+                        }
+                    },
+                    legend: { position: 'bottom' }
+                },
+                cutout: '60%'
+            }
+        });
+    </script>
+</body>
+</html>
