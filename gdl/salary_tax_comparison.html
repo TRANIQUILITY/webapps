@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1인 법인 대표 급여별 4대보험 부담금 분석 (2025)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Palette: Brilliant Blues (Energetic & Professional) -->
+    <!-- Primary: #1E3A8A (Deep Blue) -->
+    <!-- Secondary: #3B82F6 (Bright Blue) -->
+    <!-- Accent: #06B6D4 (Cyan) -->
+    <!-- Background: #F8FAFC (Slate 50) -->
+    
+    <!-- Narrative Plan Summary:
+         1. Introduction: Context of 1-person corp CEO status and 2025 standards.
+         2. Key Metrics: Highlight the Pension Cap and Health Insurance proportionality.
+         3. Comparative Analysis (Bar): Visualizing total burden increase across salary brackets.
+         4. Composition Analysis (Stacked): Demonstrating the "Pension Cap" effect visually.
+         5. Efficiency Insight: Explaining why higher salaries become cost-efficient regarding insurance.
+         6. Detailed Data: Tabular view for precision.
+    -->
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F8FAFC; /* Slate 50 */
+            color: #1E293B; /* Slate 800 */
+        }
+
+        /* Chart Container Styling Rules */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px; /* Max width to prevent excessive stretching */
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px; /* Base height */
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px; /* Taller on desktop */
+            }
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header Section -->
+    <header class="bg-gradient-to-r from-blue-900 to-blue-600 text-white py-12 px-4 shadow-lg">
+        <div class="max-w-6xl mx-auto text-center">
+            <h1 class="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight">
+                2025년 1인 법인 대표<br class="md:hidden" /> 급여 전략 분석
+            </h1>
+            <p class="text-blue-100 text-lg md:text-xl font-light max-w-2xl mx-auto">
+                급여 인상 시 법인 부담금은 어떻게 변할까?<br/>
+                국민연금 상한액 도달에 따른 <strong>비용 효율성 구간</strong>을 확인하세요.
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 py-12 space-y-16">
+
+        <!-- Section 1: Introduction & Key Logic -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="md:col-span-3 text-center mb-4">
+                <h2 class="text-2xl font-bold text-blue-900 mb-2">분석 전제 조건</h2>
+                <p class="text-slate-600">본 분석은 2025년 하반기 요율 및 국민연금 상한액(637만 원)을 기준으로 작성되었습니다.<br>대표이사는 근로자가 아니므로 <strong>고용·산재보험은 제외</strong>됩니다.</p>
+            </div>
+
+            <!-- Card 1 -->
+            <div class="bg-white rounded-2xl shadow-md p-8 border-t-4 border-blue-600 card-hover">
+                <div class="text-center">
+                    <div class="text-5xl font-black text-blue-600 mb-2">4.5<span class="text-2xl">%</span></div>
+                    <h3 class="text-lg font-bold text-slate-800">국민연금 (법인부담)</h3>
+                    <p class="text-sm text-slate-500 mt-2">
+                        월 소득 <strong>637만원</strong> 초과 시<br>
+                        보험료가 더 이상 오르지 않음<br>
+                        (최대 286,650원)
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="bg-white rounded-2xl shadow-md p-8 border-t-4 border-cyan-500 card-hover">
+                <div class="text-center">
+                    <div class="text-5xl font-black text-cyan-500 mb-2">4.0<span class="text-2xl">%</span></div>
+                    <h3 class="text-lg font-bold text-slate-800">건강+요양 (법인부담)</h3>
+                    <p class="text-sm text-slate-500 mt-2">
+                        소득에 비례하여 <strong>계속 증가</strong><br>
+                        (상한선이 매우 높음)<br>
+                        약 4.004% 적용
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="bg-white rounded-2xl shadow-md p-8 border-t-4 border-slate-400 card-hover">
+                <div class="text-center">
+                    <div class="text-5xl font-black text-slate-400 mb-2">40<span class="text-2xl">만</span></div>
+                    <h3 class="text-lg font-bold text-slate-800">비과세 급여 적용</h3>
+                    <p class="text-sm text-slate-500 mt-2">
+                        모든 구간 공통 적용<br>
+                        (식대, 자가운전보조금 등)<br>
+                        보험료 산정 제외
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Total Burden Comparison -->
+        <!-- Justification: Bar Chart is best for comparing absolute values across distinct categories (Salary Levels). -->
+        <section>
+            <div class="mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-blue-900 border-l-8 border-blue-600 pl-4 mb-4">
+                    급여 구간별 법인 총 부담금 비교
+                </h2>
+                <p class="text-lg text-slate-700 leading-relaxed">
+                    급여가 350만 원에서 1,000만 원으로 상승함에 따라 법인이 부담해야 할 4대보험 총액(국민연금+건강보험)은 어떻게 변할까요? 
+                    전체적인 부담금의 절대적인 크기 변화를 확인해보세요. 급여가 오를수록 부담금도 커지지만, <strong>증가폭의 변화</strong>에 주목해야 합니다.
+                </p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <div class="chart-container">
+                    <canvas id="totalBurdenChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Composition & Pension Cap Efficiency -->
+        <!-- Justification: Stacked Bar Chart allows us to see the internal composition of the burden. It perfectly visualizes the "Pension Cap" where the blue segment stops growing while the cyan segment continues. -->
+        <section>
+            <div class="mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-blue-900 border-l-8 border-cyan-500 pl-4 mb-4">
+                    부담금 상세 구성 및 '효율 구간' 발견
+                </h2>
+                <p class="text-lg text-slate-700 leading-relaxed">
+                    총 부담금을 <strong>국민연금</strong>과 <strong>건강보험</strong>으로 나누어 살펴보면 중요한 인사이트를 얻을 수 있습니다.
+                    급여 750만 원 구간부터는 국민연금(진한 파랑) 그래프의 높이가 고정되는 것을 볼 수 있습니다. 
+                    즉, 750만 원에서 1,000만 원으로 급여를 250만 원 인상하더라도, <strong>국민연금 추가 부담은 0원</strong>입니다.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+                    <div class="chart-container">
+                        <canvas id="compositionChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-blue-50 p-6 rounded-xl shadow-inner flex flex-col justify-center">
+                    <h3 class="text-xl font-bold text-blue-800 mb-4">💡 핵심 인사이트</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <span class="text-2xl mr-2">📉</span>
+                            <p class="text-slate-700"><strong>500만 → 750만 구간:</strong><br>국민연금과 건강보험이 모두 증가하여 비용 부담 체감이 큽니다.</p>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-2xl mr-2">🚀</span>
+                            <p class="text-slate-700"><strong>750만 → 1,000만 구간:</strong><br>국민연금 상한 도달(637만원)로 인해 <strong>건강보험료만 증가</strong>합니다. 급여 인상 대비 비용 효율이 가장 좋은 구간입니다.</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Detailed Data Table -->
+        <!-- Justification: HTML Table is best for organized, precise numerical data lookup. -->
+        <section>
+            <h2 class="text-2xl font-bold text-slate-800 mb-6 text-center">급여별 법인 부담금 상세 내역</h2>
+            <div class="overflow-x-auto bg-white rounded-xl shadow-lg">
+                <table class="min-w-full text-sm md:text-base">
+                    <thead>
+                        <tr class="bg-blue-900 text-white">
+                            <th class="py-4 px-6 text-left">구분</th>
+                            <th class="py-4 px-6 text-right">월 급여</th>
+                            <th class="py-4 px-6 text-right">과세 표준</th>
+                            <th class="py-4 px-6 text-right bg-blue-800">국민연금 (4.5%)</th>
+                            <th class="py-4 px-6 text-right bg-cyan-700">건강+요양 (~4%)</th>
+                            <th class="py-4 px-6 text-right font-bold bg-slate-800">법인 부담 합계</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-slate-700 divide-y divide-slate-200">
+                        <tr class="hover:bg-blue-50 transition-colors">
+                            <td class="py-4 px-6 font-medium">Case 1</td>
+                            <td class="py-4 px-6 text-right">350만</td>
+                            <td class="py-4 px-6 text-right text-slate-500">310만</td>
+                            <td class="py-4 px-6 text-right">139,500</td>
+                            <td class="py-4 px-6 text-right">124,124</td>
+                            <td class="py-4 px-6 text-right font-bold text-blue-900">263,624</td>
+                        </tr>
+                        <tr class="hover:bg-blue-50 transition-colors">
+                            <td class="py-4 px-6 font-medium">Case 2</td>
+                            <td class="py-4 px-6 text-right">450만</td>
+                            <td class="py-4 px-6 text-right text-slate-500">410만</td>
+                            <td class="py-4 px-6 text-right">184,500</td>
+                            <td class="py-4 px-6 text-right">164,164</td>
+                            <td class="py-4 px-6 text-right font-bold text-blue-900">348,664</td>
+                        </tr>
+                        <tr class="hover:bg-blue-50 transition-colors">
+                            <td class="py-4 px-6 font-medium">Case 3</td>
+                            <td class="py-4 px-6 text-right">500만</td>
+                            <td class="py-4 px-6 text-right text-slate-500">460만</td>
+                            <td class="py-4 px-6 text-right">207,000</td>
+                            <td class="py-4 px-6 text-right">184,184</td>
+                            <td class="py-4 px-6 text-right font-bold text-blue-900">391,184</td>
+                        </tr>
+                        <tr class="hover:bg-blue-50 transition-colors bg-blue-50/50">
+                            <td class="py-4 px-6 font-medium text-blue-700">Case 4 (효율구간 진입)</td>
+                            <td class="py-4 px-6 text-right font-bold">750만</td>
+                            <td class="py-4 px-6 text-right text-slate-500">710만</td>
+                            <td class="py-4 px-6 text-right font-bold text-blue-600">286,650 (Max)</td>
+                            <td class="py-4 px-6 text-right">284,284</td>
+                            <td class="py-4 px-6 text-right font-bold text-blue-900">570,934</td>
+                        </tr>
+                        <tr class="hover:bg-blue-50 transition-colors bg-blue-50/50">
+                            <td class="py-4 px-6 font-medium text-blue-700">Case 5 (고소득)</td>
+                            <td class="py-4 px-6 text-right font-bold">1,000만</td>
+                            <td class="py-4 px-6 text-right text-slate-500">960만</td>
+                            <td class="py-4 px-6 text-right font-bold text-blue-600">286,650 (Max)</td>
+                            <td class="py-4 px-6 text-right">384,384</td>
+                            <td class="py-4 px-6 text-right font-bold text-blue-900">671,034</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-right text-sm text-slate-500 mt-2">* 단위: 원 / 비과세 40만원 적용 기준</p>
+        </section>
+
+        <!-- Conclusion -->
+        <footer class="bg-white rounded-2xl shadow-lg p-8 md:p-12 text-center border border-slate-200">
+            <h3 class="text-2xl font-bold text-slate-800 mb-4">최종 제언</h3>
+            <p class="text-lg text-slate-600 max-w-3xl mx-auto mb-6">
+                급여를 1,000만 원으로 책정하더라도 법인 부담금은 기하급수적으로 늘어나지 않습니다.<br>
+                국민연금 상한액 제도 덕분에 <strong>고액 급여 구간에서의 비용 증가분은 오직 건강보험료 뿐입니다.</strong><br>
+                따라서 법인 자금 상황이 허락한다면, 상한액을 초과하는 급여 설정은 대표이사의 자산 형성 관점에서 효율적인 선택이 될 수 있습니다.
+            </p>
+            <div class="inline-block bg-blue-100 text-blue-800 px-6 py-3 rounded-full font-semibold">
+                Tip: 1,000만 원 급여 설정 시 소득세 구간도 함께 고려하세요.
+            </div>
+        </footer>
+
+    </main>
+
+    <!-- Script Section -->
+    <script>
+        // --- Data Pre-processing ---
+        // Labels for all charts
+        const rawLabels = ['350만원', '450만원', '500만원', '750만원', '1,000만원'];
+
+        // Helper function for label wrapping (16-char logic)
+        // Though not strictly needed for short labels like "350만원", it's required by the prompt instructions.
+        function processLabels(labels) {
+            return labels.map(label => {
+                if (label.length > 16) {
+                    const words = label.split(' ');
+                    const lines = [];
+                    let currentLine = words[0];
+
+                    for (let i = 1; i < words.length; i++) {
+                        if ((currentLine + " " + words[i]).length <= 16) {
+                            currentLine += " " + words[i];
+                        } else {
+                            lines.push(currentLine);
+                            currentLine = words[i];
+                        }
+                    }
+                    lines.push(currentLine);
+                    return lines;
+                }
+                return label;
+            });
+        }
+
+        const chartLabels = processLabels(rawLabels);
+
+        // Data Points
+        const pensionData = [139500, 184500, 207000, 286650, 286650]; // National Pension
+        const healthData = [124124, 164164, 184184, 284284, 384384]; // Health + Long-term Care
+        const totalData = pensionData.map((p, i) => p + healthData[i]); // Total Sum
+
+        // Common Chart Options
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false, // Critical for container responsiveness
+            plugins: {
+                tooltip: {
+                    backgroundColor: 'rgba(30, 41, 59, 0.9)', // Slate-800
+                    padding: 12,
+                    cornerRadius: 8,
+                    callbacks: {
+                        // MANDATORY Tooltip Title Configuration for multiline support
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) {
+                                return label.join(' ');
+                            } else {
+                                return label;
+                            }
+                        },
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(context.parsed.y);
+                            }
+                            return label;
+                        }
+                    }
+                },
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: {
+                            family: "'Noto Sans KR', sans-serif",
+                            size: 12
+                        },
+                        padding: 20
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        font: {
+                            family: "'Noto Sans KR', sans-serif"
+                        }
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#E2E8F0' // Slate-200
+                    },
+                    ticks: {
+                        font: {
+                            family: "'Noto Sans KR', sans-serif"
+                        },
+                        callback: function(value) {
+                            return value.toLocaleString() + '원';
+                        }
+                    }
+                }
+            }
+        };
+
+        // --- Chart 1: Total Burden Bar Chart ---
+        const ctxTotal = document.getElementById('totalBurdenChart').getContext('2d');
+        new Chart(ctxTotal, {
+            type: 'bar',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: '법인 총 부담금 합계',
+                    data: totalData,
+                    backgroundColor: '#1E3A8A', // Deep Blue
+                    borderRadius: 6,
+                    barPercentage: 0.6
+                }]
+            },
+            options: commonOptions
+        });
+
+        // --- Chart 2: Composition Stacked Bar Chart ---
+        const ctxComp = document.getElementById('compositionChart').getContext('2d');
+        new Chart(ctxComp, {
+            type: 'bar',
+            data: {
+                labels: chartLabels,
+                datasets: [
+                    {
+                        label: '국민연금 (4.5%, 상한적용)',
+                        data: pensionData,
+                        backgroundColor: '#3B82F6', // Bright Blue
+                        borderRadius: 4,
+                    },
+                    {
+                        label: '건강+요양보험 (약 4%)',
+                        data: healthData,
+                        backgroundColor: '#06B6D4', // Cyan
+                        borderRadius: 4,
+                    }
+                ]
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    x: {
+                        stacked: true, // Enable stacking
+                        grid: { display: false },
+                        ticks: { font: { family: "'Noto Sans KR', sans-serif" } }
+                    },
+                    y: {
+                        stacked: true, // Enable stacking
+                        beginAtZero: true,
+                        grid: { color: '#E2E8F0' },
+                        ticks: {
+                            font: { family: "'Noto Sans KR', sans-serif" },
+                            callback: function(value) { return value.toLocaleString() + '원'; }
+                        }
+                    }
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>
