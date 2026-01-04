@@ -19,22 +19,22 @@
         /* Hide scrollbar for clean UI in simulators */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Timeline styles */
+        .timeline-line { position: absolute; left: 24px; top: 0; bottom: 0; width: 2px; background-color: #e5e7eb; z-index: 0; }
+        .timeline-item:last-child .timeline-line { display: none; }
     </style>
     <!-- Chosen Palette: Warm Neutrals (Stone) with Indigo/Orange Accents -->
     <!-- Application Structure Plan: 
-         1. Hero: Hook the user with the core philosophy (Director vs Builder).
-         2. Philosophy & Data: Visualizing the shift in effort using Charts (Conceptual data derived from text).
-         3. The Vibe Loop: Interactive 3-step process explorer.
-         4. The Antigravity Simulator: A mock IDE that lets users run the specific prompts from the report to see "results".
-         5. Scenario Gallery: Filterable cards for the 5 use cases (Android, iOS, Web, Rust, Cross-platform).
-         6. DevOps Flow: Simple guide for Git/CI/CD/Deploy.
-         Purpose: To turn the text-heavy guide into an experiential learning tool. -->
-    <!-- Visualization & Content Choices:
-         - Doughnut Chart: To show the "Role Shift" (Coding vs Planning). Goal: Inform/Persuade.
-         - Radar Chart: To show "Platform Versatility" (Mobile, Web, System). Goal: Compare.
-         - Simulator: To demonstrate the "Prompt -> Action" workflow. Goal: Engagement/Wow Factor.
-         - Cards/Grid: For organizing scenarios. Goal: Organize.
-         -->
+         1. Hero: Hook the user with the core philosophy.
+         2. Setup Guide (NEW): Basic Antigravity configuration steps.
+         3. Philosophy & Data: Visualizing the shift in effort.
+         4. The Vibe Loop: Interactive 3-step process explorer.
+         5. The Antigravity Simulator: A mock IDE.
+         6. Scenario Gallery: Use cases.
+         7. Project Deep Dive: Make 10 Cross-platform app.
+         8. Tech Stack Encyclopedia: Library/Solutions.
+         9. DevOps Flow: Git/CI/CD/Deploy. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 </head>
 <body class="bg-stone-50 text-stone-800 antialiased selection:bg-indigo-100 selection:text-indigo-800">
@@ -46,11 +46,13 @@
                 <div class="flex items-center">
                     <span class="text-xl font-bold tracking-tight text-indigo-900">Antigravity<span class="font-light text-stone-600">Guide</span></span>
                 </div>
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="#philosophy" class="text-sm font-medium hover:text-indigo-600 transition-colors">철학 (Philosophy)</a>
-                    <a href="#process" class="text-sm font-medium hover:text-indigo-600 transition-colors">프로세스 (The Loop)</a>
-                    <a href="#simulator" class="text-sm font-medium hover:text-indigo-600 transition-colors">시뮬레이터 (Simulator)</a>
-                    <a href="#scenarios" class="text-sm font-medium hover:text-indigo-600 transition-colors">시나리오 (Scenarios)</a>
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="#setup" class="text-sm font-medium hover:text-indigo-600 transition-colors">설정 (Setup)</a>
+                    <a href="#philosophy" class="text-sm font-medium hover:text-indigo-600 transition-colors">철학</a>
+                    <a href="#process" class="text-sm font-medium hover:text-indigo-600 transition-colors">프로세스</a>
+                    <a href="#simulator" class="text-sm font-medium hover:text-indigo-600 transition-colors">시뮬레이터</a>
+                    <a href="#deep-dive" class="text-sm font-medium hover:text-indigo-600 transition-colors">실전 가이드</a>
+                    <a href="#tech-stack" class="text-sm font-medium hover:text-indigo-600 transition-colors">기술 백과</a>
                 </div>
             </div>
         </div>
@@ -70,14 +72,59 @@
             <a href="#simulator" class="px-8 py-3 rounded-full bg-stone-900 text-white font-medium hover:bg-stone-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                 AI 에이전트 체험하기
             </a>
-            <a href="#process" class="px-8 py-3 rounded-full bg-white text-stone-900 border border-stone-300 font-medium hover:bg-stone-50 transition-all">
-                프로세스 알아보기
+            <a href="#deep-dive" class="px-8 py-3 rounded-full bg-white text-stone-900 border border-stone-300 font-medium hover:bg-stone-50 transition-all">
+                Make 10 프로젝트 가이드
             </a>
         </div>
     </header>
 
+    <!-- NEW SECTION: Antigravity Setup Guide -->
+    <section id="setup" class="py-16 bg-white border-y border-stone-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <span class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider text-stone-500 uppercase bg-stone-100 rounded-full">Getting Started</span>
+                <h2 class="text-3xl font-bold text-stone-900">Antigravity 기본 설정</h2>
+                <p class="mt-4 text-stone-600">Vibe Coding을 시작하기 위한 4가지 필수 준비 단계입니다.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Step 1 -->
+                <div class="bg-stone-50 rounded-xl p-6 border border-stone-200 hover:border-indigo-300 hover:shadow-lg transition-all group">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600 font-bold text-xl mb-4 group-hover:bg-indigo-600 group-hover:text-white transition-colors">1</div>
+                    <h3 class="text-lg font-bold text-stone-900 mb-2">IDE 설치</h3>
+                    <p class="text-sm text-stone-600 mb-4">Google 공식 사이트에서 Antigravity IDE (VS Code 기반)를 다운로드하여 설치합니다.</p>
+                    <code class="text-xs bg-stone-200 px-2 py-1 rounded text-stone-700 block text-center font-mono">brew install antigravity</code>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="bg-stone-50 rounded-xl p-6 border border-stone-200 hover:border-indigo-300 hover:shadow-lg transition-all group">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600 font-bold text-xl mb-4 group-hover:bg-indigo-600 group-hover:text-white transition-colors">2</div>
+                    <h3 class="text-lg font-bold text-stone-900 mb-2">Google 계정 연동</h3>
+                    <p class="text-sm text-stone-600 mb-4">Gemini 모델 사용을 위해 Google Cloud 또는 개인 계정으로 로그인합니다.</p>
+                    <div class="text-xs bg-stone-200 px-2 py-1 rounded text-stone-700 text-center">Settings > Account > Sign in</div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="bg-stone-50 rounded-xl p-6 border border-stone-200 hover:border-indigo-300 hover:shadow-lg transition-all group">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600 font-bold text-xl mb-4 group-hover:bg-indigo-600 group-hover:text-white transition-colors">3</div>
+                    <h3 class="text-lg font-bold text-stone-900 mb-2">모델 선택</h3>
+                    <p class="text-sm text-stone-600 mb-4">프로젝트 성격에 맞는 모델을 선택합니다. 최신 Antigravity에서는 <strong>'Gemini 3.0 Pro'</strong>가 기본값으로 권장됩니다.</p>
+                    <div class="text-xs bg-stone-200 px-2 py-1 rounded text-stone-700 text-center">Chat Model: Gemini 3.0 Pro</div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="bg-stone-50 rounded-xl p-6 border border-stone-200 hover:border-indigo-300 hover:shadow-lg transition-all group">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600 font-bold text-xl mb-4 group-hover:bg-indigo-600 group-hover:text-white transition-colors">4</div>
+                    <h3 class="text-lg font-bold text-stone-900 mb-2">Agent 권한 부여</h3>
+                    <p class="text-sm text-stone-600 mb-4">터미널 실행 및 파일 생성을 위해 에이전트에게 'Auto-Approve' 또는 'Ask' 권한을 설정합니다.</p>
+                    <div class="text-xs bg-stone-200 px-2 py-1 rounded text-stone-700 text-center">Agent Mode: Delegated</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Section 1: Philosophy & Insights (Data Vis) -->
-    <section id="philosophy" class="py-16 bg-white border-y border-stone-200">
+    <section id="philosophy" class="py-16 bg-stone-50 border-b border-stone-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                 
@@ -103,7 +150,7 @@
                 </div>
 
                 <!-- Visualization -->
-                <div class="bg-stone-50 rounded-2xl p-6 shadow-inner">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-stone-200">
                     <h3 class="text-center text-sm font-semibold text-stone-500 mb-4 uppercase tracking-widest">노력의 변화 (Traditional vs Vibe)</h3>
                     <div class="chart-container">
                         <canvas id="effortChart"></canvas>
@@ -116,7 +163,7 @@
     </section>
 
     <!-- Section 2: The Vibe Loop (Interactive Process) -->
-    <section id="process" class="py-20 bg-stone-50">
+    <section id="process" class="py-20 bg-white border-b border-stone-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="text-3xl font-bold text-stone-900">The Vibe Loop: 핵심 프로세스</h2>
@@ -148,7 +195,7 @@
             </div>
 
             <!-- Dynamic Detail View -->
-            <div class="mt-12 bg-white rounded-2xl p-8 border border-stone-200 shadow-lg relative overflow-hidden transition-all duration-300" id="loop-detail-panel">
+            <div class="mt-12 bg-stone-50 rounded-2xl p-8 border border-stone-200 shadow-inner relative overflow-hidden transition-all duration-300" id="loop-detail-panel">
                 <div class="absolute top-0 left-0 w-2 h-full bg-indigo-500" id="detail-accent"></div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
                     <div>
@@ -199,13 +246,13 @@
                         <div class="font-bold">🌐 웹 서비스 생성</div>
                         <div class="text-xs text-stone-400 mt-1">Next.js + Tailwind</div>
                     </button>
-                    <button onclick="runSimulation('android')" class="sim-btn text-left p-3 rounded-lg bg-stone-700 hover:bg-indigo-600 transition-colors text-sm border-l-4 border-transparent hover:border-indigo-300 focus:outline-none focus:bg-indigo-700 focus:border-indigo-300">
-                        <div class="font-bold">📱 Android Native</div>
-                        <div class="text-xs text-stone-400 mt-1">Kotlin + Go Hybrid</div>
+                    <button onclick="runSimulation('cross')" class="sim-btn text-left p-3 rounded-lg bg-stone-700 hover:bg-indigo-600 transition-colors text-sm border-l-4 border-transparent hover:border-indigo-300 focus:outline-none focus:bg-indigo-700 focus:border-indigo-300">
+                        <div class="font-bold">📱 Cross-Platform</div>
+                        <div class="text-xs text-stone-400 mt-1">Make 10 Game (Web+App)</div>
                     </button>
-                    <button onclick="runSimulation('game')" class="sim-btn text-left p-3 rounded-lg bg-stone-700 hover:bg-indigo-600 transition-colors text-sm border-l-4 border-transparent hover:border-indigo-300 focus:outline-none focus:bg-indigo-700 focus:border-indigo-300">
-                        <div class="font-bold">🎮 iOS Game</div>
-                        <div class="text-xs text-stone-400 mt-1">Swift + SpriteKit</div>
+                    <button onclick="runSimulation('android')" class="sim-btn text-left p-3 rounded-lg bg-stone-700 hover:bg-indigo-600 transition-colors text-sm border-l-4 border-transparent hover:border-indigo-300 focus:outline-none focus:bg-indigo-700 focus:border-indigo-300">
+                        <div class="font-bold">🤖 Android Native</div>
+                        <div class="text-xs text-stone-400 mt-1">Kotlin + Go Hybrid</div>
                     </button>
                     <button onclick="runSimulation('rust')" class="sim-btn text-left p-3 rounded-lg bg-stone-700 hover:bg-indigo-600 transition-colors text-sm border-l-4 border-transparent hover:border-indigo-300 focus:outline-none focus:bg-indigo-700 focus:border-indigo-300">
                         <div class="font-bold">⚙️ System Tool</div>
@@ -214,10 +261,6 @@
                     <button onclick="runSimulation('deploy')" class="sim-btn text-left p-3 rounded-lg bg-stone-700 hover:bg-indigo-600 transition-colors text-sm border-l-4 border-transparent hover:border-indigo-300 focus:outline-none focus:bg-indigo-700 focus:border-indigo-300">
                         <div class="font-bold">🚀 Firebase 배포</div>
                         <div class="text-xs text-stone-400 mt-1">Build & Deploy</div>
-                    </button>
-                    <button onclick="runSimulation('cicd')" class="sim-btn text-left p-3 rounded-lg bg-stone-700 hover:bg-indigo-600 transition-colors text-sm border-l-4 border-transparent hover:border-indigo-300 focus:outline-none focus:bg-indigo-700 focus:border-indigo-300">
-                        <div class="font-bold">🔄 CI/CD 설정</div>
-                        <div class="text-xs text-stone-400 mt-1">GitHub Actions</div>
                     </button>
                 </div>
 
@@ -265,6 +308,140 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Deep Dive (Make 10) -->
+    <section id="deep-dive" class="py-16 bg-white border-t border-stone-200">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <span class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider text-green-600 uppercase bg-green-50 rounded-full">Step-by-Step Guide</span>
+                <h2 class="text-3xl font-bold text-stone-900">Project Deep Dive: Make 10 게임 만들기</h2>
+                <p class="mt-4 text-stone-600">Web 기술로 핵심 로직을 만들고, Mobile과 Desktop으로 확장하는 Vibe Coding 전략입니다.</p>
+            </div>
+
+            <div class="relative pl-8 border-l-2 border-stone-200 space-y-12">
+                
+                <!-- Step 1 -->
+                <div class="relative">
+                    <div class="absolute -left-[41px] top-0 w-6 h-6 rounded-full bg-stone-900 border-4 border-white shadow-sm z-10"></div>
+                    <div class="bg-stone-50 rounded-xl p-6 border border-stone-200 hover:border-indigo-300 transition-all">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-stone-900">Step 1: 핵심 로직 구현 (Web)</h3>
+                                <p class="text-sm text-stone-500 mt-1">Phaser.js를 사용하여 브라우저에서 실행 가능한 프로토타입 생성</p>
+                            </div>
+                            <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded">Prototype</span>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border border-stone-200 mb-4">
+                            <p class="text-xs font-bold text-stone-400 mb-2 uppercase">Director's Prompt</p>
+                            <p class="text-stone-800 font-mono text-sm">
+                                "HTML5 Canvas 게임 엔진인 Phaser.js를 사용하여 'Make 10' 퍼즐 게임을 만들어줘.<br>
+                                1. 10x10 그리드에 랜덤한 숫자(1~9) 과일 아이콘 배치.<br>
+                                2. 마우스로 드래그하여 선택한 과일 숫자의 합이 10이 되면 사라지고 점수 획득.<br>
+                                3. 데스크톱과 모바일 화면 모두에 꽉 차게 반응형(Scale Manager) 설정."
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="relative">
+                    <div class="absolute -left-[41px] top-0 w-6 h-6 rounded-full bg-white border-4 border-stone-300 shadow-sm z-10"></div>
+                    <div class="bg-stone-50 rounded-xl p-6 border border-stone-200 hover:border-indigo-300 transition-all">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-stone-900">Step 2: 모드 확장 (Refactoring)</h3>
+                                <p class="text-sm text-stone-500 mt-1">기본 기능에 다양한 게임 모드(Time Attack, Zen) 추가</p>
+                            </div>
+                            <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs font-bold rounded">Expansion</span>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border border-stone-200 mb-4">
+                            <p class="text-xs font-bold text-stone-400 mb-2 uppercase">Director's Prompt</p>
+                            <p class="text-stone-800 font-mono text-sm">
+                                "기본 게임 로직을 'ClassicMode' 클래스로 분리해줘. 그리고 다음 모드를 추가하고 싶어.<br>
+                                1. 'TimeAttack': 60초 제한 시간이 있고, 블록을 깰 때마다 시간이 조금씩 추가됨.<br>
+                                2. 'ZenMode': 시간 제한 없이 무한으로 즐기는 모드.<br>
+                                메인 메뉴 씬(Scene)을 만들어서 모드를 선택할 수 있게 UI를 구성해 줘."
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="relative">
+                    <div class="absolute -left-[41px] top-0 w-6 h-6 rounded-full bg-white border-4 border-stone-300 shadow-sm z-10"></div>
+                    <div class="bg-stone-50 rounded-xl p-6 border border-stone-200 hover:border-indigo-300 transition-all">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-stone-900">Step 3: Mobile 패키징 (Capacitor)</h3>
+                                <p class="text-sm text-stone-500 mt-1">iOS/Android 앱으로 변환 및 터치 최적화</p>
+                            </div>
+                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded">Mobile</span>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border border-stone-200 mb-4">
+                            <p class="text-xs font-bold text-stone-400 mb-2 uppercase">Director's Prompt</p>
+                            <p class="text-stone-800 font-mono text-sm">
+                                "이 웹 프로젝트에 Capacitor를 추가해서 Android와 iOS 앱으로 빌드할 수 있게 설정해 줘.<br>
+                                1. `npx cap init` 실행 및 설정.<br>
+                                2. 모바일 상태바(Status Bar)를 숨겨서 전체 화면 게임처럼 보이게 설정.<br>
+                                3. 터치 입력 반응 속도를 높이기 위해 CSS `touch-action: none` 적용."
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="relative">
+                    <div class="absolute -left-[41px] top-0 w-6 h-6 rounded-full bg-white border-4 border-stone-300 shadow-sm z-10"></div>
+                    <div class="bg-stone-50 rounded-xl p-6 border border-stone-200 hover:border-indigo-300 transition-all">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-stone-900">Step 4: Desktop 패키징 (Electron)</h3>
+                                <p class="text-sm text-stone-500 mt-1">MacOS/Windows 실행 파일 생성</p>
+                            </div>
+                            <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-bold rounded">Desktop</span>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border border-stone-200 mb-4">
+                            <p class="text-xs font-bold text-stone-400 mb-2 uppercase">Director's Prompt</p>
+                            <p class="text-stone-800 font-mono text-sm">
+                                "Electron을 사용하여 이 게임을 데스크톱 앱(exe, dmg)으로 패키징하고 싶어.<br>
+                                1. Electron 메인 프로세스(`main.js`)를 작성해서 게임 `index.html`을 로드해 줘.<br>
+                                2. 창 크기를 800x600으로 고정하고, 메뉴바는 숨겨줘.<br>
+                                3. `electron-builder`를 사용하여 배포용 파일을 빌드하는 스크립트를 `package.json`에 추가해 줘."
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW SECTION: Tech Stack Encyclopedia -->
+    <section id="tech-stack" class="py-20 bg-stone-100 border-t border-stone-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <span class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider text-teal-600 uppercase bg-teal-50 rounded-full">Tech Stack Encyclopedia</span>
+                <h2 class="text-3xl font-bold text-stone-900">Vibe Coding 기술 백과</h2>
+                <p class="mt-4 text-stone-600">구현하고 싶은 기능에 맞는 기술과 Agent에게 요청할 최적의 프롬프트를 찾아보세요.</p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="flex flex-wrap justify-center gap-2 mb-10">
+                <button onclick="filterTechStack('frontend')" class="tech-tab-btn active px-6 py-2 rounded-full text-sm font-medium bg-stone-800 text-white transition-all shadow">Web/Frontend</button>
+                <button onclick="filterTechStack('backend')" class="tech-tab-btn px-6 py-2 rounded-full text-sm font-medium bg-white text-stone-600 hover:bg-stone-200 transition-all shadow-sm">Backend/Cloud</button>
+                <button onclick="filterTechStack('game')" class="tech-tab-btn px-6 py-2 rounded-full text-sm font-medium bg-white text-stone-600 hover:bg-stone-200 transition-all shadow-sm">Game Engine</button>
+                <button onclick="filterTechStack('mobile-desktop')" class="tech-tab-btn px-6 py-2 rounded-full text-sm font-medium bg-white text-stone-600 hover:bg-stone-200 transition-all shadow-sm">Mobile/Desktop</button>
+                <button onclick="filterTechStack('system')" class="tech-tab-btn px-6 py-2 rounded-full text-sm font-medium bg-white text-stone-600 hover:bg-stone-200 transition-all shadow-sm">System/Utils</button>
+                <!-- Added AI & Modern Stack -->
+                <button onclick="filterTechStack('ai-modern')" class="tech-tab-btn px-6 py-2 rounded-full text-sm font-medium bg-white text-indigo-600 hover:bg-indigo-50 border border-indigo-100 transition-all shadow-sm">AI & Modern Stack</button>
+            </div>
+
+            <!-- Content Grid -->
+            <div id="tech-stack-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Items injected via JS -->
             </div>
         </div>
     </section>
@@ -394,8 +571,40 @@
             { id: 'android', category: 'mobile', title: 'Android Native App', stack: 'Kotlin + Go', desc: 'Go로 핵심 로직을, Kotlin으로 UI를 작성하는 하이브리드 앱.', icon: '📱' },
             { id: 'game', category: 'mobile', title: 'iOS Game App', stack: 'Swift + SpriteKit', desc: '물리 엔진 로직과 게임 오버 시스템 구현.', icon: '🎮' },
             { id: 'rust', category: 'system', title: 'System Software', stack: 'Rust + Tokio', desc: '고성능 로그 분석 CLI 도구. 소유권 규칙 가이드 포함.', icon: '⚙️' },
-            { id: 'cross', category: 'mobile', title: 'Cross-Platform Game', stack: 'Canvas + Capacitor', desc: '웹 기술로 게임 만들고 Android/iOS 동시 배포.', icon: '⚔️' },
+            { id: 'cross', category: 'mobile', title: 'Cross-Platform Game', stack: 'Phaser.js + Capacitor', desc: '웹 기술로 게임 만들고 Mobile/Desktop 동시 배포.', icon: '⚔️' },
             { id: 'deploy', category: 'web', title: 'Deployment', stack: 'Firebase / Vercel', desc: '터미널에서 바로 배포하고 URL 생성.', icon: '🚀' }
+        ];
+
+        // NEW: Tech Stack Data
+        const techStackData = [
+            // Frontend
+            { category: 'frontend', name: 'Next.js', desc: 'React 기반의 Full-stack 웹 프레임워크. 서버 사이드 렌더링(SSR)과 정적 사이트 생성(SSG) 지원.', prompt: 'Next.js 14 버전을 사용해서 프로젝트를 스캐폴딩해 줘. Tailwind CSS도 함께 설치해 줘.' },
+            { category: 'frontend', name: 'Tailwind CSS', desc: 'Utility-first CSS 프레임워크. 빠르고 일관된 디자인 시스템 구축에 최적.', prompt: '디자인은 Tailwind CSS를 사용해서 모던하고 깔끔하게 만들어 줘. 다크 모드도 지원하게 해 줘.' },
+            
+            // Game Engine
+            { category: 'game', name: 'Phaser.js', desc: '강력한 HTML5 Canvas 2D 게임 프레임워크. 웹 기반 게임 개발의 표준.', prompt: '별도의 설치 없이 CDN으로 Phaser.js를 불러와서 간단한 2D 플랫포머 게임 예제를 만들어 줘.' },
+            { category: 'game', name: 'Three.js', desc: '웹 브라우저에서 3D 그래픽을 구현하기 위한 JavaScript 라이브러리.', prompt: 'Three.js를 사용해서 마우스로 회전 가능한 3D 큐브를 화면 중앙에 띄워 줘.' },
+
+            // Mobile/Desktop
+            { category: 'mobile-desktop', name: 'Capacitor', desc: '웹 앱(HTML/JS)을 네이티브 iOS/Android 앱으로 패키징하는 런타임.', prompt: '현재 웹 프로젝트에 Capacitor를 추가하고, Android용으로 빌드할 수 있게 설정해 줘.' },
+            { category: 'mobile-desktop', name: 'Electron', desc: '웹 기술로 Windows, macOS, Linux 데스크톱 앱을 만드는 프레임워크.', prompt: 'Electron을 사용해서 이 웹 앱을 실행 파일(.exe, .dmg)로 패키징할 수 있는 스크립트를 짜줘.' },
+            { category: 'mobile-desktop', name: 'Go Mobile', desc: 'Go 언어로 작성된 코드를 안드로이드/iOS 라이브러리로 컴파일.', prompt: 'Go로 작성한 이 함수를 안드로이드 앱에서 호출할 수 있게 Go Mobile로 바인딩해 줘.' },
+
+            // Backend/Cloud
+            { category: 'backend', name: 'Supabase', desc: 'Firebase의 오픈소스 대안. PostgreSQL 기반의 DB, Auth, Realtime API 제공.', prompt: 'Supabase를 백엔드로 사용하고 싶어. 사용자 로그인(Auth)과 투두 리스트 테이블(DB) 연동 코드를 작성해 줘.' },
+            { category: 'backend', name: 'Firebase', desc: 'Google의 앱 개발 플랫폼. Hosting, Database, Auth 등 서버리스 기능 제공.', prompt: 'Firebase Hosting에 이 프로젝트를 배포해 줘. firebase-tools를 사용해서 초기화부터 진행해 줘.' },
+            { category: 'backend', name: 'Vercel', desc: 'Next.js 개발사가 만든 프론트엔드 배포 플랫폼. Git Push만으로 자동 배포.', prompt: '터미널에서 Vercel CLI를 사용해서 이 Next.js 프로젝트를 즉시 배포해 줘.' },
+
+            // System/Utils
+            { category: 'system', name: 'Tokio', desc: 'Rust 언어를 위한 비동기 런타임. 고성능 네트워크 애플리케이션에 필수.', prompt: 'Rust로 비동기 HTTP 요청을 보내야 해. Tokio와 Reqwest 라이브러리를 사용해서 예제 코드를 짜줘.' },
+            { category: 'system', name: 'GitHub Actions', desc: 'GitHub 리포지토리 내에서 빌드, 테스트, 배포 파이프라인을 자동화.', prompt: 'main 브랜치에 푸시될 때마다 테스트를 실행하는 GitHub Actions 워크플로우 파일(.yml)을 만들어 줘.' },
+
+            // AI & Modern Stack (NEW)
+            { category: 'ai-modern', name: 'Shadcn/ui', desc: '복사/붙여넣기 방식의 UI 컴포넌트. AI가 코드를 생성하고 디자인을 적용하기에 가장 최적화된 라이브러리.', prompt: 'Shadcn/ui 컴포넌트(Card, Button, Input)를 사용하여 모던한 로그인 페이지 코드를 작성해 줘.' },
+            { category: 'ai-modern', name: 'Vercel AI SDK', desc: '앱에 AI 챗봇이나 스트리밍 텍스트 생성을 쉽게 통합할 수 있는 표준 라이브러리.', prompt: 'Vercel AI SDK를 사용하여 OpenAI API와 연동된 간단한 챗봇 라우트(route.ts)를 만들어 줘.' },
+            { category: 'ai-modern', name: 'Prisma', desc: 'DB 스키마를 직관적으로 정의할 수 있는 차세대 ORM. 기획서를 DB 구조로 변환할 때 강력함.', prompt: 'schema.prisma 파일에 User와 Post 모델을 1:N 관계로 정의하고, 마이그레이션 명령어를 알려줘.' },
+            { category: 'ai-modern', name: 'Zustand', desc: 'Redux보다 훨씬 가볍고 직관적인 상태 관리. AI가 오류 없는 로직을 짜기에 적합.', prompt: 'Zustand를 사용하여 쇼핑카트 상태(담기, 삭제, 초기화)를 관리하는 간단한 store를 만들어 줘.' },
+            { category: 'ai-modern', name: 'Playwright', desc: '모든 최신 브라우저를 지원하는 E2E 테스트 도구. AI에게 테스트 시나리오 작성을 맡기기에 최적.', prompt: 'Playwright를 사용하여 로그인 페이지에 접속하고 버튼을 클릭했을 때 대시보드로 이동하는지 테스트하는 코드를 짜줘.' }
         ];
 
         const simulationPrompts = {
@@ -409,10 +618,10 @@
                 agent: "Kotlin과 Go를 사용하는 하이브리드 프로젝트를 구성합니다. Go Mobile 툴체인을 사용하여 바인딩을 생성하겠습니다.\n\nFile Created: app/src/main/go/logic.go\nFile Updated: build.gradle (added gomobile)",
                 terminal: "> gomobile bind -target=android\n> ./gradlew build\nBUILD SUCCESSFUL in 3s"
             },
-            game: {
-                user: "Swift와 SpriteKit으로 '벽돌 깨기' 게임 만들어줘. 물리 충돌 로직 포함.",
-                agent: "SpriteKit 게임 템플릿을 생성합니다. Ball, Paddle, Brick 노드 클래스를 작성하고 SKPhysicsBody를 적용하겠습니다.\n\nFile Created: GameScene.swift\nClass Added: BreakoutPhysicsCategory",
-                terminal: "Compiling Swift sources...\nLinking...\nReady to launch in Simulator."
+            cross: {
+                user: "Phaser.js로 Make 10 게임 만들고, Capacitor로 모바일 앱, Electron으로 데스크톱 앱 빌드해줘.",
+                agent: "Phaser 프로젝트를 스캐폴딩합니다. 이후 Capacitor를 초기화하고 Electron 빌더를 설정하겠습니다.\n\nFile Created: src/scenes/GameScene.js\nAdded: @capacitor/core, electron-builder",
+                terminal: "> npm install phaser\n> npx cap init\n> npm install --save-dev electron\n\nCross-platform setup complete."
             },
             rust: {
                 user: "Rust로 고성능 로그 분석 CLI 만들어줘. Tokio 비동기 처리 사용.",
@@ -423,11 +632,6 @@
                 user: "현재 프로젝트 빌드하고 Firebase에 배포해줘.",
                 agent: "Firebase Hosting 배포를 시작합니다. 먼저 프로덕션 빌드를 수행합니다.\n\nRunning: npm run build\nRunning: firebase deploy",
                 terminal: "> next build\n> firebase deploy --only hosting\n\nDeploy complete! \nHosting URL: https://daily-quote.web.app"
-            },
-            cicd: {
-                user: "GitHub Actions 설정해줘. main 푸시되면 빌드 테스트하도록.",
-                agent: "CI 워크플로우 파일을 생성합니다.\n\nFile Created: .github/workflows/ci.yml\nTrigger: push to main\nJob: npm install && npm run build",
-                terminal: "Created .github/workflows/ci.yml\nGit status: 1 file added."
             }
         };
 
@@ -538,11 +742,63 @@
             renderScenarios(category);
         }
 
+        // Tech Stack Rendering (NEW)
+        function renderTechStack(filter) {
+            const grid = document.getElementById('tech-stack-grid');
+            grid.innerHTML = '';
+            
+            const filtered = techStackData.filter(item => item.category === filter);
+            
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-xl p-6 shadow-sm border border-stone-200 hover:border-teal-400 transition-all flex flex-col";
+                card.innerHTML = `
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-lg font-bold text-stone-900">${item.name}</h3>
+                        <span class="text-xs font-mono text-teal-600 bg-teal-50 px-2 py-1 rounded-md uppercase">${item.category}</span>
+                    </div>
+                    <p class="text-sm text-stone-600 mb-4 flex-grow">${item.desc}</p>
+                    <div class="bg-stone-800 p-3 rounded-lg mt-auto">
+                        <p class="text-[10px] text-stone-400 font-bold uppercase mb-1 tracking-wider">Vibe Prompt Tip:</p>
+                        <p class="text-xs text-teal-300 font-mono leading-relaxed">"${item.prompt}"</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterTechStack(category) {
+            document.querySelectorAll('.tech-tab-btn').forEach(btn => {
+                // Reset standard tabs
+                if (!btn.innerText.includes('AI & Modern')) {
+                    btn.classList.remove('bg-stone-800', 'text-white');
+                    btn.classList.add('bg-white', 'text-stone-600', 'hover:bg-stone-200');
+                } else {
+                    // Reset AI tab style (special case)
+                    btn.classList.remove('bg-indigo-600', 'text-white');
+                    btn.classList.add('bg-white', 'text-indigo-600', 'hover:bg-indigo-50');
+                }
+
+                // Activate Clicked
+                if (btn.getAttribute('onclick').includes(category)) {
+                     if (!btn.innerText.includes('AI & Modern')) {
+                        btn.classList.remove('bg-white', 'text-stone-600', 'hover:bg-stone-200');
+                        btn.classList.add('bg-stone-800', 'text-white');
+                     } else {
+                        btn.classList.remove('bg-white', 'text-indigo-600', 'hover:bg-indigo-50');
+                        btn.classList.add('bg-indigo-600', 'text-white');
+                     }
+                }
+            });
+            renderTechStack(category);
+        }
+
         // --- 3. Charts ---
         document.addEventListener('DOMContentLoaded', () => {
             // Initial Renders
             updateLoopDetails(1);
             renderScenarios('all');
+            renderTechStack('frontend'); // Initial Tech Stack
 
             // Effort Chart (Doughnut)
             const ctx = document.getElementById('effortChart').getContext('2d');
