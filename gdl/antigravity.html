@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Antigravity Vibe Coding Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #fafaf9; color: #1c1917; }
+        .chart-container { position: relative; width: 100%; max-width: 500px; margin: 0 auto; height: 300px; }
+        .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .code-font { font-family: 'Consolas', 'Monaco', monospace; }
+        .typing-cursor::after { content: '|'; animation: blink 1s step-start infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+        /* Smooth scrolling */
+        html { scroll-behavior: smooth; }
+        /* Hide scrollbar for clean UI in simulators */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+    <!-- Chosen Palette: Warm Neutrals (Stone) with Indigo/Orange Accents -->
+    <!-- Application Structure Plan: 
+         1. Hero: Hook the user with the core philosophy (Director vs Builder).
+         2. Philosophy & Data: Visualizing the shift in effort using Charts (Conceptual data derived from text).
+         3. The Vibe Loop: Interactive 3-step process explorer.
+         4. The Antigravity Simulator: A mock IDE that lets users run the specific prompts from the report to see "results".
+         5. Scenario Gallery: Filterable cards for the 5 use cases (Android, iOS, Web, Rust, Cross-platform).
+         6. DevOps Flow: Simple guide for Git/CI/CD/Deploy.
+         Purpose: To turn the text-heavy guide into an experiential learning tool. -->
+    <!-- Visualization & Content Choices:
+         - Doughnut Chart: To show the "Role Shift" (Coding vs Planning). Goal: Inform/Persuade.
+         - Radar Chart: To show "Platform Versatility" (Mobile, Web, System). Goal: Compare.
+         - Simulator: To demonstrate the "Prompt -> Action" workflow. Goal: Engagement/Wow Factor.
+         - Cards/Grid: For organizing scenarios. Goal: Organize.
+         -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="bg-stone-50 text-stone-800 antialiased selection:bg-indigo-100 selection:text-indigo-800">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass-panel border-b border-stone-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-xl font-bold tracking-tight text-indigo-900">Antigravity<span class="font-light text-stone-600">Guide</span></span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#philosophy" class="text-sm font-medium hover:text-indigo-600 transition-colors">철학 (Philosophy)</a>
+                    <a href="#process" class="text-sm font-medium hover:text-indigo-600 transition-colors">프로세스 (The Loop)</a>
+                    <a href="#simulator" class="text-sm font-medium hover:text-indigo-600 transition-colors">시뮬레이터 (Simulator)</a>
+                    <a href="#scenarios" class="text-sm font-medium hover:text-indigo-600 transition-colors">시나리오 (Scenarios)</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+        <h1 class="text-4xl sm:text-6xl font-extrabold text-stone-900 tracking-tight mb-6">
+            코드를 직접 치는 것보다,<br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-orange-500">상상하는 것이 더 중요합니다.</span>
+        </h1>
+        <p class="mt-4 text-xl text-stone-600 max-w-2xl mx-auto">
+            Google Antigravity와 Gemini를 활용한 <strong>Vibe Coding</strong> 가이드.<br>
+            개발자가 감독(Director)이 되어 AI 에이전트와 협업하는 새로운 개발 방식을 경험하세요.
+        </p>
+        <div class="mt-10 flex justify-center gap-4">
+            <a href="#simulator" class="px-8 py-3 rounded-full bg-stone-900 text-white font-medium hover:bg-stone-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                AI 에이전트 체험하기
+            </a>
+            <a href="#process" class="px-8 py-3 rounded-full bg-white text-stone-900 border border-stone-300 font-medium hover:bg-stone-50 transition-all">
+                프로세스 알아보기
+            </a>
+        </div>
+    </header>
+
+    <!-- Section 1: Philosophy & Insights (Data Vis) -->
+    <section id="philosophy" class="py-16 bg-white border-y border-stone-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                
+                <!-- Text Content -->
+                <div>
+                    <div class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider text-indigo-600 uppercase bg-indigo-50 rounded-full">
+                        Paradigm Shift
+                    </div>
+                    <h2 class="text-3xl font-bold text-stone-900 mb-6">Director vs. Builder</h2>
+                    <p class="text-lg text-stone-600 mb-6 leading-relaxed">
+                        <strong>Vibe Coding</strong>은 단순한 코드 생성을 넘어섭니다. 당신은 프로젝트의 방향(Vibe)을 결정하는 <strong>감독(Human)</strong>이고, Google Antigravity 내의 Gemini는 실제 작업을 수행하는 <strong>에이전트(AI)</strong>입니다.
+                    </p>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-green-100 text-green-600 mt-1">✓</span>
+                            <span class="ml-3 text-stone-700"><strong>Human:</strong> 기획, 검수, 의사결정 (Vibe 설정)</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 mt-1">✓</span>
+                            <span class="ml-3 text-stone-700"><strong>AI (Gemini):</strong> 코딩, 터미널 명령, 파일 생성, 배포</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Visualization -->
+                <div class="bg-stone-50 rounded-2xl p-6 shadow-inner">
+                    <h3 class="text-center text-sm font-semibold text-stone-500 mb-4 uppercase tracking-widest">노력의 변화 (Traditional vs Vibe)</h3>
+                    <div class="chart-container">
+                        <canvas id="effortChart"></canvas>
+                    </div>
+                    <p class="text-center text-xs text-stone-400 mt-4">* 개념적 데이터 시각화</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: The Vibe Loop (Interactive Process) -->
+    <section id="process" class="py-20 bg-stone-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-stone-900">The Vibe Loop: 핵심 프로세스</h2>
+                <p class="mt-4 text-stone-600">Antigravity 개발의 3단계 순환 구조를 클릭하여 확인하세요.</p>
+            </div>
+
+            <!-- Interaction Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Step 1 -->
+                <div onclick="updateLoopDetails(1)" class="cursor-pointer group relative bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-all border border-stone-200 ring-2 ring-transparent hover:ring-indigo-500" id="step1-card">
+                    <div class="absolute top-0 right-0 -mt-4 -mr-4 w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold text-xl border-4 border-stone-50">1</div>
+                    <h3 class="text-xl font-bold text-stone-900 mb-2 group-hover:text-indigo-600 transition-colors">기획하기 (Planning)</h3>
+                    <p class="text-stone-500 text-sm">Agent에게 무엇을 만들지 설명하고 청사진을 그립니다.</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div onclick="updateLoopDetails(2)" class="cursor-pointer group relative bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-all border border-stone-200 ring-2 ring-transparent hover:ring-indigo-500" id="step2-card">
+                    <div class="absolute top-0 right-0 -mt-4 -mr-4 w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold text-xl border-4 border-stone-50">2</div>
+                    <h3 class="text-xl font-bold text-stone-900 mb-2 group-hover:text-indigo-600 transition-colors">맡기기 (Delegating)</h3>
+                    <p class="text-stone-500 text-sm">코딩뿐만 아니라 터미널 명령, 파일 생성까지 위임합니다.</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div onclick="updateLoopDetails(3)" class="cursor-pointer group relative bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-all border border-stone-200 ring-2 ring-transparent hover:ring-indigo-500" id="step3-card">
+                    <div class="absolute top-0 right-0 -mt-4 -mr-4 w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold text-xl border-4 border-stone-50">3</div>
+                    <h3 class="text-xl font-bold text-stone-900 mb-2 group-hover:text-indigo-600 transition-colors">다듬기 (Refining)</h3>
+                    <p class="text-stone-500 text-sm">결과물을 미리 보고 대화하듯 디테일을 수정합니다.</p>
+                </div>
+            </div>
+
+            <!-- Dynamic Detail View -->
+            <div class="mt-12 bg-white rounded-2xl p-8 border border-stone-200 shadow-lg relative overflow-hidden transition-all duration-300" id="loop-detail-panel">
+                <div class="absolute top-0 left-0 w-2 h-full bg-indigo-500" id="detail-accent"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                    <div>
+                        <h3 class="text-2xl font-bold text-stone-900 mb-4" id="detail-title">기획하기 (Planning with Agent)</h3>
+                        <p class="text-stone-600 mb-6 leading-relaxed" id="detail-desc">
+                            Antigravity의 사이드바(Chat)를 열고 Gemini에게 기획을 요청하는 단계입니다. 단순히 "만들어줘"가 아니라, 프로젝트의 성격과 요구사항을 정의하는 과정입니다.
+                        </p>
+                        <div class="bg-indigo-50 p-4 rounded-lg border border-indigo-100">
+                            <p class="text-sm font-semibold text-indigo-900 mb-1">💡 Pro Tip</p>
+                            <p class="text-indigo-800 text-sm" id="detail-tip">"이 프로젝트를 위한 `PRD.md` (제품 요구사항 문서)를 작성해 줘"라고 요청하면, 에이전트가 프로젝트의 청사진을 그립니다.</p>
+                        </div>
+                    </div>
+                    <div class="bg-stone-900 rounded-lg p-6 font-mono text-sm text-stone-300 shadow-inner h-full flex flex-col justify-center">
+                        <div class="flex items-center gap-2 mb-4 border-b border-stone-700 pb-2">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            <span class="ml-2 text-xs text-stone-500">Antigravity Chat</span>
+                        </div>
+                        <p id="detail-code" class="typing-cursor">@Gemini, 나는 '오늘의 명언' 앱을 만들고 싶어.<br>기획서(PRD)를 먼저 작성해 줄래?</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: Antigravity Simulator (The Wow Factor) -->
+    <section id="simulator" class="py-20 bg-stone-900 text-white overflow-hidden relative">
+        <!-- Background decorative elements -->
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10 pointer-events-none">
+            <div class="absolute top-10 left-10 w-64 h-64 bg-indigo-500 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-10 right-10 w-96 h-96 bg-orange-500 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-12">
+                <span class="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider text-indigo-300 uppercase bg-indigo-900/50 rounded-full border border-indigo-700">Interactive Demo</span>
+                <h2 class="text-3xl font-bold">Antigravity 시뮬레이터</h2>
+                <p class="mt-4 text-stone-400">가이드에 나온 실제 프롬프트를 선택하여 Gemini 에이전트가 어떻게 반응하는지 경험해보세요.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[600px]">
+                
+                <!-- Scenario Selector Sidebar -->
+                <div class="lg:col-span-1 bg-stone-800 rounded-xl p-4 border border-stone-700 flex flex-col gap-3 overflow-y-auto no-scrollbar">
+                    <h3 class="text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">Tasks</h3>
+                    <button onclick="runSimulation('web')" class="sim-btn text-left p-3 rounded-lg bg-stone-700 hover:bg-indigo-600 transition-colors text-sm border-l-4 border-transparent hover:border-indigo-300 focus:outline-none focus:bg-indigo-700 focus:border-indigo-300">
+                        <div class="font-bold">🌐 웹 서비스 생성</div>
+                        <div class="text-xs text-stone-400 mt-1">Next.js + Tailwind</div>
+                    </button>
+                    <button onclick="runSimulation('android')" class="sim-btn text-left p-3 rounded-lg bg-stone-700 hover:bg-indigo-600 transition-colors text-sm border-l-4 border-transparent hover:border-indigo-300 focus:outline-none focus:bg-indigo-700 focus:border-indigo-300">
+                        <div class="font-bold">📱 Android Native</div>
+                        <div class="text-xs text-stone-400 mt-1">Kotlin + Go Hybrid</div>
+                    </button>
+                    <button onclick="runSimulation('game')" class="sim-btn text-left p-3 rounded-lg bg-stone-700 hover:bg-indigo-600 transition-colors text-sm border-l-4 border-transparent hover:border-indigo-300 focus:outline-none focus:bg-indigo-700 focus:border-indigo-300">
+                        <div class="font-bold">🎮 iOS Game</div>
+                        <div class="text-xs text-stone-400 mt-1">Swift + SpriteKit</div>
+                    </button>
+                    <button onclick="runSimulation('rust')" class="sim-btn text-left p-3 rounded-lg bg-stone-700 hover:bg-indigo-600 transition-colors text-sm border-l-4 border-transparent hover:border-indigo-300 focus:outline-none focus:bg-indigo-700 focus:border-indigo-300">
+                        <div class="font-bold">⚙️ System Tool</div>
+                        <div class="text-xs text-stone-400 mt-1">Rust CLI</div>
+                    </button>
+                    <button onclick="runSimulation('deploy')" class="sim-btn text-left p-3 rounded-lg bg-stone-700 hover:bg-indigo-600 transition-colors text-sm border-l-4 border-transparent hover:border-indigo-300 focus:outline-none focus:bg-indigo-700 focus:border-indigo-300">
+                        <div class="font-bold">🚀 Firebase 배포</div>
+                        <div class="text-xs text-stone-400 mt-1">Build & Deploy</div>
+                    </button>
+                    <button onclick="runSimulation('cicd')" class="sim-btn text-left p-3 rounded-lg bg-stone-700 hover:bg-indigo-600 transition-colors text-sm border-l-4 border-transparent hover:border-indigo-300 focus:outline-none focus:bg-indigo-700 focus:border-indigo-300">
+                        <div class="font-bold">🔄 CI/CD 설정</div>
+                        <div class="text-xs text-stone-400 mt-1">GitHub Actions</div>
+                    </button>
+                </div>
+
+                <!-- Main IDE Interface -->
+                <div class="lg:col-span-3 bg-stone-900 rounded-xl border border-stone-700 flex flex-col shadow-2xl overflow-hidden">
+                    <!-- IDE Header -->
+                    <div class="h-10 bg-stone-800 border-b border-stone-700 flex items-center px-4 justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-stone-600"></span>
+                            <span class="w-3 h-3 rounded-full bg-stone-600"></span>
+                            <span class="w-3 h-3 rounded-full bg-stone-600"></span>
+                        </div>
+                        <div class="text-xs text-stone-400 font-mono">Antigravity - Vibe Coding Environment</div>
+                        <div class="text-xs text-indigo-400">● Gemini Connected</div>
+                    </div>
+
+                    <!-- IDE Body -->
+                    <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+                        <!-- Chat Panel (Left) -->
+                        <div class="w-full md:w-1/2 p-4 border-r border-stone-800 flex flex-col">
+                            <div class="flex-1 overflow-y-auto space-y-4 mb-4" id="chat-history">
+                                <div class="flex gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold">AI</div>
+                                    <div class="bg-stone-800 p-3 rounded-lg rounded-tl-none text-sm text-stone-300">
+                                        안녕하세요! 어떤 프로젝트를 도와드릴까요? 왼쪽 메뉴에서 Task를 선택해주세요.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Input Area -->
+                            <div class="bg-stone-800 p-3 rounded-lg border border-stone-700">
+                                <p class="text-xs text-stone-500 mb-1">User Prompt:</p>
+                                <p class="text-sm text-white font-mono h-12 overflow-hidden" id="user-input-display">...</p>
+                            </div>
+                        </div>
+
+                        <!-- Code/Terminal Panel (Right) -->
+                        <div class="w-full md:w-1/2 bg-black p-4 font-mono text-xs overflow-y-auto">
+                            <div class="flex justify-between items-center mb-2 border-b border-stone-800 pb-2">
+                                <span class="text-stone-400">TERMINAL / PREVIEW</span>
+                                <span class="bg-stone-800 px-2 py-0.5 rounded text-stone-400">bash</span>
+                            </div>
+                            <div id="terminal-output" class="text-green-400 space-y-1">
+                                <span class="opacity-50">Waiting for instructions...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 4: Scenario Explorer (Cards & Filters) -->
+    <section id="scenarios" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-12">
+                <div>
+                    <h2 class="text-3xl font-bold text-stone-900">개발 시나리오 탐색</h2>
+                    <p class="mt-2 text-stone-600">Antigravity가 지원하는 다양한 플랫폼 개발 예시입니다.</p>
+                </div>
+                <!-- Filters -->
+                <div class="mt-4 md:mt-0 flex gap-2">
+                    <button onclick="filterScenarios('all')" class="filter-btn active px-4 py-2 rounded-full text-sm font-medium border border-stone-200 bg-stone-800 text-white transition-all">전체</button>
+                    <button onclick="filterScenarios('mobile')" class="filter-btn px-4 py-2 rounded-full text-sm font-medium border border-stone-200 text-stone-600 hover:bg-stone-100 transition-all">Mobile</button>
+                    <button onclick="filterScenarios('web')" class="filter-btn px-4 py-2 rounded-full text-sm font-medium border border-stone-200 text-stone-600 hover:bg-stone-100 transition-all">Web</button>
+                    <button onclick="filterScenarios('system')" class="filter-btn px-4 py-2 rounded-full text-sm font-medium border border-stone-200 text-stone-600 hover:bg-stone-100 transition-all">System</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="scenario-grid">
+                <!-- Cards injected via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 5: DevOps & Tips -->
+    <section class="py-16 bg-stone-50 border-t border-stone-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <!-- DevOps -->
+                <div>
+                    <h3 class="text-2xl font-bold text-stone-900 mb-6 flex items-center">
+                        <span class="bg-orange-100 p-2 rounded-lg text-orange-600 mr-3">🛠️</span>
+                        Git & CI/CD 관리
+                    </h3>
+                    <div class="bg-white rounded-xl p-6 shadow-sm border border-stone-200">
+                        <ul class="space-y-6">
+                            <li class="relative pl-6 border-l-2 border-stone-200">
+                                <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-stone-300"></div>
+                                <h4 class="font-bold text-stone-800">1. 저장소 초기화</h4>
+                                <p class="text-sm text-stone-600 mt-1">"git init 하고 .gitignore 생성해줘"</p>
+                            </li>
+                            <li class="relative pl-6 border-l-2 border-stone-200">
+                                <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-stone-300"></div>
+                                <h4 class="font-bold text-stone-800">2. GitHub 연동</h4>
+                                <p class="text-sm text-stone-600 mt-1">"내 계정에 'app-name' 리포지토리 만들고 push 해줘"</p>
+                            </li>
+                            <li class="relative pl-6 border-l-2 border-indigo-500">
+                                <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-indigo-500 animate-pulse"></div>
+                                <h4 class="font-bold text-indigo-700">3. GitHub Actions (CI/CD)</h4>
+                                <div class="bg-stone-900 text-stone-300 text-xs p-3 rounded mt-2 font-mono">
+                                    Prompt: ".github/workflows/ci.yml 파일을 작성해 줘. main에 푸시되면 빌드 테스트하도록."
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Pro Tips -->
+                <div>
+                    <h3 class="text-2xl font-bold text-stone-900 mb-6 flex items-center">
+                        <span class="bg-green-100 p-2 rounded-lg text-green-600 mr-3">💡</span>
+                        Pro Tips
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-stone-200 hover:border-indigo-300 transition-colors">
+                            <h4 class="font-bold text-stone-800 mb-1">@Mentions 활용</h4>
+                            <p class="text-sm text-stone-600">채팅창에서 <code class="bg-stone-100 px-1 rounded">@Codebase</code>, <code class="bg-stone-100 px-1 rounded">@File:App.js</code>를 사용하여 문맥을 정확히 지정하세요.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-stone-200 hover:border-indigo-300 transition-colors">
+                            <h4 class="font-bold text-stone-800 mb-1">에러 자동 해결</h4>
+                            <p class="text-sm text-stone-600">터미널 에러를 드래그하고 "Fix this" 버튼을 누르면 원인 분석부터 수정까지 한 번에.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-stone-200 hover:border-indigo-300 transition-colors">
+                            <h4 class="font-bold text-stone-800 mb-1">Artifacts 관리</h4>
+                            <p class="text-sm text-stone-600">기획서나 문서는 채팅에 흘려보내지 말고 "이 내용을 docs/plan.md로 저장해줘"라고 명령하세요.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-stone-900 text-stone-400 py-12 border-t border-stone-800">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="font-medium text-stone-200 mb-2">Google Antigravity Guide</p>
+            <p class="text-sm">Created with Vibe Coding Principles.</p>
+            <div class="mt-8 flex justify-center gap-6 text-xs">
+                <span>VS Code Based</span>
+                <span>•</span>
+                <span>Powered by Gemini</span>
+                <span>•</span>
+                <span>Agent-Centric Workflow</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- 1. State & Data ---
+        const loopData = {
+            1: {
+                title: "1단계: 기획하기 (Planning)",
+                desc: "Antigravity의 사이드바(Chat)를 열고 Gemini에게 기획을 요청합니다. 막연한 아이디어를 구체적인 PRD(제품 요구사항 문서)로 변환하는 단계입니다.",
+                code: "@Gemini, 나는 '오늘의 명언' 앱을 만들고 싶어.\n기술 스택: Next.js\n기능: 랜덤 명언 표시, 공유하기\n\n이 내용으로 PRD.md를 작성해 줘.",
+                tip: "Tip: 처음부터 코드를 짜지 말고 '기획서'를 먼저 요구하세요. 에이전트가 전체 그림을 이해하는 데 도움이 됩니다."
+            },
+            2: {
+                title: "2단계: 맡기기 (Delegating)",
+                desc: "단순 코딩이 아닌 'Task(작업)' 단위로 명령합니다. 에이전트는 파일 생성, 패키지 설치, Git 초기화 등의 터미널 작업까지 수행합니다.",
+                code: "기획서(PRD)대로 프로젝트를 스캐폴딩해 줘.\ngit init 하고 첫 커밋까지 완료해 줘.\n필요한 npm 패키지도 모두 설치해.",
+                tip: "Tip: 터미널 명령을 실행할 때 에이전트가 승인을 요청합니다. 내용을 확인하고 승인하세요."
+            },
+            3: {
+                title: "3단계: 다듬기 (Refining)",
+                desc: "결과물을 미리보기(Preview)로 확인하며 디테일을 수정합니다. Inline Edit 기능을 사용하여 특정 부분만 핀 포인트로 수정 요청할 수 있습니다.",
+                code: "// 코드 라인에서 Cmd+K 입력\n이 버튼 색상을 좀 더 따뜻한 파스텔 톤으로 변경해 줘.\n모바일에서는 폰트 크기를 14px로 줄여줘.",
+                tip: "Tip: '이거 고쳐줘'라고 퉁명스럽게 말해도 됩니다. Vibe Coding은 대화하듯 수정하는 것이 핵심입니다."
+            }
+        };
+
+        const scenarioData = [
+            { id: 'web', category: 'web', title: 'Web Service (Full Stack)', stack: 'Next.js + Supabase', desc: '데이터베이스 스키마 설계부터 API 연동, 모바일 친화적 UI까지.', icon: '🌐' },
+            { id: 'android', category: 'mobile', title: 'Android Native App', stack: 'Kotlin + Go', desc: 'Go로 핵심 로직을, Kotlin으로 UI를 작성하는 하이브리드 앱.', icon: '📱' },
+            { id: 'game', category: 'mobile', title: 'iOS Game App', stack: 'Swift + SpriteKit', desc: '물리 엔진 로직과 게임 오버 시스템 구현.', icon: '🎮' },
+            { id: 'rust', category: 'system', title: 'System Software', stack: 'Rust + Tokio', desc: '고성능 로그 분석 CLI 도구. 소유권 규칙 가이드 포함.', icon: '⚙️' },
+            { id: 'cross', category: 'mobile', title: 'Cross-Platform Game', stack: 'Canvas + Capacitor', desc: '웹 기술로 게임 만들고 Android/iOS 동시 배포.', icon: '⚔️' },
+            { id: 'deploy', category: 'web', title: 'Deployment', stack: 'Firebase / Vercel', desc: '터미널에서 바로 배포하고 URL 생성.', icon: '🚀' }
+        ];
+
+        const simulationPrompts = {
+            web: {
+                user: "@Gemini, '오늘의 명언' 웹 앱을 만들고 싶어. Next.js와 Tailwind CSS 사용. 공유하기 기능 포함.",
+                agent: "네, 알겠습니다. Next.js 프로젝트를 생성하고 Tailwind CSS를 설정하겠습니다.\n\nRunning: npx create-next-app@latest daily-quote --typescript --tailwind\n...\n프로젝트 생성이 완료되었습니다. 이제 pages/index.tsx에 명언 UI를 구현하겠습니다.",
+                terminal: "Initializing project...\nInstalling dependencies...\nSuccess! Created daily-quote-app."
+            },
+            android: {
+                user: "안드로이드 앱 생성해줘. UI는 Kotlin, 로직은 Go(Go Mobile) 사용. JNI 설정까지 해줘.",
+                agent: "Kotlin과 Go를 사용하는 하이브리드 프로젝트를 구성합니다. Go Mobile 툴체인을 사용하여 바인딩을 생성하겠습니다.\n\nFile Created: app/src/main/go/logic.go\nFile Updated: build.gradle (added gomobile)",
+                terminal: "> gomobile bind -target=android\n> ./gradlew build\nBUILD SUCCESSFUL in 3s"
+            },
+            game: {
+                user: "Swift와 SpriteKit으로 '벽돌 깨기' 게임 만들어줘. 물리 충돌 로직 포함.",
+                agent: "SpriteKit 게임 템플릿을 생성합니다. Ball, Paddle, Brick 노드 클래스를 작성하고 SKPhysicsBody를 적용하겠습니다.\n\nFile Created: GameScene.swift\nClass Added: BreakoutPhysicsCategory",
+                terminal: "Compiling Swift sources...\nLinking...\nReady to launch in Simulator."
+            },
+            rust: {
+                user: "Rust로 고성능 로그 분석 CLI 만들어줘. Tokio 비동기 처리 사용.",
+                agent: "Cargo 프로젝트를 생성하고 tokio 의존성을 추가합니다. 파일 I/O를 비동기로 처리하는 main 루프를 작성합니다.\n\nRunning: cargo new log-analyzer\nAdding dependency: tokio = { version = \"1\", features = [\"full\"] }",
+                terminal: "> cargo build --release\nCompiling log-analyzer v0.1.0\nFinished release [optimized] target(s)."
+            },
+            deploy: {
+                user: "현재 프로젝트 빌드하고 Firebase에 배포해줘.",
+                agent: "Firebase Hosting 배포를 시작합니다. 먼저 프로덕션 빌드를 수행합니다.\n\nRunning: npm run build\nRunning: firebase deploy",
+                terminal: "> next build\n> firebase deploy --only hosting\n\nDeploy complete! \nHosting URL: https://daily-quote.web.app"
+            },
+            cicd: {
+                user: "GitHub Actions 설정해줘. main 푸시되면 빌드 테스트하도록.",
+                agent: "CI 워크플로우 파일을 생성합니다.\n\nFile Created: .github/workflows/ci.yml\nTrigger: push to main\nJob: npm install && npm run build",
+                terminal: "Created .github/workflows/ci.yml\nGit status: 1 file added."
+            }
+        };
+
+        // --- 2. Interactive Functions ---
+
+        // Vibe Loop Click Handler
+        function updateLoopDetails(step) {
+            // Reset active styles
+            [1, 2, 3].forEach(i => {
+                const card = document.getElementById(`step${i}-card`);
+                card.classList.remove('ring-indigo-500', 'bg-indigo-50');
+                card.classList.add('bg-white');
+                card.querySelector('.absolute').classList.remove('bg-indigo-600', 'text-white');
+                card.querySelector('.absolute').classList.add('bg-indigo-100', 'text-indigo-600');
+            });
+
+            // Set active style
+            const activeCard = document.getElementById(`step${step}-card`);
+            activeCard.classList.remove('bg-white');
+            activeCard.classList.add('ring-indigo-500', 'bg-indigo-50');
+            activeCard.querySelector('.absolute').classList.remove('bg-indigo-100', 'text-indigo-600');
+            activeCard.querySelector('.absolute').classList.add('bg-indigo-600', 'text-white');
+
+            // Update Content
+            const data = loopData[step];
+            document.getElementById('detail-title').innerText = data.title;
+            document.getElementById('detail-desc').innerText = data.desc;
+            document.getElementById('detail-code').innerHTML = data.code.replace(/\n/g, '<br>');
+            document.getElementById('detail-tip').innerText = data.tip;
+
+            // Animation Reset
+            const panel = document.getElementById('loop-detail-panel');
+            panel.classList.remove('opacity-100');
+            void panel.offsetWidth; // trigger reflow
+            panel.classList.add('opacity-100');
+        }
+
+        // Simulator Logic
+        function runSimulation(key) {
+            const data = simulationPrompts[key];
+            const chatHistory = document.getElementById('chat-history');
+            const userInput = document.getElementById('user-input-display');
+            const terminal = document.getElementById('terminal-output');
+
+            // 1. User Input Animation
+            userInput.innerText = "";
+            let i = 0;
+            const typeWriter = setInterval(() => {
+                userInput.innerText += data.user.charAt(i);
+                i++;
+                if (i > data.user.length - 1) {
+                    clearInterval(typeWriter);
+                    
+                    // 2. Add to Chat History (after typing)
+                    setTimeout(() => {
+                        const userMsg = `<div class="flex gap-3 justify-end"><div class="bg-indigo-600 p-3 rounded-lg rounded-tr-none text-sm text-white max-w-[80%]">${data.user}</div><div class="w-8 h-8 rounded-full bg-stone-600 flex items-center justify-center text-xs font-bold">ME</div></div>`;
+                        chatHistory.innerHTML += userMsg;
+                        chatHistory.scrollTop = chatHistory.scrollHeight;
+
+                        // 3. Agent Thinking & Response
+                        setTimeout(() => {
+                            const agentMsg = `<div class="flex gap-3"><div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold">AI</div><div class="bg-stone-800 p-3 rounded-lg rounded-tl-none text-sm text-stone-300 max-w-[90%] whitespace-pre-line">${data.agent}</div></div>`;
+                            chatHistory.innerHTML += agentMsg;
+                            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+                            // 4. Terminal Update
+                            terminal.innerHTML = `<span class="text-white">$ executing instructions...</span><br>${data.terminal.replace(/\n/g, '<br>')}`;
+                        }, 1000);
+                    }, 500);
+                }
+            }, 30);
+        }
+
+        // Scenario Filtering & Rendering
+        function renderScenarios(filter) {
+            const grid = document.getElementById('scenario-grid');
+            grid.innerHTML = '';
+            
+            const filtered = filter === 'all' ? scenarioData : scenarioData.filter(s => s.category === filter);
+            
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-xl p-6 border border-stone-200 hover:shadow-lg hover:border-indigo-300 transition-all group";
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-4xl filter grayscale group-hover:grayscale-0 transition-all">${item.icon}</span>
+                        <span class="px-2 py-1 bg-stone-100 text-stone-500 text-xs rounded uppercase font-bold tracking-wider">${item.category}</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-stone-900 mb-1 group-hover:text-indigo-600">${item.title}</h3>
+                    <p class="text-xs text-indigo-500 font-mono mb-3">${item.stack}</p>
+                    <p class="text-stone-600 text-sm leading-relaxed">${item.desc}</p>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterScenarios(category) {
+            // Update Buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-stone-800', 'text-white');
+                btn.classList.add('text-stone-600', 'hover:bg-stone-100');
+                if ((category === 'all' && btn.innerText === '전체') || 
+                    (btn.innerText.toLowerCase().includes(category))) {
+                    btn.classList.remove('text-stone-600', 'hover:bg-stone-100');
+                    btn.classList.add('bg-stone-800', 'text-white');
+                }
+            });
+            renderScenarios(category);
+        }
+
+        // --- 3. Charts ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initial Renders
+            updateLoopDetails(1);
+            renderScenarios('all');
+
+            // Effort Chart (Doughnut)
+            const ctx = document.getElementById('effortChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['기획 & 검수 (Human)', '코딩 & 구현 (AI)', '디버깅 & 수정 (Collaboration)'],
+                    datasets: [{
+                        data: [45, 40, 15], // Conceptual data representing Vibe Coding shift
+                        backgroundColor: ['#4f46e5', '#f97316', '#a8a29e'], // Indigo, Orange, Stone
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { family: "'Noto Sans KR', sans-serif" }, usePointStyle: true } },
+                        tooltip: { 
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.label}: ${context.raw}% Effort`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
