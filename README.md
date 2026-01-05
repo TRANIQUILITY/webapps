@@ -1,2 +1,2 @@
 # webapps
-This repo is to make a preview for landing pages at 51labs
+This repo is to be created to manage pilot projects regarding 51labs.kr
