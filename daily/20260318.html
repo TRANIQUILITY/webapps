@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geopolitical Alpha - Marco Papic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans KR', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+        }
+        .section-fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+        .section-fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-white text-slate-900 leading-relaxed">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass-nav">
+        <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="text-xl font-bold tracking-tighter text-black">
+                GEOPOLITICAL<span class="text-blue-600">.ALPHA</span>
+            </div>
+            <div class="hidden md:flex space-x-8 text-sm font-medium text-slate-600">
+                <a href="#principles" class="hover:text-blue-600 transition">원칙</a>
+                <a href="#market" class="hover:text-blue-600 transition">시장</a>
+                <a href="#iran" class="hover:text-blue-600 transition">이란/전쟁</a>
+                <a href="#guidelines" class="hover:text-blue-600 transition">가이드라인</a>
+            </div>
+            <button class="md:hidden text-slate-800" id="menuBtn">
+                <i class="fas fa-bars text-xl"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section / Executive Summary -->
+    <header class="pt-32 pb-20 px-6 max-w-5xl mx-auto">
+        <div class="inline-block px-3 py-1 bg-blue-50 text-blue-600 text-xs font-bold rounded-full mb-4 uppercase tracking-widest">
+            Executive Summary
+        </div>
+        <h1 class="text-4xl md:text-6xl font-bold text-slate-900 mb-8 tracking-tight leading-tight">
+            마르코 파픽의 <br/><span class="text-blue-600">제약 조건 프레임워크</span>
+        </h1>
+        <p class="text-xl md:text-2xl text-slate-600 font-light leading-relaxed max-w-3xl border-l-4 border-blue-600 pl-6">
+            월스트리트의 저명한 지정학 전략가 마르코 파픽은 지도자의 주관적인 '의도'가 아닌 객관적인 '제약 조건'에 집중하는 독창적인 분석 프레임워크를 제시합니다. 
+            그는 지정학적 이벤트를 단순한 리스크가 아닌 물리적인 현실로 규정하며 선거 주기, 경제 지표, 법적 한계와 같은 요소들이 결과를 결정한다고 주장합니다. 
+            최근 이란과 이스라엘의 갈등은 과거의 '관리된 적대감'을 넘어 '정권 교체'라는 새로운 제약 조건이 발생함에 따라 시장의 기존 학습 효과가 통하지 않는 국면에 진입했습니다. 
+            투자자는 시장이 지정학적 리스크를 무시하는 '신화'에 매몰되어 있음을 경계하고 이란이 미국의 효용 함수를 갱신하기 위해 글로벌 경제에 고통을 가할 합리적 유인이 있음을 이해해야 합니다. 
+            결국 S&P 500의 10% 조정이나 인플레이션 수치와 같은 구체적인 제약 변화를 모니터링하여 정책 입안자의 피봇 시점을 포착하는 것이 분석의 핵심입니다.
+        </p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-5xl mx-auto px-6 pb-24 space-y-24">
+        
+        <!-- 1. Core Principles -->
+        <section id="principles" class="section-fade-in">
+            <div class="flex items-center space-x-4 mb-10">
+                <div class="w-10 h-10 bg-slate-900 text-white flex items-center justify-center rounded-lg">
+                    <i class="fas fa-microscope"></i>
+                </div>
+                <h2 class="text-2xl font-bold tracking-tight">지정학 분석의 핵심 원칙</h2>
+            </div>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="p-8 border border-slate-100 bg-slate-50 rounded-2xl card-hover">
+                    <p class="text-slate-800 font-medium">지도자의 성격, 이념, 발언 등 관측 불가능한 '의도' 분석의 위험성 경계</p>
+                </div>
+                <div class="p-8 border border-slate-100 bg-slate-50 rounded-2xl card-hover">
+                    <p class="text-slate-800 font-medium">선거 일정, 경제 데이터, 의회 구성, 법적 한계 등 관측 가능한 '제약 조건'에 집중</p>
+                </div>
+                <div class="p-8 border border-slate-100 bg-slate-50 rounded-2xl card-hover">
+                    <p class="text-slate-800 font-medium">지도자가 무엇을 하고 싶은지가 아니라 무엇을 할 수밖에 없는지를 도출하는 과정</p>
+                </div>
+                <div class="p-8 border border-slate-100 bg-slate-50 rounded-2xl card-hover">
+                    <p class="text-slate-800 font-medium">지정학은 추상적인 리스크가 아닌 물리적이고 실질적인 현실임을 강조</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Market Literacy -->
+        <section id="market" class="section-fade-in">
+            <div class="flex items-center space-x-4 mb-10">
+                <div class="w-10 h-10 bg-blue-600 text-white flex items-center justify-center rounded-lg">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h2 class="text-2xl font-bold tracking-tight">시장의 문해력과 '신화'의 붕괴</h2>
+            </div>
+            <div class="bg-slate-900 text-white p-10 rounded-3xl overflow-hidden relative">
+                <div class="absolute top-0 right-0 p-12 opacity-10 text-8xl">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <ul class="space-y-6 relative z-10">
+                    <li class="flex items-start space-x-4 border-b border-slate-800 pb-6">
+                        <span class="text-blue-400 font-bold">01.</span>
+                        <p class="text-slate-300">시장은 항상 지정학적 리스크를 과대평가하며 최악의 시나리오를 선반영하는 경향</p>
+                    </li>
+                    <li class="flex items-start space-x-4 border-b border-slate-800 pb-6">
+                        <span class="text-blue-400 font-bold">02.</span>
+                        <p class="text-slate-300">'무슨 일이 터져도 가만히 있으면 돈을 번다'는 학습된 신화가 시장 전반에 확산</p>
+                    </li>
+                    <li class="flex items-start space-x-4 border-b border-slate-800 pb-6">
+                        <span class="text-blue-400 font-bold">03.</span>
+                        <p class="text-slate-300">과거 호르무즈 해협 봉쇄 여부만이 유일한 실질적 제약 조건이었던 시대의 종언</p>
+                    </li>
+                    <li class="flex items-start space-x-4">
+                        <span class="text-blue-400 font-bold">04.</span>
+                        <p class="text-slate-300">시장이 제약 조건의 변화를 읽지 못하고 패턴을 답습하는 '지정학적 무지' 경고</p>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 3. Iran Analysis -->
+        <section id="iran" class="section-fade-in">
+            <div class="flex items-center space-x-4 mb-10">
+                <div class="w-10 h-10 bg-red-600 text-white flex items-center justify-center rounded-lg">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h2 class="text-2xl font-bold tracking-tight">이란 전쟁의 결말과 합리적 선택</h2>
+            </div>
+            <div class="grid md:grid-cols-2 gap-10">
+                <div class="space-y-6">
+                    <div class="group">
+                        <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-red-600 transition">합리적 보복의 유인</h3>
+                        <p class="text-slate-600">이란 정권은 존재 위협 상황에서 내부 결속을 위해 보복을 유일한 합리적 선택으로 간주함</p>
+                    </div>
+                    <div class="group">
+                        <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-red-600 transition">비대칭 전술 채택</h3>
+                        <p class="text-slate-600">정면승부 대신 드론 등을 활용해 글로벌 경제에 실질적 고통을 가하는 전략을 채택함</p>
+                    </div>
+                    <div class="group">
+                        <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-red-600 transition">미국 효용 함수 갱신</h3>
+                        <p class="text-slate-600">에너지 공급망 타격을 통해 미국이 정권 교체를 거론할 때 치러야 할 비용을 각인시킴</p>
+                    </div>
+                </div>
+                <div class="bg-red-50 p-8 rounded-2xl border border-red-100">
+                    <h4 class="text-red-600 font-bold mb-4 uppercase text-xs tracking-widest">Market Prediction</h4>
+                    <div class="space-y-6">
+                        <div class="flex justify-between items-end border-b border-red-200 pb-4">
+                            <span class="font-medium text-slate-800">유가 (Oil)</span>
+                            <span class="text-xl font-bold text-red-600">Double Top</span>
+                        </div>
+                        <div class="flex justify-between items-end border-b border-red-200 pb-4">
+                            <span class="font-medium text-slate-800">주식 (S&P 500)</span>
+                            <span class="text-xl font-bold text-slate-900">Double Bottom</span>
+                        </div>
+                    </div>
+                    <p class="mt-6 text-sm text-red-800 italic">"트럼프가 후퇴하더라도 이란이 이에 응할지는 별개의 문제이며 장기적 긴장이 고조될 가능성 상존함"</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Monitoring Guidelines -->
+        <section id="guidelines" class="section-fade-in">
+            <div class="flex items-center space-x-4 mb-10">
+                <div class="w-10 h-10 bg-green-600 text-white flex items-center justify-center rounded-lg">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <h2 class="text-2xl font-bold tracking-tight">실전 모니터링 가이드라인</h2>
+            </div>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="p-8 border border-slate-100 rounded-2xl bg-white shadow-sm flex flex-col items-center text-center">
+                    <div class="text-3xl text-blue-600 mb-4 font-bold">-10%</div>
+                    <h4 class="font-bold mb-2">S&P 500 낙폭</h4>
+                    <p class="text-sm text-slate-500">10% 이상 조정 시 트럼프의 정치적 피봇 확률 급등함</p>
+                </div>
+                <div class="p-8 border border-slate-100 rounded-2xl bg-white shadow-sm flex flex-col items-center text-center">
+                    <div class="text-3xl text-green-600 mb-4 font-bold">CPI</div>
+                    <h4 class="font-bold mb-2">인플레이션 데이터</h4>
+                    <p class="text-sm text-slate-500">물가 상승은 보호 무역 정책 유지의 큰 제약 조건으로 작용함</p>
+                </div>
+                <div class="p-8 border border-slate-100 rounded-2xl bg-white shadow-sm flex flex-col items-center text-center">
+                    <div class="text-3xl text-orange-600 mb-4 font-bold">20%</div>
+                    <h4 class="font-bold mb-2">에너지 공급망</h4>
+                    <p class="text-sm text-slate-500">호르무즈 해협의 실질적 공급 차질 규모 모니터링 필수임</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Conclusion -->
+        <section class="section-fade-in bg-slate-50 p-12 rounded-3xl text-center">
+            <h2 class="text-2xl font-bold mb-6">결론 및 시나리오 대응</h2>
+            <div class="max-w-2xl mx-auto space-y-4">
+                <p class="text-slate-700">지정학적 위기 시 매수 혹은 매도라는 이분법적 접근보다 <strong>제약 조건 분석</strong>이 선행되어야 함</p>
+                <p class="text-slate-700">미디어가 조장하는 공포에 매몰되지 않고 냉철한 시나리오별 대응 전략을 준비해야 함</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-100 py-12 px-6">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 text-slate-400 text-sm">
+            <div>
+                51 labs LLC. All Rights Reserved
+            </div>
+            <div class="flex space-x-6">
+                <a href="#" class="hover:text-slate-900">Privacy</a>
+                <a href="#" class="hover:text-slate-900">Terms</a>
+                <a href="#" class="hover:text-slate-900">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Scroll Animation
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.section-fade-in').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Mobile Menu Toggle (Basic)
+        const menuBtn = document.getElementById('menuBtn');
+        menuBtn.addEventListener('click', () => {
+            // Placeholder for menu functionality
+            console.log('Menu clicked');
+        });
+    </script>
+</body>
+</html>
