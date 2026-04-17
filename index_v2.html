@@ -81,11 +81,9 @@
             width: 100%;
             display: flex;
             flex-direction: column;
-            /* Changed from center to flex-start to keep header distance constant */
-            justify-content: flex-start; 
+            justify-content: center; 
             align-items: center;
-            /* Increased top padding to position content correctly below header */
-            padding: 180px 5% 100px; 
+            padding: 100px 5% 100px; 
             position: relative;
             overflow: hidden;
             z-index: 0; 
@@ -155,18 +153,16 @@
 
         .logo {
             font-size: 1.6rem;
-            /* Gradient & Shadow Removed, Solid Black Color Applied */
             color: #000000;
             display: flex;
             align-items: center;
-            gap: 1px; /* Tighter gap for text logo */
+            gap: 1px;
         }
         
-        /* Font weights for logo parts */
         .logo-bold { font-weight: 800; }
         .logo-normal { font-weight: 400; }
 
-        nav ul { display: flex; gap: 2rem; } /* Reduced gap from 2.5rem to 2rem */
+        nav ul { display: flex; gap: 2rem; }
         
         nav a {
             font-size: 0.95rem;
@@ -174,7 +170,7 @@
             color: #64748b;
             position: relative;
             cursor: pointer;
-            white-space: nowrap; /* Prevent line breaks in menu items */
+            white-space: nowrap; 
         }
 
         nav a:hover, nav a.active { color: var(--accent-blue); }
@@ -190,17 +186,20 @@
         }
 
         /* --- Container #1: 51labs? --- */
+        #about {
+            justify-content: flex-start; 
+            padding-top: 180px; 
+        }
+        
         #about .hero-text { text-align: center; }
 
         .hero-main {
-            /* Updated Font Family Stack for better Mobile Compatibility */
             font-family: 'Libre Baskerville', Georgia, 'Times New Roman', Times, serif; 
             font-size: 3rem; 
             font-weight: 400;
             margin-bottom: 3rem; 
             line-height: 1.3;
-            letter-spacing: -0.5px; /* Adjusted letter spacing for serif font */
-            /* text-transform: uppercase; Removed to render casing correctly */
+            letter-spacing: -0.5px; 
         }
 
         .hero-main .highlight {
@@ -209,7 +208,7 @@
             color: #cbd5e1; 
             font-weight: 400;
             display: inline-block;
-            font-style: italic; /* Added italic for "with us" to match serif style often used */
+            font-style: italic; 
         }
 
         /* --- New Intro Text Styles --- */
@@ -219,20 +218,18 @@
             text-align: center;
             display: flex;
             flex-direction: column;
-            /* Reduced gap from 2.5rem to 1.5rem for tighter paragraph spacing */
             gap: 1.5rem; 
         }
 
         .intro-paragraph {
             font-size: 1.15rem;
-            color: #e2e8f0; /* Slate 200 - Brighter than description */
-            /* Reduced line-height from 1.7 to 1.45 for tighter line spacing (~4px visual gap) */
-            line-height: 1.45; 
+            color: #e2e8f0; 
+            line-height: 1.6; 
             font-weight: 300;
             opacity: 0;
             transform: translateY(20px);
             transition: all 1.0s cubic-bezier(0.22, 1, 0.36, 1);
-            word-break: keep-all; /* Prevent awkward word breaks in Korean */
+            word-break: keep-all; 
         }
 
         /* Staggered Animation Delays */
@@ -244,7 +241,7 @@
         section.visible .intro-paragraph:nth-child(2) {
             opacity: 1;
             transform: translateY(0);
-            transition-delay: 1.2s; /* Wait for reading */
+            transition-delay: 1.2s; 
         }
         section.visible .intro-paragraph:nth-child(3) {
             opacity: 1;
@@ -257,9 +254,8 @@
             transition-delay: 2.8s;
         }
 
-        /* Updated: Linear Gradient Highlighter Style */
+        /* Highlighter Style */
         .highlight-marker {
-            /* Default Gradient: Red-Orange to Orange */
             background: linear-gradient(90deg, #ff3131 0%, #ff914d 100%);
             color: #ffffff; 
             padding: 2px 6px;
@@ -269,12 +265,10 @@
             -webkit-box-decoration-break: clone;
         }
 
-        /* Variant: Green Gradient */
         .highlight-marker.marker-green {
             background: linear-gradient(90deg, #0097b2 0%, #7ed975 100%);
         }
 
-        /* Variant: Blue Gradient */
         .highlight-marker.marker-blue {
             background: linear-gradient(90deg, #004aad 0%, #5ed0e6 100%);
         }
@@ -368,21 +362,20 @@
             display: flex;
             gap: 2rem;
             justify-content: center;
-            /* Height is auto to allow free scroll */
             height: auto; 
-            flex-wrap: wrap; /* Wrap allowed for mobile */
+            flex-wrap: wrap; 
         }
 
         .jira-column {
             flex: 1;
-            min-width: 300px; /* Ensure column has width before wrapping */
+            min-width: 300px; 
             background: #f4f5f7;
             border-radius: 8px;
             padding: 1rem;
             display: flex;
             flex-direction: column;
             gap: 1rem;
-            max-width: 400px; /* Reduced width since we have 3 columns now */
+            max-width: 400px; 
         }
         
         .column-header {
@@ -417,7 +410,6 @@
 
         .jira-card:hover { background: #ebecf0; }
         
-        /* Updated Border Colors based on Business Area */
         .jira-card.tag-aii { border-left-color: #006644; }
         .jira-card.tag-aid { border-left-color: #403294; }
         .jira-card.tag-cma { border-left-color: #ffab00; }
@@ -434,7 +426,6 @@
         
         .avatar { width: 22px; height: 22px; border-radius: 50%; background: #0052cc; color: white; font-size: 0.65rem; display: flex; align-items: center; justify-content: center; font-weight: bold; }
         
-        /* New Tag Styles */
         .area-tag {
             font-size: 0.65rem;
             padding: 2px 6px;
@@ -448,11 +439,120 @@
         .tag-cma { background: var(--tag-cma-bg); color: var(--tag-cma-text); }
         .tag-suc { background: var(--tag-suc-bg); color: var(--tag-suc-text); }
 
-        /* --- Container #4: Achievements & Footer --- */
+        /* --- Container #3.5: Roadmap (Center Aligned Alternate Timeline) --- */
+        .timeline-container {
+            max-width: 1000px; 
+            margin: 0 auto;
+            position: relative;
+            padding: 2rem 0;
+        }
+        
+        /* Central Line */
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--border-light);
+            transform: translateX(-50%);
+        }
+        
+        .timeline-item {
+            position: relative;
+            width: 50%;
+            margin-bottom: 3rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        
+        /* Odd Items (Left Side) */
+        .timeline-item:nth-child(odd) {
+            margin-right: auto;
+            padding-right: 50px;
+            text-align: right;
+        }
+
+        /* Even Items (Right Side) */
+        .timeline-item:nth-child(even) {
+            margin-left: auto;
+            padding-left: 50px;
+            text-align: left;
+        }
+        
+        section.visible .timeline-item {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        section.visible .timeline-item:nth-child(1) { transition-delay: 0.2s; }
+        section.visible .timeline-item:nth-child(2) { transition-delay: 0.4s; }
+        section.visible .timeline-item:nth-child(3) { transition-delay: 0.6s; }
+        section.visible .timeline-item:nth-child(4) { transition-delay: 0.8s; }
+        
+        .timeline-item:last-child { margin-bottom: 0; }
+        
+        .timeline-dot {
+            position: absolute;
+            top: 0;
+            width: 21px;
+            height: 21px;
+            border-radius: 50%;
+            background-color: var(--accent-blue);
+            border: 4px solid #fff;
+            box-shadow: 0 0 0 3px var(--border-light);
+            z-index: 2;
+        }
+
+        /* Dot positioning for Odd/Left */
+        .timeline-item:nth-child(odd) .timeline-dot {
+            right: -11px;
+            left: auto;
+        }
+
+        /* Dot positioning for Even/Right */
+        .timeline-item:nth-child(even) .timeline-dot {
+            left: -11px;
+            right: auto;
+        }
+        
+        .timeline-date {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+            margin-bottom: 0.5rem;
+            display: inline-block;
+            background: #eff6ff;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+        
+        .timeline-text h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+        
+        .timeline-text p {
+            color: #475569;
+            font-size: 1rem;
+            line-height: 1.6;
+            word-break: keep-all;
+        }
+
+        /* Keep bullet points aligned to the left even when the box is on the left side */
+        .timeline-item:nth-child(odd) .timeline-text p {
+            display: inline-block;
+            text-align: left;
+        }
+
+        /* --- Container #4: Dynamic Chart for Achievements --- */
         #achievements {
             justify-content: space-between;
             padding-bottom: 0;
-            /* Remove horizontal padding from section to allow footer to span full width */
             padding-left: 0;
             padding-right: 0;
         }
@@ -464,48 +564,125 @@
             justify-content: center;
             align-items: center;
             width: 100%;
-            /* Add padding back to content container */
             padding: 2rem 5%; 
         }
 
-        .achievement-box {
-            background: #fff;
-            border: 2px dashed var(--border-light);
-            padding: 4rem;
-            border-radius: 20px;
-            text-align: center;
-            max-width: 800px;
+        .chart-container {
             width: 100%;
+            max-width: 900px;
+            background: #ffffff; 
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
         }
 
-        .notice-text {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #0f172a;
-            margin-bottom: 1rem;
+        .chart-header { margin-bottom: 2.5rem; }
+        .chart-header h3 { font-size: 1.8rem; color: var(--text-dark); font-weight: 800; margin-bottom: 1rem; }
+        
+        /* Added: Chart Description Layout */
+        .chart-description {
+            display: inline-block;
+            text-align: left;
+            color: #475569;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        .chart-description p { margin-bottom: 0.4rem; }
+        /* Removed .final-result extra margin and font styling to match normal paragraph */
+
+        /* Chart Footer for Description */
+        .chart-footer {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+        .chart-footer p { 
+            color: #94a3b8; 
+            font-size: 0.85rem; /* Font size -1 */
+            margin-bottom: 0; 
+        }
+
+        /* SVG Chart Styles adjusted for Light Background */
+        .svg-chart { width: 100%; height: auto; overflow: visible; font-family: 'Paperlogy', sans-serif; }
+        .chart-grid { stroke: #e2e8f0; stroke-width: 1; stroke-dasharray: 4 4; }
+        .chart-baseline { stroke: #94a3b8; stroke-width: 1.5; }
+        .chart-axis-text { fill: #94a3b8; font-size: 12px; text-anchor: end; }
+        .chart-x-text { text-anchor: middle; font-weight: 600; font-size: 13px; fill: #475569; }
+        
+        .chart-line {
+            fill: none;
+            stroke: var(--accent-gold);
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 1200;
+            stroke-dashoffset: 1200;
         }
         
-        .sub-notice { color: #64748b; font-size: 1.1rem; }
+        /* Line Animation Triggered on Scroll */
+        section.visible .chart-line {
+            animation: drawChartLine 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation-delay: 0.3s;
+        }
+        @keyframes drawChartLine { to { stroke-dashoffset: 0; } }
+
+        /* Data Points & Tooltips Animation */
+        .data-group { opacity: 0; transform: translateY(10px); }
+        section.visible .data-group {
+            animation: showDataPoint 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        .data-group:nth-of-type(1) { animation-delay: 0.6s; }
+        .data-group:nth-of-type(2) { animation-delay: 0.8s; }
+        .data-group:nth-of-type(3) { animation-delay: 1.0s; }
+        .data-group:nth-of-type(4) { animation-delay: 1.2s; }
+        .data-group:nth-of-type(5) { animation-delay: 1.4s; }
+        .data-group:nth-of-type(6) { animation-delay: 1.6s; }
+
+        @keyframes showDataPoint { to { opacity: 1; transform: translateY(0); } }
+
+        /* Interaction */
+        .chart-point { fill: #ffffff; stroke: var(--accent-gold); stroke-width: 3; transition: all 0.2s; cursor: pointer; }
+        .data-group:hover .chart-point { r: 8; fill: var(--accent-gold); }
+        .data-group:hover .chart-tooltip-bg { stroke: var(--accent-gold); }
+        
+        .chart-tooltip-bg { fill: #ffffff; stroke: #e2e8f0; stroke-width: 1; transition: all 0.2s; }
+        
+        /* Updated: Text Colors based on months */
+        .chart-tooltip-text { font-size: 13px; font-weight: 700; text-anchor: middle; }
+        .chart-tooltip-text.muted { fill: #94a3b8; } /* Light Gray for 7~11 */
+        .chart-tooltip-text.highlight { fill: var(--text-dark); font-size: 14px; } /* Distinct for 12 */
+        
+        /* Hover color change for muted texts */
+        .data-group:hover .chart-tooltip-text.muted { fill: var(--accent-gold); }
 
         /* --- Footer --- */
         footer {
             width: 100%;
-            padding: 40px 20px;
+            padding: 40px 5%; /* Added horizontal padding for responsiveness */
             background-color: var(--bg-dark);
             color: #94a3b8;
             font-size: 0.85rem;
-            text-align: center;
+            text-align: right; /* Right aligned text */
             z-index: 10;
         }
 
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
         .footer-content p {
-            margin-bottom: 6px; /* Slightly reduced margin for better spacing */
+            margin-bottom: 6px; 
             line-height: 1.4;
+        }
+
+        .footer-content p.made-with {
+            margin-bottom: 24px; /* Empty line space */
         }
         
         .footer-content p:last-child {
             margin-bottom: 0;
-            /* opacity: 0.7; Removed opacity for better readability of address */
         }
 
         /* --- Mobile Toggle --- */
@@ -520,55 +697,82 @@
         }
 
         @media (max-width: 768px) {
-            /* Adjust header padding and menu */
-            header { padding: 0 4%; } /* Slightly reduced padding */
+            header { padding: 0 4%; } 
             
-            /* Hide Hamburger Menu */
             .menu-toggle { display: none; } 
             
-            /* Show Nav Inline on Mobile */
             nav ul {
                 display: flex;
-                flex-direction: row; /* Horizontal */
-                position: static; /* Remove absolute positioning */
+                flex-direction: row; 
+                position: static; 
                 top: auto;
                 right: auto;
                 width: auto;
                 background: transparent;
                 padding: 0;
                 box-shadow: none;
-                gap: 0.7rem; /* Tight gap for mobile */
+                gap: 0.7rem; 
                 align-items: center;
             }
             
             nav a {
-                font-size: 0.8rem; /* Smaller font for menu */
+                font-size: 0.8rem; 
             }
 
             .logo {
-                font-size: 1.3rem; /* Smaller logo for space */
-                margin-right: auto; /* Push nav to right if needed, though space-between handles it */
+                font-size: 1.3rem; 
+                margin-right: auto; 
             }
             
-            /* Section padding adjustments for mobile */
             section {
-                padding: 150px 20px 60px; /* Fixed top padding for mobile */
-                justify-content: flex-start; /* Ensure start alignment */
+                padding: 120px 20px 60px; 
             }
 
-            /* Intro */
+            #about {
+                padding-top: 150px; 
+                justify-content: flex-start; 
+            }
+
             .hero-main { font-size: 2rem; margin-bottom: 3rem; } 
             
             .intro-paragraph { font-size: 1rem; gap: 2rem; }
 
-            /* Business Grid: 1 column on mobile */
             .business-grid { grid-template-columns: 1fr; gap: 2rem; }
             
-            /* Projects */
             .jira-column { margin-bottom: 2rem; }
 
-            /* Achievements */
-            .achievement-box { padding: 3rem 1rem; }
+            /* Roadmap Mobile Fallback (Left Aligned) */
+            .timeline-container::before {
+                left: 20px;
+                transform: none;
+            }
+            .timeline-item {
+                width: 100%; 
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                padding-left: 60px !important;
+                padding-right: 0 !important;
+                text-align: left !important;
+            }
+            .timeline-item .timeline-dot {
+                left: 11px !important;
+                right: auto !important;
+            }
+            .timeline-item .timeline-text p {
+                display: block !important;
+                text-align: left !important;
+            }
+
+            /* Chart Mobile Adjustments */
+            .chart-container { padding: 2rem 1rem; }
+            .chart-header h3 { font-size: 1.5rem; }
+            .chart-description { font-size: 0.9rem; }
+            .chart-description .final-result { font-size: 1.05rem; }
+            .chart-axis-text { font-size: 10px; }
+            .chart-x-text { font-size: 11px; }
+            .chart-tooltip-text { font-size: 11px; }
+            
+            .chart-footer p { font-size: 0.75rem; }
         }
     </style>
 </head>
@@ -579,18 +783,17 @@
 
     <!-- Header -->
     <header>
-        <!-- Updated Logo: Black color, Bold 51, Normal labs -->
         <a href="#about" class="logo" onclick="moveToSection(0); return false;">
             <span class="logo-bold">51</span><span class="logo-normal">labs</span>
         </a>
         <div class="menu-toggle">☰</div>
         <nav>
             <ul>
-                <!-- Nav Links call custom JS instead of href anchor -->
                 <li><a onclick="moveToSection(0)" class="active">소개</a></li>
                 <li><a onclick="moveToSection(1)">사업영역</a></li>
                 <li><a onclick="moveToSection(2)">프로젝트</a></li>
-                <li><a onclick="moveToSection(3)">성과</a></li>
+                <li><a onclick="moveToSection(3)">로드맵</a></li>
+                <li><a onclick="moveToSection(4)">성과</a></li>
             </ul>
         </nav>
     </header>
@@ -602,34 +805,33 @@
             <div class="content-box hero-text">
                 <h1 class="hero-main">
                     Reset,<br>
-                    Recharge and<br>
+                    Recharge,<br>
                     Replan<br>
                     <span class="highlight">with us</span>
                 </h1>
                 
-                <!-- Updated Intro Content: Sequential Text -->
                 <div class="intro-text-container">
                     
                     <p class="intro-paragraph">
-                        <strong>51labs(오일랩스)</strong>는 2025년 7월 21일,<br>
-                        새로운 도전을 시작한 투자·소프트웨어 개발 법인입니다.
+                        우리는 2025년 7월 21일,<br>
+                        금융 투자와 소프트웨어를 결합한 새로운 도전을 시작했습니다.
                     </p>
 
                     <p class="intro-paragraph">
                         <span class="highlight-marker">15년의 투자 경험</span>과<br>
-                        <span class="highlight-marker">25년의 소프트웨어 엔지니어 경력</span>을 지닌 대표가<br>
-                        두 분야의 전문성을 결합한<br>
-                        새로운 비지니스 모델을 만들어갑니다.
+                        <span class="highlight-marker">25년의 소프트웨어 엔지니어링 경력</span>을 바탕으로,<br>
+                        두 영역의 전문성을 하나의 구조로 연결해<br>
+                        차별화된 비즈니스 모델을 구축하고 있습니다.
                     </p>
 
                     <p class="intro-paragraph">
-                        51labs는 AI와 함께 일하는 법을 적극적으로 실현하는<br>
-                        <span class="highlight-marker marker-green">작은 연구실</span>입니다.
+                        51labs는 AI와 함께 일하는 방식을 연구하고,<br>
+                        이를 실제 성과로 구현하는<br>
+                        <span class="highlight-marker marker-green">실험적이지만 실행 중심의 조직</span>입니다.
                     </p>
 
                     <p class="intro-paragraph">
-                        낡은 엔지니어에게는 낯선 여정이지만,<br>
-                        <span class="highlight-marker marker-blue">성과로 증명</span>하겠습니다!
+                        <span class="highlight-marker marker-blue">결과로 증명</span>하겠습니다.
                     </p>
 
                 </div>
@@ -641,14 +843,12 @@
             <h2 class="section-title">사업 영역</h2>
             <div class="content-box business-grid">
                 
-                <!-- Card 1 (Core Business) -->
+                <!-- Card 1 -->
                 <div class="biz-card">
-                    <!-- Added 'core-business' class for darker background -->
                     <div class="biz-header-row core-business">
                         <h3>지능형 금융 투자</h3>
                         <div style="display: flex; gap: 5px;">
                             <span class="biz-badge">금융업</span>
-                            <!-- Added '주업종' Tag with Gold Color -->
                             <span class="biz-badge main-tag">주업종</span>
                         </div>
                     </div>
@@ -692,7 +892,7 @@
                         <span class="biz-badge">서비스업</span>
                     </div>
                     <ul class="biz-content-list">
-                        <li>금융과 IT를 결합한 창업 전략 가이드</li>
+                        <li>금융과 IT 결합 창업 전략 가이드</li>
                         <li>법인 설립 형태 및 운영 노하우 상담</li>
                         <li>금융 투자 관련 컨설팅 (종목 추천 아님!)</li>
                     </ul>
@@ -701,7 +901,7 @@
             </div>
         </section>
 
-        <!-- Container #3: Projects (Dark + Jira Style) -->
+        <!-- Container #3: Projects (Dark) -->
         <section id="projects" class="section-dark">
             <h2 class="section-title">프로젝트 현황</h2>
             <div class="content-box">
@@ -711,7 +911,7 @@
                     <div class="jira-column">
                         <div class="column-header">
                             <span>Backlog</span>
-                            <span class="card-count">5</span>
+                            <span class="card-count">4</span>
                         </div>
                         
                         <div class="jira-card tag-aid">
@@ -721,7 +921,6 @@
                                     <span class="issue-key">AID-301</span>
                                 </div>
                                 <div class="meta-right">
-                                    <!-- Removed text tag -->
                                     <span class="avatar">PM</span>
                                 </div>
                             </div>
@@ -734,7 +933,6 @@
                                     <span class="issue-key">AID-302</span>
                                 </div>
                                 <div class="meta-right">
-                                    <!-- Removed text tag -->
                                     <span class="avatar">UX</span>
                                 </div>
                             </div>
@@ -747,13 +945,11 @@
                                     <span class="issue-key">AID-303</span>
                                 </div>
                                 <div class="meta-right">
-                                    <!-- Removed text tag -->
                                     <span class="avatar">CTO</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Added Item -->
                         <div class="jira-card tag-aii">
                             <span class="card-title">금융상품 필터링 시스템 개발</span>
                             <div class="card-meta">
@@ -765,8 +961,75 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Added Item -->
+                    <!-- Column: In Progress -->
+                    <div class="jira-column">
+                        <div class="column-header">
+                            <span>In Progress</span>
+                            <span class="card-count">6</span> 
+                        </div>
+                        
+                        <div class="jira-card tag-aid">
+                            <span class="card-title">투자 개인화 서비스 원천 기술 특허</span>
+                            <div class="card-meta">
+                                <div class="meta-left">
+                                    <span class="issue-key">AID-101</span>
+                                </div>
+                                <div class="meta-right">
+                                    <span class="avatar">IP</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="jira-card tag-cma">
+                            <span class="card-title">연간 법인 운영 통합 대시보드 구축</span>
+                            <div class="card-meta">
+                                <div class="meta-left">
+                                    <span class="issue-key">CMA-201</span>
+                                </div>
+                                <div class="meta-right">
+                                    <span class="avatar">DEV</span>
+                                </div>
+                            </div>
+                        </div>
+
+                         <div class="jira-card tag-aid">
+                            <span class="card-title">연령대별 투자 현황 분석</span>
+                            <div class="card-meta">
+                                <div class="meta-left">
+                                    <span class="issue-key">AID-102</span>
+                                </div>
+                                <div class="meta-right">
+                                    <span class="avatar">AI</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="jira-card tag-aii">
+                            <span class="card-title">포트폴리오 평가 및 리밸런싱 자동화</span>
+                            <div class="card-meta">
+                                <div class="meta-left">
+                                    <span class="issue-key">AII-101</span>
+                                </div>
+                                <div class="meta-right">
+                                    <span class="avatar">QA</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="jira-card tag-aii">
+                            <span class="card-title">증권사 원장 데이터 자동 분석</span>
+                            <div class="card-meta">
+                                <div class="meta-left">
+                                    <span class="issue-key">AII-103</span>
+                                </div>
+                                <div class="meta-right">
+                                    <span class="avatar">DEV</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="jira-card tag-aii">
                             <span class="card-title">거시·미시 시장 지표 분석 자동화</span>
                             <div class="card-meta">
@@ -780,63 +1043,11 @@
                         </div>
                     </div>
 
-                    <!-- Column: In Progress -->
+                    <!-- Column: Done -->
                     <div class="jira-column">
                         <div class="column-header">
-                            <span>In Progress</span>
-                            <span class="card-count">6</span> <!-- Updated count -->
-                        </div>
-                        
-                        <div class="jira-card tag-aid">
-                            <span class="card-title">투자 개인화 서비스 원천 기술 특허</span>
-                            <div class="card-meta">
-                                <div class="meta-left">
-                                    <span class="issue-key">AID-101</span>
-                                </div>
-                                <div class="meta-right">
-                                    <!-- Removed text tag -->
-                                    <span class="avatar">IP</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="jira-card tag-cma">
-                            <span class="card-title">연간 법인 운영 통합 대시보드 구축</span>
-                            <div class="card-meta">
-                                <div class="meta-left">
-                                    <span class="issue-key">CMA-201</span>
-                                </div>
-                                <div class="meta-right">
-                                    <!-- Removed text tag -->
-                                    <span class="avatar">DEV</span>
-                                </div>
-                            </div>
-                        </div>
-
-                         <div class="jira-card tag-aid">
-                            <span class="card-title">연령대별 투자 현황 분석</span>
-                            <div class="card-meta">
-                                <div class="meta-left">
-                                    <span class="issue-key">AID-102</span>
-                                </div>
-                                <div class="meta-right">
-                                    <!-- Removed text tag -->
-                                    <span class="avatar">AI</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="jira-card tag-aii">
-                            <span class="card-title">포트폴리오 평가 및 리밸런싱 자동화</span>
-                            <div class="card-meta">
-                                <div class="meta-left">
-                                    <span class="issue-key">AII-101</span>
-                                </div>
-                                <div class="meta-right">
-                                    <!-- Removed text tag -->
-                                    <span class="avatar">QA</span>
-                                </div>
-                            </div>
+                            <span>Done</span>
+                            <span class="card-count">7</span> 
                         </div>
 
                         <div class="jira-card tag-aii">
@@ -851,28 +1062,6 @@
                             </div>
                         </div>
 
-                        <!-- Added Item -->
-                        <div class="jira-card tag-aii">
-                            <span class="card-title">증권사 원장 데이터 자동 분석</span>
-                            <div class="card-meta">
-                                <div class="meta-left">
-                                    <span class="issue-key">AII-103</span>
-                                </div>
-                                <div class="meta-right">
-                                    <span class="avatar">DEV</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Column: Done -->
-                    <div class="jira-column">
-                        <div class="column-header">
-                            <span>Done</span>
-                            <span class="card-count">7</span> <!-- Updated count -->
-                        </div>
-
-                        <!-- Added Item -->
                         <div class="jira-card tag-aid">
                             <span class="card-title">은퇴 설계 개인화 서비스 PoC 개발</span>
                             <div class="card-meta">
@@ -892,7 +1081,6 @@
                                     <span class="issue-key">CMA-101</span>
                                 </div>
                                 <div class="meta-right">
-                                    <!-- Removed text tag -->
                                     <span class="avatar">DS</span>
                                 </div>
                             </div>
@@ -905,7 +1093,6 @@
                                     <span class="issue-key">CMA-102</span>
                                 </div>
                                 <div class="meta-right">
-                                    <!-- Removed text tag -->
                                     <span class="avatar">CFO</span>
                                 </div>
                             </div>
@@ -918,13 +1105,11 @@
                                     <span class="issue-key">SUC-101</span>
                                 </div>
                                 <div class="meta-right">
-                                    <!-- Removed text tag -->
                                     <span class="avatar">CEO</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Added Item -->
                         <div class="jira-card tag-suc">
                             <span class="card-title">Multi-Persona 협업 규칙 적용</span>
                             <div class="card-meta">
@@ -937,19 +1122,6 @@
                             </div>
                         </div>
 
-                        <!-- Added Item -->
-                        <div class="jira-card tag-suc">
-                            <span class="card-title">법인세 시뮬레이터 개발</span>
-                            <div class="card-meta">
-                                <div class="meta-left">
-                                    <span class="issue-key">SUC-002</span>
-                                </div>
-                                <div class="meta-right">
-                                    <span class="avatar">TAX</span>
-                                </div>
-                            </div>
-                        </div>
-
                         <div class="jira-card tag-cma">
                             <span class="card-title">회사 랜딩 페이지 v1, v2 개발</span>
                             <div class="card-meta">
@@ -957,7 +1129,6 @@
                                     <span class="issue-key">CMA-001</span>
                                 </div>
                                 <div class="meta-right">
-                                    <!-- Removed text tag -->
                                     <span class="avatar">FE</span>
                                 </div>
                             </div>
@@ -968,19 +1139,156 @@
             </div>
         </section>
 
-        <!-- Container #4: Achievements & Footer (White) -->
-        <section id="achievements" class="section-light">
+        <!-- Container #3.5: Roadmap (Light) -->
+        <section id="roadmap" class="section-light">
+            <h2 class="section-title">로드맵</h2>
+            <div class="content-box">
+                <div class="timeline-container">
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-date">2025 H2</div>
+                        <div class="timeline-text">
+                            <h3>법인 설립 및 지능형 투자 시스템 구축</h3>
+                            <p>
+                                • 투자 법인 체계 구축<br>
+                                • 법인 운영 관련 PoC 개발 및 적용<br>
+                                • AI 기반 업무 자동화
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-date">2026 H1</div>
+                        <div class="timeline-text">
+                            <h3>금융 투자 안정화</h3>
+                            <p>
+                                • 대외 변동에 안정화된 포트폴리오 구성 및 운영<br>
+                                • 투자 법인 관점의 현금 흐름 평가 및 개선<br>
+                                • 은퇴, 투자, AI 관련 컨텐츠 개발 (5월)
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-date">2026 H2</div>
+                        <div class="timeline-text">
+                            <h3>사업 스케일업</h3>
+                            <p>
+                                • 은퇴 설계 Agentic AI 서비스 개발 착수<br>
+                                • 미디어 컨텐츠 개발 확장<br>
+                                • 본점 이전 (12월 예정)
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-date">2027 ~</div>
+                        <div class="timeline-text">
+                            <h3>사업 본격화</h3>
+                            <p>
+                                • 투자 및 AI 서비스 개발 관련 채용 계획
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Container #4: Achievements & Footer (Dark) -->
+        <section id="achievements" class="section-dark">
             <h2 class="section-title">성과</h2>
             <div class="content-box achievement-container">
-                <div class="achievement-box">
-                    <h3 class="notice-text">2026년 1월 업데이트 예정</h3>
-                    <p class="sub-notice">각 사업영역별 상세 성과 지표가 공개됩니다.</p>
+                
+                <!-- Dynamic SVG Chart -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>제 1기 (2025년) 투자 성과</h3>
+                        <div class="chart-description">
+                            <p>- Macro + Momentum 전략 기반 투자</p>
+                            <p>- 같은 기간 S&P 500의 8.7% 대비 약 1% 추가 달성</p>
+                            <p>- 투자 성과율: 9.67%</p>
+                        </div>
+                    </div>
+                    
+                    <svg viewBox="0 0 600 320" class="svg-chart">
+                        <!-- Y-Axis Grid Lines & Baseline (Max 15%) -->
+                        <line x1="40" y1="50" x2="560" y2="50" class="chart-grid" /> <!-- 15% -->
+                        <line x1="40" y1="123" x2="560" y2="123" class="chart-grid" /> <!-- 10% -->
+                        <line x1="40" y1="196" x2="560" y2="196" class="chart-grid" /> <!-- 5% -->
+                        <line x1="40" y1="270" x2="560" y2="270" class="chart-baseline" /> <!-- 0% Base -->
+
+                        <!-- Y-axis Labels -->
+                        <text x="30" y="54" class="chart-axis-text">15%</text>
+                        <text x="30" y="127" class="chart-axis-text">10%</text>
+                        <text x="30" y="200" class="chart-axis-text">5%</text>
+                        <text x="30" y="274" class="chart-axis-text">0%</text>
+
+                        <!-- X-axis Labels -->
+                        <text x="60" y="300" class="chart-axis-text chart-x-text">7월</text>
+                        <text x="160" y="300" class="chart-axis-text chart-x-text">8월</text>
+                        <text x="260" y="300" class="chart-axis-text chart-x-text">9월</text>
+                        <text x="360" y="300" class="chart-axis-text chart-x-text">10월</text>
+                        <text x="460" y="300" class="chart-axis-text chart-x-text">11월</text>
+                        <text x="560" y="300" class="chart-axis-text chart-x-text">12월</text>
+
+                        <!-- Connecting Line Path -->
+                        <path class="chart-line" d="M60,262.8 L160,265.6 L260,177.8 L360,73.7 L460,105.7 L560,128.2" />
+
+                        <!-- Data Points & Tooltips -->
+                        <!-- 7월 ~ 11월: Muted Texts -->
+                        <g class="data-group">
+                            <circle cx="60" cy="262.8" r="6" class="chart-point" />
+                            <rect x="35" y="225" width="50" height="24" rx="4" class="chart-tooltip-bg"/>
+                            <text x="60" y="242" class="chart-tooltip-text muted">0.49%</text>
+                        </g>
+                        
+                        <g class="data-group">
+                            <circle cx="160" cy="265.6" r="6" class="chart-point" />
+                            <rect x="135" y="228" width="50" height="24" rx="4" class="chart-tooltip-bg"/>
+                            <text x="160" y="245" class="chart-tooltip-text muted">0.30%</text>
+                        </g>
+                        
+                        <g class="data-group">
+                            <circle cx="260" cy="177.8" r="6" class="chart-point" />
+                            <rect x="235" y="140" width="50" height="24" rx="4" class="chart-tooltip-bg"/>
+                            <text x="260" y="157" class="chart-tooltip-text muted">6.29%</text>
+                        </g>
+                        
+                        <g class="data-group">
+                            <circle cx="360" cy="73.7" r="6" class="chart-point" />
+                            <rect x="330" y="36" width="60" height="24" rx="4" class="chart-tooltip-bg"/>
+                            <text x="360" y="53" class="chart-tooltip-text muted">13.39%</text>
+                        </g>
+                        
+                        <g class="data-group">
+                            <circle cx="460" cy="105.7" r="6" class="chart-point" />
+                            <rect x="430" y="68" width="60" height="24" rx="4" class="chart-tooltip-bg"/>
+                            <text x="460" y="85" class="chart-tooltip-text muted">11.21%</text>
+                        </g>
+                        
+                        <!-- 12월: Highlighted Text -->
+                        <g class="data-group">
+                            <circle cx="560" cy="128.2" r="6" class="chart-point" />
+                            <rect x="535" y="90" width="50" height="24" rx="4" class="chart-tooltip-bg"/>
+                            <text x="560" y="107" class="chart-tooltip-text highlight">9.67%</text>
+                        </g>
+                    </svg>
+                    
+                    <div class="chart-footer">
+                        <p>2025.07 ~ 2025.12 월별 누적 자산 변동률</p>
+                    </div>
                 </div>
+
             </div>
             
             <footer>
                 <div class="footer-content">
-                    <p>Made with Gemini v3.0</p>
+                    <p class="made-with">Made with Google Gemini v3.1</p>
                     <p>All Rights Reserved by</p>
                     <p>오일랩스 유한회사 | 51labs LLC.</p>
                     <p>사업자등록번호: 172-88-03237</p>
