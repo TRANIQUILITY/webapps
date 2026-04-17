@@ -678,7 +678,21 @@
         }
 
         .footer-content p.made-with {
-            margin-bottom: 24px; /* Empty line space */
+            margin-bottom: 6px;
+        }
+        
+        .footer-content p.version-link {
+            margin-bottom: 24px; /* Empty line space moved here */
+        }
+        
+        .footer-content p.version-link a {
+            text-decoration: underline;
+            color: #94a3b8;
+            transition: color 0.2s;
+        }
+        
+        .footer-content p.version-link a:hover {
+            color: var(--accent-blue);
         }
         
         .footer-content p:last-child {
@@ -1289,6 +1303,7 @@
             <footer>
                 <div class="footer-content">
                     <p class="made-with">Made with Google Gemini v3.1</p>
+                    <p class="version-link"><a href="/index_v1.html">이전 Version 보기</a></p>
                     <p>All Rights Reserved by</p>
                     <p>오일랩스 유한회사 | 51labs LLC.</p>
                     <p>사업자등록번호: 172-88-03237</p>
