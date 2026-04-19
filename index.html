@@ -531,6 +531,19 @@
             border-radius: 20px;
         }
         
+        /* Added: Month badge for specific inline dates */
+        .month-badge {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #064e3b; /* Dark green text */
+            background-color: #a7f3d0; /* Fluorescent light green */
+            padding: 2px 10px;
+            border-radius: 12px;
+            margin-left: 6px;
+            display: inline-block;
+            vertical-align: baseline;
+        }
+
         .timeline-text h3 {
             font-size: 1.4rem;
             margin-bottom: 0.5rem;
@@ -1066,7 +1079,7 @@
                     <div class="jira-column">
                         <div class="column-header">
                             <span>Done</span>
-                            <span class="card-count">7</span> 
+                            <span class="card-count">5</span> 
                         </div>
 
                         <div class="jira-card tag-aii">
@@ -1105,35 +1118,11 @@
                             </div>
                         </div>
 
-                        <div class="jira-card tag-cma">
-                            <span class="card-title">비용 관리 및 절세 시뮬레이터 개발</span>
+                        <div class="jira-card tag-suc" style="opacity: 0.6;">
+                            <span class="card-title" style="text-decoration: line-through;">Multi-Persona 협업 규칙 적용</span>
                             <div class="card-meta">
                                 <div class="meta-left">
-                                    <span class="issue-key">CMA-102</span>
-                                </div>
-                                <div class="meta-right">
-                                    <span class="avatar">CFO</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="jira-card tag-suc">
-                            <span class="card-title">창업 멘토링 가이드 및 서비스 개발</span>
-                            <div class="card-meta">
-                                <div class="meta-left">
-                                    <span class="issue-key">SUC-101</span>
-                                </div>
-                                <div class="meta-right">
-                                    <span class="avatar">CEO</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="jira-card tag-suc">
-                            <span class="card-title">Multi-Persona 협업 규칙 적용</span>
-                            <div class="card-meta">
-                                <div class="meta-left">
-                                    <span class="issue-key">SUC-001</span>
+                                    <span class="issue-key" style="text-decoration: line-through;">SUC-001</span>
                                 </div>
                                 <div class="meta-right">
                                     <span class="avatar">PM</span>
@@ -1168,11 +1157,11 @@
                         <div class="timeline-dot"></div>
                         <div class="timeline-date">2025 H2</div>
                         <div class="timeline-text">
-                            <h3>법인 설립 및 지능형 투자 시스템 구축</h3>
+                            <h3>법인 설립 및 안정화</h3>
                             <p>
                                 • 투자 법인 체계 구축<br>
                                 • 법인 운영 관련 PoC 개발 및 적용<br>
-                                • AI 기반 업무 자동화
+                                • 법인 업무 자동화
                             </p>
                         </div>
                     </div>
@@ -1181,11 +1170,11 @@
                         <div class="timeline-dot"></div>
                         <div class="timeline-date">2026 H1</div>
                         <div class="timeline-text">
-                            <h3>금융 투자 안정화</h3>
+                            <h3>투자 포트폴리오 전개</h3>
                             <p>
-                                • 대외 변동에 안정화된 포트폴리오 구성 및 운영<br>
+                                • 리스크에 대응 가능한 포트폴리오 재구성<br>
                                 • 투자 법인 관점의 현금 흐름 평가 및 개선<br>
-                                • 은퇴, 투자, AI 관련 컨텐츠 개발 (5월)
+                                • 은퇴, 투자, AI 관련 컨텐츠 개발 <span class="month-badge">5월</span>
                             </p>
                         </div>
                     </div>
@@ -1198,7 +1187,7 @@
                             <p>
                                 • 은퇴 설계 Agentic AI 서비스 개발 착수<br>
                                 • 미디어 컨텐츠 개발 확장<br>
-                                • 본점 이전 (12월 예정)
+                                • 본점 이전 <span class="month-badge">12월 예정</span>
                             </p>
                         </div>
                     </div>
